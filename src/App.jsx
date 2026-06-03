@@ -282,7 +282,7 @@ export default function App() {
     const url=form.fichaUrl.trim(); if(!url){setStatus({t:"err",m:"Cole o link da ficha Google."});return;}
     setFichaLoad(true); setStatus({t:"load",m:"Analisando ficha Google..."});
     try {
-      const resp=await fetch("/api/claude",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:900,tools:[{type:"web_search_20250305",name:"web_search"}],messages:[{role:"user",content:`Acesse a ficha Google Meu Negócio em: ${url}\nSe não conseguir diretamente, busque pelo nome na URL.\nRetorne SOMENTE JSON sem markdown:\n{"nome":"","categoria":"","endereco":"","cidade":"","estado":"","nota":"","numAvals":"","numFotos":"","temSite":false,"temWhats":false,"postsAtivos":false,"frequencia":"nenhuma","site":"","whatsapp":"","posicao":"","social":""}`}]})});
+      const resp=await fetch("/api/claude",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:900,messages:[{role:"user",content:`Acesse a ficha Google Meu Negócio em: ${url}\nSe não conseguir diretamente, busque pelo nome na URL.\nRetorne SOMENTE JSON sem markdown:\n{"nome":"","categoria":"","endereco":"","cidade":"","estado":"","nota":"","numAvals":"","numFotos":"","temSite":false,"temWhats":false,"postsAtivos":false,"frequencia":"nenhuma","site":"","whatsapp":"","posicao":"","social":""}`}]})});
       const data=await resp.json();
       const text=data.content?.filter(b=>b.type==="text").map(b=>b.text).join("")||"";
       const s=text.indexOf("{"),e=text.lastIndexOf("}"); if(s<0)throw new Error();
@@ -305,7 +305,7 @@ export default function App() {
     const url=ig.url.trim(); if(!url){setStatus({t:"err",m:"Cole o link do Instagram."});return;}
     setIgLoad(true); setStatus({t:"load",m:"Analisando perfil do Instagram..."});
     try {
-      const resp=await fetch("/api/claude",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:900,tools:[{type:"web_search_20250305",name:"web_search"}],messages:[{role:"user",content:`Acesse o perfil do Instagram neste link e analise: ${url}\nRetorne SOMENTE JSON sem markdown:\n{"handle":"username sem @","seguidores":"número","bioOtimizada":false,"linkBio":false,"frequencia":"nenhuma ou raramente ou mensal ou semanal ou diaria","qualVisual":"ruim ou media ou boa","contAutoridade":"nenhum ou parcial ou completo","engRate":"porcentagem numérica","observacoes":"observação breve sobre o perfil"}`}]})});
+      const resp=await fetch("/api/claude",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:900,messages:[{role:"user",content:`Acesse o perfil do Instagram neste link e analise: ${url}\nRetorne SOMENTE JSON sem markdown:\n{"handle":"username sem @","seguidores":"número","bioOtimizada":false,"linkBio":false,"frequencia":"nenhuma ou raramente ou mensal ou semanal ou diaria","qualVisual":"ruim ou media ou boa","contAutoridade":"nenhum ou parcial ou completo","engRate":"porcentagem numérica","observacoes":"observação breve sobre o perfil"}`}]})});
       const data=await resp.json();
       const text=data.content?.filter(b=>b.type==="text").map(b=>b.text).join("")||"";
       const s=text.indexOf("{"),e=text.lastIndexOf("}"); if(s<0)throw new Error();
@@ -330,7 +330,7 @@ export default function App() {
     if(!form.categoria||!form.cidade){setStatus({t:"err",m:"Preencha categoria e cidade."});return;}
     setConcLoad(true); setStatus({t:"load",m:"Buscando concorrentes..."});
     try {
-      const resp=await fetch("/api/claude",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1200,tools:[{type:"web_search_20250305",name:"web_search"}],messages:[{role:"user",content:`Pesquise Google Maps TOP 5 concorrentes do segmento "${form.categoria}" em ${form.cidade}, Brasil. Retorne SOMENTE JSON: {"concorrentes":[{"posicao":1,"nome":"Nome","nota":"4.5","avals":"300","diferencial":"diferencial"}]}`}]})});
+      const resp=await fetch("/api/claude",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1200,messages:[{role:"user",content:`Pesquise no Google Maps os TOP 5 concorrentes do segmento "${form.categoria}${form.especializacao?" - "+form.especializacao:""}" em ${form.cidade}, Brasil. Liste os negócios reais que aparecem nessa busca. Retorne SOMENTE JSON sem markdown: {"concorrentes":[{"posicao":1,"nome":"Nome completo","nota":"4.5","avals":"300","diferencial":"principal diferencial em 1 frase"}]}`}]})});
       const data=await resp.json();
       const text=data.content?.filter(b=>b.type==="text").map(b=>b.text).join("")||"";
       const s=text.indexOf("{"),e=text.lastIndexOf("}");
@@ -472,20 +472,7 @@ Retorne SOMENTE JSON sem markdown:
             </div>
           )}
 
-          <div style={css.card()}>
-            <div style={{fontSize:"13px",fontWeight:700,marginBottom:"4px",display:"flex",alignItems:"center",gap:"8px"}}>
-              Extrair dados da ficha Google
-              <span style={{background:"linear-gradient(90deg,#7C3AED,#4F46E5)",color:"#fff",fontSize:"10px",padding:"2px 8px",borderRadius:"20px",fontWeight:700}}>IA</span>
-            </div>
-            <p style={{fontSize:"12px",color:T.n400,marginBottom:"10px"}}>Cole o link do Google Maps. A IA extrai os dados automaticamente.</p>
-            <div style={{display:"flex",gap:"8px"}}>
-              <input style={css.inp} value={form.fichaUrl} onChange={e=>setF("fichaUrl",e.target.value)} placeholder="https://maps.google.com/..."/>
-              <button onClick={extrairFicha} disabled={fichaLoad} style={{...css.btn(form.cor1,"#fff"),whiteSpace:"nowrap",opacity:fichaLoad?.7:1,fontSize:"12px",padding:"9px 14px"}}>
-                {fichaLoad?"Analisando...":"Extrair"}
-              </button>
-            </div>
-            <SBar/>
-          </div>
+
 
           <div style={css.card()}>
             <div style={css.sec}>Segmento</div>
@@ -515,36 +502,45 @@ Retorne SOMENTE JSON sem markdown:
             ))}
           </div>
 
-          <div style={css.card()}>
-            <div style={css.sec}>Dados do negócio</div>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"12px",marginBottom:"10px"}}>
-              <div><label style={css.lbl}>Nome *</label><input style={css.inp} value={form.nome} onChange={e=>setF("nome",e.target.value)} placeholder="Nome da empresa"/></div>
-              <div><label style={css.lbl}>Responsável</label><input style={css.inp} value={form.responsavel} onChange={e=>setF("responsavel",e.target.value)} placeholder="João Silva"/></div>
-            </div>
-            <div style={{marginBottom:"10px"}}><label style={css.lbl}>Endereço</label><input style={css.inp} value={form.endereco} onChange={e=>setF("endereco",e.target.value)} placeholder="Rua, nº, bairro, cidade - UF"/></div>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 80px",gap:"12px",marginBottom:"10px"}}>
-              <div><label style={css.lbl}>Cidade *</label><input style={css.inp} value={form.cidade} onChange={e=>setF("cidade",e.target.value)} placeholder="Belo Horizonte"/></div>
-              <div><label style={css.lbl}>UF</label><input style={css.inp} value={form.estado} onChange={e=>setF("estado",e.target.value)} placeholder="MG"/></div>
-            </div>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"12px",marginBottom:"10px"}}>
-              <div><label style={css.lbl}>Site</label><input style={css.inp} value={form.site} onChange={e=>setF("site",e.target.value)} placeholder="https://site.com.br"/></div>
-              <div><label style={css.lbl}>WhatsApp</label><input style={css.inp} value={form.whatsapp} onChange={e=>setF("whatsapp",e.target.value)} placeholder="(31) 9 9999-9999"/></div>
-            </div>
-            <div style={css.sec}>Presença digital</div>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"8px"}}>
-              <div><Tog checked={form.temSite} onChange={v=>setF("temSite",v)} label="Site ativo"/><Tog checked={form.temWhats} onChange={v=>setF("temWhats",v)} label="WhatsApp ativo"/><Tog checked={form.postsAtivos} onChange={v=>setF("postsAtivos",v)} label="Posts Google ativos"/></div>
-              <div><label style={css.lbl}>Frequência posts Google</label>
-                <select style={css.inp} value={form.frequencia} onChange={e=>setF("frequencia",e.target.value)}>
-                  <option value="nenhuma">Nenhuma</option><option value="raramente">Raramente</option><option value="mensal">Mensal</option><option value="semanal">Semanal</option><option value="diaria">Diária</option>
-                </select>
+          {(form.nome||form.cidade||form.categoria)&&(
+            <div style={{...css.card(),background:T.goldL,border:`.5px solid ${T.goldM}`}}>
+              <div style={{fontSize:"10px",fontWeight:700,letterSpacing:".1em",textTransform:"uppercase",color:T.gold,marginBottom:"10px",display:"flex",alignItems:"center",gap:"6px"}}>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+                Dados extraídos pela IA
+              </div>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"10px",marginBottom:"8px"}}>
+                <div><label style={css.lbl}>Nome</label><input style={css.inp} value={form.nome} onChange={e=>setF("nome",e.target.value)}/></div>
+                <div><label style={css.lbl}>Categoria</label><input style={css.inp} value={form.categoria} onChange={e=>setF("categoria",e.target.value)}/></div>
+              </div>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 80px",gap:"10px",marginBottom:"8px"}}>
+                <div><label style={css.lbl}>Cidade</label><input style={css.inp} value={form.cidade} onChange={e=>setF("cidade",e.target.value)}/></div>
+                <div><label style={css.lbl}>UF</label><input style={css.inp} value={form.estado} onChange={e=>setF("estado",e.target.value)}/></div>
+              </div>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"10px"}}>
+                <div><label style={css.lbl}>Nota Google</label><input style={css.inp} value={form.nota} onChange={e=>setF("nota",e.target.value)}/></div>
+                <div><label style={css.lbl}>Nº avaliações</label><input style={css.inp} value={form.numAvals} onChange={e=>setF("numAvals",e.target.value)}/></div>
               </div>
             </div>
-          </div>
+          )}
           <div style={{display:"flex",justifyContent:"flex-end"}}><button onClick={()=>setPg(2)} style={css.btn(T.dark,"#fff")}>Próximo</button></div>
         </div>}
 
         {/* P2 — Métricas Google (OPCIONAL) */}
         {pg===2&&<div>
+          <div style={css.card()}>
+            <div style={{fontSize:"13px",fontWeight:700,marginBottom:"4px",display:"flex",alignItems:"center",gap:"8px"}}>
+              Extrair dados da ficha Google
+              <span style={{background:"linear-gradient(90deg,#7C3AED,#4F46E5)",color:"#fff",fontSize:"10px",padding:"2px 8px",borderRadius:"20px",fontWeight:700}}>IA</span>
+            </div>
+            <p style={{fontSize:"12px",color:T.n400,marginBottom:"10px"}}>Cole o link do Google Maps. A IA extrai nota, avaliações, fotos e posição automaticamente.</p>
+            <div style={{display:"flex",gap:"8px"}}>
+              <input style={css.inp} value={form.fichaUrl} onChange={e=>setF("fichaUrl",e.target.value)} placeholder="https://maps.google.com/..."/>
+              <button onClick={extrairFicha} disabled={fichaLoad} style={{...css.btn(form.cor1,"#fff"),whiteSpace:"nowrap",opacity:fichaLoad?.7:1,fontSize:"12px",padding:"9px 14px"}}>
+                {fichaLoad?"Analisando...":"Extrair métricas"}
+              </button>
+            </div>
+            <SBar/>
+          </div>
           <div style={{...css.card(T.goldL),border:`.5px solid ${T.goldM}`,marginBottom:"10px"}}>
             <div style={{fontSize:"12px",color:T.gold,fontWeight:600,display:"flex",alignItems:"center",gap:"6px"}}>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
