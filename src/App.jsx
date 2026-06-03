@@ -282,7 +282,7 @@ export default function App() {
     const url=form.fichaUrl.trim(); if(!url){setStatus({t:"err",m:"Cole o link da ficha Google."});return;}
     setFichaLoad(true); setStatus({t:"load",m:"Analisando ficha Google..."});
     try {
-      const resp=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:900,tools:[{type:"web_search_20250305",name:"web_search"}],messages:[{role:"user",content:`Acesse a ficha Google Meu Negócio em: ${url}\nSe não conseguir diretamente, busque pelo nome na URL.\nRetorne SOMENTE JSON sem markdown:\n{"nome":"","categoria":"","endereco":"","cidade":"","estado":"","nota":"","numAvals":"","numFotos":"","temSite":false,"temWhats":false,"postsAtivos":false,"frequencia":"nenhuma","site":"","whatsapp":"","posicao":"","social":""}`}]})});
+      const resp=await fetch("/api/claude",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:900,tools:[{type:"web_search_20250305",name:"web_search"}],messages:[{role:"user",content:`Acesse a ficha Google Meu Negócio em: ${url}\nSe não conseguir diretamente, busque pelo nome na URL.\nRetorne SOMENTE JSON sem markdown:\n{"nome":"","categoria":"","endereco":"","cidade":"","estado":"","nota":"","numAvals":"","numFotos":"","temSite":false,"temWhats":false,"postsAtivos":false,"frequencia":"nenhuma","site":"","whatsapp":"","posicao":"","social":""}`}]})});
       const data=await resp.json();
       const text=data.content?.filter(b=>b.type==="text").map(b=>b.text).join("")||"";
       const s=text.indexOf("{"),e=text.lastIndexOf("}"); if(s<0)throw new Error();
@@ -305,7 +305,7 @@ export default function App() {
     const url=ig.url.trim(); if(!url){setStatus({t:"err",m:"Cole o link do Instagram."});return;}
     setIgLoad(true); setStatus({t:"load",m:"Analisando perfil do Instagram..."});
     try {
-      const resp=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:900,tools:[{type:"web_search_20250305",name:"web_search"}],messages:[{role:"user",content:`Acesse o perfil do Instagram neste link e analise: ${url}\nRetorne SOMENTE JSON sem markdown:\n{"handle":"username sem @","seguidores":"número","bioOtimizada":false,"linkBio":false,"frequencia":"nenhuma ou raramente ou mensal ou semanal ou diaria","qualVisual":"ruim ou media ou boa","contAutoridade":"nenhum ou parcial ou completo","engRate":"porcentagem numérica","observacoes":"observação breve sobre o perfil"}`}]})});
+      const resp=await fetch("/api/claude",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:900,tools:[{type:"web_search_20250305",name:"web_search"}],messages:[{role:"user",content:`Acesse o perfil do Instagram neste link e analise: ${url}\nRetorne SOMENTE JSON sem markdown:\n{"handle":"username sem @","seguidores":"número","bioOtimizada":false,"linkBio":false,"frequencia":"nenhuma ou raramente ou mensal ou semanal ou diaria","qualVisual":"ruim ou media ou boa","contAutoridade":"nenhum ou parcial ou completo","engRate":"porcentagem numérica","observacoes":"observação breve sobre o perfil"}`}]})});
       const data=await resp.json();
       const text=data.content?.filter(b=>b.type==="text").map(b=>b.text).join("")||"";
       const s=text.indexOf("{"),e=text.lastIndexOf("}"); if(s<0)throw new Error();
@@ -330,7 +330,7 @@ export default function App() {
     if(!form.categoria||!form.cidade){setStatus({t:"err",m:"Preencha categoria e cidade."});return;}
     setConcLoad(true); setStatus({t:"load",m:"Buscando concorrentes..."});
     try {
-      const resp=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1200,tools:[{type:"web_search_20250305",name:"web_search"}],messages:[{role:"user",content:`Pesquise Google Maps TOP 5 concorrentes do segmento "${form.categoria}" em ${form.cidade}, Brasil. Retorne SOMENTE JSON: {"concorrentes":[{"posicao":1,"nome":"Nome","nota":"4.5","avals":"300","diferencial":"diferencial"}]}`}]})});
+      const resp=await fetch("/api/claude",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1200,tools:[{type:"web_search_20250305",name:"web_search"}],messages:[{role:"user",content:`Pesquise Google Maps TOP 5 concorrentes do segmento "${form.categoria}" em ${form.cidade}, Brasil. Retorne SOMENTE JSON: {"concorrentes":[{"posicao":1,"nome":"Nome","nota":"4.5","avals":"300","diferencial":"diferencial"}]}`}]})});
       const data=await resp.json();
       const text=data.content?.filter(b=>b.type==="text").map(b=>b.text).join("")||"";
       const s=text.indexOf("{"),e=text.lastIndexOf("}");
@@ -353,7 +353,7 @@ export default function App() {
     const n=NICHOS[nichoKey]||NICHOS.outro;
     const ton=TONS[form.tom]||TONS.original;
     try {
-      const resp=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1800,messages:[{role:"user",content:`Copywriter de marketing digital local.
+      const resp=await fetch("/api/claude",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1800,messages:[{role:"user",content:`Copywriter de marketing digital local.
 
 TOM: ${ton.label}
 INSTRUÇÃO: ${ton.instrucao}
