@@ -267,7 +267,6 @@ export default function App() {
   const [concLoad, setConcLoad] = useState(false);
   const [fichaLoad, setFichaLoad] = useState(false);
   const [p2modo, setP2modo] = useState("manual");
-  const [p2modo, setP2modo] = useState("manual"); // "manual" | "auto"
   const [igLoad, setIgLoad] = useState(false);
   const [presets, setPresets] = useState(loadPresets());
   const [presetName, setPresetName] = useState("");
