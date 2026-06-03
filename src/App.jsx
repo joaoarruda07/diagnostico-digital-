@@ -600,14 +600,18 @@ Retorne SOMENTE JSON sem markdown:
           </div>
 
           <div style={css.card()}>
+            <div style={css.sec}>Segmento</div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(88px,1fr))",gap:"7px",marginBottom:"14px"}}>
+              {Object.entries(NICHOS).map(([k,v])=>(
+                <div key={k} onClick={()=>setNicho(k)} style={{padding:"10px 6px",borderRadius:"9px",border:nichoKey===k?`1.5px solid ${form.cor1}`:`.5px solid ${T.n200}`,background:nichoKey===k?form.cor1+"12":T.n0,cursor:"pointer",textAlign:"center",transition:"all .12s"}}>
+                  <div style={{fontSize:"11px",fontWeight:600,color:nichoKey===k?form.cor1:T.n600}}>{v.label}</div>
+                </div>
+              ))}
+            </div>
             <div style={css.sec}>Dados do negócio</div>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"12px",marginBottom:"10px"}}>
               <div><label style={css.lbl}>Nome *</label><input style={css.inp} value={form.nome} onChange={e=>setF("nome",e.target.value)} placeholder="Ex: Clínica Dra. Marina"/></div>
               <div><label style={css.lbl}>Responsável</label><input style={css.inp} value={form.responsavel||""} onChange={e=>setF("responsavel",e.target.value)} placeholder="Nome do proprietário"/></div>
-            </div>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"12px",marginBottom:"10px"}}>
-              <div><label style={css.lbl}>Categoria *</label><input style={css.inp} value={form.categoria} onChange={e=>setF("categoria",e.target.value)} placeholder="Ex: Clínica Médica"/></div>
-              <div><label style={css.lbl}>Especialização</label><input style={css.inp} value={form.especializacao||""} onChange={e=>setF("especializacao",e.target.value)} placeholder="Ex: Ortopedia"/></div>
             </div>
             <div style={{marginBottom:"10px"}}><label style={css.lbl}>Endereço</label><input style={css.inp} value={form.endereco||""} onChange={e=>setF("endereco",e.target.value)} placeholder="Rua, nº, bairro"/></div>
             <div style={{display:"grid",gridTemplateColumns:"1fr 80px",gap:"12px",marginBottom:"10px"}}>
@@ -740,12 +744,16 @@ Retorne SOMENTE JSON sem markdown:
 
         {/* P4 — Concorrentes (OPCIONAL) */}
         {pg===4&&<div>
-          <div style={{...css.card(T.goldL),border:`.5px solid ${T.goldM}`,marginBottom:"10px"}}>
+          {p2modo==="manual"&&<div style={{...css.card(T.n50),border:`.5px solid ${T.n200}`,marginBottom:"10px",padding:"16px 20px"}}>
+            <div style={{fontSize:"13px",fontWeight:700,color:T.n900,marginBottom:"4px"}}>Análise de concorrentes</div>
+            <div style={{fontSize:"12px",color:T.n400,lineHeight:1.6}}>Disponível no modo <strong>Auto IA</strong>. Ative o modo Auto IA na sidebar para buscar concorrentes automaticamente pelo Google Maps.</div>
+          </div>}
+          {p2modo==="auto"&&<div style={{...css.card(T.goldL),border:`.5px solid ${T.goldM}`,marginBottom:"10px"}}>
             <div style={{fontSize:"12px",color:T.gold,fontWeight:600,display:"flex",alignItems:"center",gap:"6px"}}>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
               Seção opcional — sem concorrentes, a página não será gerada no PDF
             </div>
-          </div>
+          </div>}
           {p2modo==="auto"&&<div style={css.card()}>
             <div style={{fontSize:"13px",fontWeight:700,marginBottom:"4px",display:"flex",alignItems:"center",gap:"8px"}}>Concorrentes <span style={{background:"linear-gradient(90deg,#7C3AED,#4F46E5)",color:"#fff",fontSize:"10px",padding:"2px 8px",borderRadius:"20px",fontWeight:700}}>IA + Web</span></div>
             <SBar/>
@@ -765,13 +773,17 @@ Retorne SOMENTE JSON sem markdown:
                 {c.diferencial&&<div style={{fontSize:"11px",color:T.n400,marginTop:"4px"}}>{c.diferencial}</div>}
               </div>))}
             </div>}
-          </div>}          {temConcs&&(
+          </div>}
+          {p2modo==="auto"&&temConcs&&(
             <div style={css.card()}>
               <div style={css.sec}>Mapa de posicionamento</div>
               <div style={{borderRadius:"10px",overflow:"hidden",border:`.5px solid ${T.n200}`}} dangerouslySetInnerHTML={{__html:mapHtml}}/>
             </div>
           )}
-          <div style={css.card()}>
+          {p2modo==="manual"&&<div style={{...css.card(T.n50),border:`.5px solid ${T.n200}`}}>
+            <div style={{fontSize:"12px",color:T.n400,textAlign:"center",padding:"8px 0"}}>Alterne para <strong style={{color:form.cor1}}>Auto IA</strong> para buscar e mapear concorrentes automaticamente.</div>
+          </div>}
+          {p2modo==="auto"&&<div style={css.card()}>
             <div style={css.sec}>Adicionar manualmente</div>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"10px",marginBottom:"10px"}}>
               <div><label style={css.lbl}>Nome</label><input id="cNome" style={css.inp} placeholder="Concorrente"/></div>
@@ -783,7 +795,7 @@ Retorne SOMENTE JSON sem markdown:
             </div>
             <div style={{marginBottom:"10px"}}><label style={css.lbl}>Diferencial</label><input id="cDiff" style={css.inp} placeholder="Mais fotos, site otimizado..."/></div>
             <button onClick={addComp} style={css.btnSm(T.n0,T.n700)}>+ Adicionar</button>
-          </div>
+          </div>}
           <div style={{display:"flex",gap:"10px",justifyContent:"space-between"}}><Nav label="← Voltar" to={3} back/><Nav label="Próximo →" to={5}/></div>
         </div>}
 
