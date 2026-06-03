@@ -240,6 +240,66 @@ const LogoIcon = ({size=40}) => (
 );
 
 /* ─── APP ────────────────────────────────────────────────── */
+const IG_CRITERIOS = [
+  {
+    k:"postaFreq", label:"Posta frequentemente?",
+    critica:{
+      original:"A frequência atual de publicações é insuficiente para manter relevância perante o algoritmo e a audiência. A falta de constância reduz o alcance do perfil, enfraquece a construção de autoridade e limita oportunidades de conversão.",
+      parceiro:"A frequência de posts tem espaço para crescer. Com uma cadência mais consistente, o perfil ganha mais alcance orgânico e mantém a audiência engajada ao longo do tempo.",
+      autoridade:"Perfis com alta frequência de publicação têm até 3x mais alcance orgânico. A regularidade de conteúdo é um dos principais sinais que o algoritmo usa para distribuir posts."
+    }
+  },
+  {
+    k:"temIA", label:"Tem posts com IA?",
+    criticaPositiva: true,
+    critica:{
+      original:"Foi identificado uso excessivo de conteúdos gerados por IA. Isso reduz a percepção de autenticidade da marca e pode transmitir uma comunicação genérica ao público.",
+      parceiro:"O uso de IA para apoiar a criação de conteúdo é válido, mas o equilíbrio com conteúdo autêntico é fundamental para manter a identidade da marca.",
+      autoridade:"O uso intensivo de conteúdo gerado por IA afeta negativamente métricas de engajamento. A autenticidade é fator chave no ranqueamento algorítmico do Instagram."
+    }
+  },
+  {
+    k:"temVitrine", label:"Tem conteúdo vitrine?",
+    critica:{
+      original:"O perfil apresenta poucas evidências dos produtos, serviços ou diferenciais. Novos visitantes não conseguem entender rapidamente o que a empresa oferece.",
+      parceiro:"Adicionar conteúdo que mostre seus produtos, serviços e resultados ajudaria visitantes a entenderem o valor do que você oferece logo de cara.",
+      autoridade:"Conteúdo vitrine é fundamental para conversão. Perfis sem apresentação clara de serviços têm taxa de saída significativamente maior em novas visitas."
+    }
+  },
+  {
+    k:"temBio", label:"Tem bio bem feita?",
+    critica:{
+      original:"A biografia não comunica a proposta de valor da empresa. Como a bio é um dos primeiros elementos analisados pelos visitantes, isso pode reduzir a geração de contatos.",
+      parceiro:"Uma bio mais estratégica, com proposta de valor clara e CTA, pode aumentar significativamente a conversão de visitantes em seguidores e clientes.",
+      autoridade:"A bio é o primeiro ponto de decisão do visitante. Perfis com bio otimizada (especialidade + CTA + link) convertem até 2x mais do que perfis genéricos."
+    }
+  },
+  {
+    k:"temIdentidade", label:"Tem identidade visual bem feita?",
+    critica:{
+      original:"A identidade visual atual não transmite consistência suficiente. A falta de padronização reduz a percepção de profissionalismo e confiança.",
+      parceiro:"Investir em consistência visual — paleta, tipografia e estilo de imagens — fortalece o reconhecimento da marca e transmite mais profissionalismo.",
+      autoridade:"Perfis com identidade visual consistente têm engajamento médio 40% maior. A percepção de profissionalismo é fator decisivo na escolha entre concorrentes."
+    }
+  },
+  {
+    k:"comunicaAutoridade", label:"Comunica autoridade?",
+    critica:{
+      original:"O perfil não evidencia a experiência ou expertise da empresa. Isso dificulta o posicionamento como referência e faz potenciais clientes escolherem concorrentes.",
+      parceiro:"Compartilhar conhecimento, bastidores e resultados ajuda a posicionar a empresa como referência e aumenta a confiança de novos visitantes.",
+      autoridade:"Conteúdo de autoridade (educativo, técnico, bastidores) é o tipo com maior potencial de compartilhamento orgânico e geração de leads qualificados."
+    }
+  },
+  {
+    k:"temProvaSocial", label:"Tem prova social?",
+    critica:{
+      original:"O perfil apresenta poucas evidências de resultados, depoimentos ou experiências de clientes. A ausência de prova social reduz a credibilidade e dificulta a conversão.",
+      parceiro:"Depoimentos, resultados e histórias de clientes são poderosos para construir confiança. Incluir esse tipo de conteúdo pode aumentar muito a geração de novos contatos.",
+      autoridade:"93% dos consumidores verificam avaliações antes de contratar. Perfis com prova social ativa têm taxa de conversão até 3x maior do que sem."
+    }
+  },
+];
+
 export default function App() {
   const [pg, setPg] = useState(1);
   const [nichoKey, setNichoKey] = useState("outro");
@@ -525,10 +585,7 @@ Retorne SOMENTE JSON sem markdown:
             </div>
           </div>
 
-          <div style={{padding:"10px 14px",marginBottom:"12px",background:p2modo==="auto"?"#FDF6E3":"#F5F4F8",border:"0.5px solid #E8E6EE",borderRadius:"10px",display:"flex",alignItems:"center",gap:"10px"}}>
-            <div style={{width:"8px",height:"8px",borderRadius:"50%",background:p2modo==="auto"?"#C9A84C":form.cor1,flexShrink:0}}/>
-            <div style={{fontSize:"12px",color:"#5C5575"}}>{p2modo==="manual"?<span>Modo <strong style={{color:"#111020"}}>Manual</strong> — preencha os dados nas etapas abaixo.</span>:<span>Modo <strong style={{color:"#C9A84C"}}>Auto IA</strong> — cole o link do Google Maps na etapa 2.</span>}</div>
-          </div>
+          
           <div style={css.card()}>
             <div style={css.sec}>Tom de comunicação</div>
             {Object.entries(TONS).map(([k,v])=>(
@@ -542,26 +599,26 @@ Retorne SOMENTE JSON sem markdown:
             ))}
           </div>
 
-          {(form.nome||form.cidade||form.categoria)&&(
-            <div style={{...css.card(),background:T.goldL,border:`.5px solid ${T.goldM}`}}>
-              <div style={{fontSize:"10px",fontWeight:700,letterSpacing:".1em",textTransform:"uppercase",color:T.gold,marginBottom:"10px",display:"flex",alignItems:"center",gap:"6px"}}>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-                Dados extraídos pela IA
-              </div>
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"10px",marginBottom:"8px"}}>
-                <div><label style={css.lbl}>Nome</label><input style={css.inp} value={form.nome} onChange={e=>setF("nome",e.target.value)}/></div>
-                <div><label style={css.lbl}>Categoria</label><input style={css.inp} value={form.categoria} onChange={e=>setF("categoria",e.target.value)}/></div>
-              </div>
-              <div style={{display:"grid",gridTemplateColumns:"1fr 80px",gap:"10px",marginBottom:"8px"}}>
-                <div><label style={css.lbl}>Cidade</label><input style={css.inp} value={form.cidade} onChange={e=>setF("cidade",e.target.value)}/></div>
-                <div><label style={css.lbl}>UF</label><input style={css.inp} value={form.estado} onChange={e=>setF("estado",e.target.value)}/></div>
-              </div>
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"10px"}}>
-                <div><label style={css.lbl}>Nota Google</label><input style={css.inp} value={form.nota} onChange={e=>setF("nota",e.target.value)}/></div>
-                <div><label style={css.lbl}>Nº avaliações</label><input style={css.inp} value={form.numAvals} onChange={e=>setF("numAvals",e.target.value)}/></div>
-              </div>
+          <div style={css.card()}>
+            <div style={css.sec}>Dados do negócio</div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"12px",marginBottom:"10px"}}>
+              <div><label style={css.lbl}>Nome *</label><input style={css.inp} value={form.nome} onChange={e=>setF("nome",e.target.value)} placeholder="Ex: Clínica Dra. Marina"/></div>
+              <div><label style={css.lbl}>Responsável</label><input style={css.inp} value={form.responsavel||""} onChange={e=>setF("responsavel",e.target.value)} placeholder="Nome do proprietário"/></div>
             </div>
-          )}
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"12px",marginBottom:"10px"}}>
+              <div><label style={css.lbl}>Categoria *</label><input style={css.inp} value={form.categoria} onChange={e=>setF("categoria",e.target.value)} placeholder="Ex: Clínica Médica"/></div>
+              <div><label style={css.lbl}>Especialização</label><input style={css.inp} value={form.especializacao||""} onChange={e=>setF("especializacao",e.target.value)} placeholder="Ex: Ortopedia"/></div>
+            </div>
+            <div style={{marginBottom:"10px"}}><label style={css.lbl}>Endereço</label><input style={css.inp} value={form.endereco||""} onChange={e=>setF("endereco",e.target.value)} placeholder="Rua, nº, bairro"/></div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 80px",gap:"12px",marginBottom:"10px"}}>
+              <div><label style={css.lbl}>Cidade *</label><input style={css.inp} value={form.cidade} onChange={e=>setF("cidade",e.target.value)} placeholder="Belo Horizonte"/></div>
+              <div><label style={css.lbl}>UF</label><input style={css.inp} value={form.estado||""} onChange={e=>setF("estado",e.target.value)} placeholder="MG"/></div>
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"12px"}}>
+              <div><label style={css.lbl}>Site</label><input style={css.inp} value={form.site||""} onChange={e=>setF("site",e.target.value)} placeholder="https://site.com.br"/></div>
+              <div><label style={css.lbl}>WhatsApp</label><input style={css.inp} value={form.whatsapp||""} onChange={e=>setF("whatsapp",e.target.value)} placeholder="(31) 9 9999-9999"/></div>
+            </div>
+          </div>
           <div style={{display:"flex",justifyContent:"flex-end"}}><button onClick={()=>setPg(2)} style={css.btn(T.dark,"#fff")}>Próximo</button></div>
         </div>}
 
@@ -605,10 +662,32 @@ Retorne SOMENTE JSON sem markdown:
               <input type="number" style={{...css.inp,width:"68px",marginLeft:"8px"}} value={form.nota} min="1" max="5" step="0.1" onChange={e=>setF("nota",e.target.value)} placeholder="0.0"/>
               <span style={{fontSize:"12px",color:T.n400}}>/5.0</span>
             </div>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"12px"}}>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"12px",marginBottom:"14px"}}>
               <div><label style={css.lbl}>Nº avaliações</label><input style={css.inp} type="number" value={form.numAvals} onChange={e=>setF("numAvals",e.target.value)} placeholder="—"/></div>
               <div><label style={css.lbl}>Fotos Google</label><input style={css.inp} type="number" value={form.numFotos} onChange={e=>setF("numFotos",e.target.value)} placeholder="—"/></div>
               <div><label style={css.lbl}>Posição ranking</label><input style={css.inp} type="number" value={form.posicao} onChange={e=>setF("posicao",e.target.value)} placeholder="—"/></div>
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"14px",marginBottom:"10px"}}>
+              <div>
+                <div style={css.sec}>Presença na ficha</div>
+                {[{k:"temSite",l:"Site ativo?"},{k:"temWhats",l:"WhatsApp na ficha?"},{k:"postsAtivos",l:"Posts ativos?"}].map(({k,l})=>(
+                  <div key={k} style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:"8px"}}>
+                    <span style={{fontSize:"12px",color:T.n700}}>{l}</span>
+                    <div style={{display:"flex",borderRadius:"6px",overflow:"hidden",border:`.5px solid ${T.n200}`}}>
+                      <button onClick={()=>setF(k,true)} style={{padding:"4px 14px",fontSize:"11px",fontWeight:700,cursor:"pointer",border:"none",background:form[k]===true?"#16A34A":"transparent",color:form[k]===true?"#fff":T.n400,transition:"all .15s"}}>SIM</button>
+                      <button onClick={()=>setF(k,false)} style={{padding:"4px 14px",fontSize:"11px",fontWeight:700,cursor:"pointer",border:"none",background:form[k]===false?"#DC2626":"transparent",color:form[k]===false?"#fff":T.n400,transition:"all .15s"}}>NÃO</button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div>
+                <div style={css.sec}>Frequência de posts</div>
+                {[["nenhuma","Nenhuma"],["raramente","Raramente"],["mensal","Mensal"],["semanal","Semanal"],["diaria","Diária"]].map(([v,l])=>(
+                  <button key={v} onClick={()=>setF("frequencia",v)} style={{display:"block",width:"100%",textAlign:"left",padding:"6px 10px",marginBottom:"4px",borderRadius:"7px",border:`.5px solid ${form.frequencia===v?form.cor1:T.n200}`,background:form.frequencia===v?form.cor1+"12":T.n0,fontSize:"12px",fontWeight:form.frequencia===v?700:400,color:form.frequencia===v?form.cor1:T.n600,cursor:"pointer",transition:"all .12s"}}>
+                    {l}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
           <div style={css.card()}>
@@ -667,7 +746,7 @@ Retorne SOMENTE JSON sem markdown:
               Seção opcional — sem concorrentes, a página não será gerada no PDF
             </div>
           </div>
-          <div style={css.card()}>
+          {p2modo==="auto"&&<div style={css.card()}>
             <div style={{fontSize:"13px",fontWeight:700,marginBottom:"4px",display:"flex",alignItems:"center",gap:"8px"}}>Concorrentes <span style={{background:"linear-gradient(90deg,#7C3AED,#4F46E5)",color:"#fff",fontSize:"10px",padding:"2px 8px",borderRadius:"20px",fontWeight:700}}>IA + Web</span></div>
             <SBar/>
             <button onClick={buscarConcs} disabled={concLoad} style={{...css.btn(form.cor1,"#fff"),opacity:concLoad?.7:1}}>
@@ -686,8 +765,7 @@ Retorne SOMENTE JSON sem markdown:
                 {c.diferencial&&<div style={{fontSize:"11px",color:T.n400,marginTop:"4px"}}>{c.diferencial}</div>}
               </div>))}
             </div>}
-          </div>
-          {temConcs&&(
+          </div>}          {temConcs&&(
             <div style={css.card()}>
               <div style={css.sec}>Mapa de posicionamento</div>
               <div style={{borderRadius:"10px",overflow:"hidden",border:`.5px solid ${T.n200}`}} dangerouslySetInnerHTML={{__html:mapHtml}}/>
@@ -714,16 +792,16 @@ Retorne SOMENTE JSON sem markdown:
           <div style={{...css.card(T.goldL),border:`.5px solid ${T.goldM}`,marginBottom:"10px"}}>
             <div style={{fontSize:"12px",color:T.gold,fontWeight:600,display:"flex",alignItems:"center",gap:"6px"}}>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-              Seção opcional — sem link do Instagram, a página não será gerada no PDF
+              Seção opcional — sem dados do Instagram, a página não será gerada no PDF
             </div>
           </div>
 
-          <div style={css.card()}>
+          {/* Auto IA */}
+          {p2modo==="auto"&&<div style={css.card()}>
             <div style={{fontSize:"13px",fontWeight:700,marginBottom:"4px",display:"flex",alignItems:"center",gap:"8px"}}>
               Analisar Instagram
               <span style={{background:"linear-gradient(90deg,#7C3AED,#4F46E5)",color:"#fff",fontSize:"10px",padding:"2px 8px",borderRadius:"20px",fontWeight:700}}>IA</span>
             </div>
-            <p style={{fontSize:"12px",color:T.n400,marginBottom:"10px"}}>Cole o link do perfil. A IA analisa e preenche os critérios automaticamente.</p>
             <div style={{display:"flex",gap:"8px",marginBottom:"12px"}}>
               <input style={css.inp} value={ig.url} onChange={e=>setIG("url",e.target.value)} placeholder="https://instagram.com/perfil"/>
               <button onClick={extrairIG} disabled={igLoad} style={{...css.btn(form.cor1,"#fff"),whiteSpace:"nowrap",opacity:igLoad?.7:1,fontSize:"12px",padding:"9px 14px"}}>
@@ -731,60 +809,46 @@ Retorne SOMENTE JSON sem markdown:
               </button>
             </div>
             <SBar/>
-            {ig.extraido&&ig.handle&&(
-              <div style={{padding:"10px 12px",background:T.okBg,borderRadius:"8px",border:`.5px solid #bbf7d0`,fontSize:"12px",color:T.ok,marginBottom:"8px"}}>
-                Perfil @{ig.handle} analisado · {ig.seguidores} seguidores · Score: {ig.score}/100
-              </div>
-            )}
+          </div>}
+
+          {/* Dados do perfil */}
+          <div style={css.card()}>
+            <div style={css.sec}>Dados do perfil</div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"12px",marginBottom:"14px"}}>
+              <div><label style={css.lbl}>Handle (sem @)</label><input style={css.inp} value={ig.handle} onChange={e=>setIG("handle",e.target.value)} placeholder="perfil"/></div>
+              <div><label style={css.lbl}>Seguidores</label><input style={css.inp} value={ig.seguidores} onChange={e=>setIG("seguidores",e.target.value)} placeholder="1.240"/></div>
+            </div>
+            <label style={css.lbl}>Print do perfil <span style={{fontWeight:400,color:T.n400,textTransform:"none",letterSpacing:0,fontSize:"11px"}}>(opcional)</span></label>
+            <PasteImage value={ig.printUrl||""} onChange={v=>setIG("printUrl",v)} label="Cole o print do Instagram aqui (Ctrl+V)" hint="Aparecerá na página de Instagram do PDF"/>
           </div>
 
-          {(ig.url||ig.handle)&&(
-            <div style={css.card()}>
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"12px",marginBottom:"14px"}}>
-                <div><label style={css.lbl}>Handle (sem @)</label><input style={css.inp} value={ig.handle} onChange={e=>setIG("handle",e.target.value)} placeholder="perfil"/></div>
-                <div><label style={css.lbl}>Seguidores</label><input style={css.inp} value={ig.seguidores} onChange={e=>setIG("seguidores",e.target.value)} placeholder="1.240"/></div>
-              </div>
-              <div style={css.sec}>Critérios de autoridade</div>
-              <p style={{fontSize:"12px",color:T.n400,marginBottom:"12px"}}>Preenchidos pela IA. Ajuste se necessário.</p>
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"12px",marginBottom:"12px"}}>
-                <div>
-                  <Tog checked={ig.bioOtimizada} onChange={v=>setIG("bioOtimizada",v)} label="Bio com especialidade e CTA"/>
-                  <Tog checked={ig.linkBio} onChange={v=>setIG("linkBio",v)} label="Link na bio ativo"/>
-                </div>
-                <div>
-                  <label style={css.lbl}>Frequência de posts</label>
-                  <select style={css.inp} value={ig.frequencia} onChange={e=>setIG("frequencia",e.target.value)}>
-                    <option value="nenhuma">Nenhuma</option><option value="raramente">Raramente</option><option value="mensal">Mensal</option><option value="semanal">Semanal</option><option value="diaria">Diária</option>
-                  </select>
-                </div>
-              </div>
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"12px",marginBottom:"14px"}}>
-                <div><label style={css.lbl}>Qualidade visual</label>
-                  <select style={css.inp} value={ig.qualVisual} onChange={e=>setIG("qualVisual",e.target.value)}>
-                    <option value="ruim">Inconsistente</option><option value="media">Razoável</option><option value="boa">Profissional</option>
-                  </select>
-                </div>
-                <div><label style={css.lbl}>Conteúdo de autoridade</label>
-                  <select style={css.inp} value={ig.contAutoridade} onChange={e=>setIG("contAutoridade",e.target.value)}>
-                    <option value="nenhum">Ausente</option><option value="parcial">Parcial</option><option value="completo">Consistente</option>
-                  </select>
-                </div>
-                <div><label style={css.lbl}>Engajamento (%)</label>
-                  <input style={css.inp} type="number" value={ig.engRate} min="0" max="20" step="0.1" onChange={e=>setIG("engRate",e.target.value)} placeholder="1.5"/>
-                </div>
-              </div>
-              <div style={css.sec}>Score Instagram — {ig.score}/100</div>
-              <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:"6px"}}>
-                {igCrit.map(({l,pts,max})=>(
-                  <div key={l} style={css.sbar}>
-                    <div style={{fontSize:"11px",color:T.n600,width:"110px",flexShrink:0}}>{l}</div>
-                    <div style={{flex:1,height:"5px",background:T.n100,borderRadius:"3px",overflow:"hidden"}}><div style={{width:`${(pts/max)*100}%`,height:"100%",background:pts===max?"#16A34A":pts>0?form.cor1:T.n200,borderRadius:"3px"}}/></div>
-                    <div style={{fontSize:"11px",fontWeight:700,color:T.n700,minWidth:"34px",textAlign:"right"}}>{pts}/{max}</div>
+          {/* Critérios SIM/NÃO */}
+          <div style={css.card()}>
+            <div style={css.sec}>Critérios de presença</div>
+            <p style={{fontSize:"12px",color:T.n400,marginBottom:"14px"}}>Marque cada critério. Os itens negativos geram críticas automáticas adaptadas ao tom selecionado.</p>
+            {IG_CRITERIOS.map(({k,label,critica,criticaPositiva})=>{
+              const val = ig[k];
+              const mostrarCritica = criticaPositiva ? val===true : val===false;
+              const tom = form.tom||"original";
+              return(
+                <div key={k} style={{marginBottom:"12px",paddingBottom:"12px",borderBottom:`.5px solid ${T.n100}`}}>
+                  <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:"6px"}}>
+                    <span style={{fontSize:"13px",fontWeight:600,color:T.n900}}>{label}</span>
+                    <div style={{display:"flex",borderRadius:"6px",overflow:"hidden",border:`.5px solid ${T.n200}`}}>
+                      <button onClick={()=>setIG(k,true)} style={{padding:"5px 16px",fontSize:"11px",fontWeight:700,cursor:"pointer",border:"none",background:val===true?"#16A34A":"transparent",color:val===true?"#fff":T.n400,transition:"all .15s"}}>SIM</button>
+                      <button onClick={()=>setIG(k,false)} style={{padding:"5px 16px",fontSize:"11px",fontWeight:700,cursor:"pointer",border:"none",background:val===false?"#DC2626":"transparent",color:val===false?"#fff":T.n400,transition:"all .15s"}}>NÃO</button>
+                    </div>
                   </div>
-                ))}
-              </div>
-            </div>
-          )}
+                  {mostrarCritica&&critica[tom]&&(
+                    <div style={{padding:"10px 13px",background:T.errBg,borderLeft:`3px solid #DC2626`,borderRadius:"0 8px 8px 0",fontSize:"12px",color:"#7F1D1D",lineHeight:1.6}}>
+                      {critica[tom]}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
           <div style={{display:"flex",gap:"10px",justifyContent:"space-between"}}><Nav label="← Voltar" to={4} back/><Nav label="Próximo →" to={6}/></div>
         </div>}
 
