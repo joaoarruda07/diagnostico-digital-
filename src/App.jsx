@@ -608,6 +608,10 @@ Retorne SOMENTE JSON sem markdown:
                 </div>
               ))}
             </div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"12px",marginBottom:"14px"}}>
+              <div><label style={css.lbl}>Categoria</label><input style={css.inp} value={form.categoria} onChange={e=>setF("categoria",e.target.value)} placeholder="Ex: Clínica Médica"/></div>
+              <div><label style={css.lbl}>Especialização</label><input style={css.inp} value={form.especializacao||""} onChange={e=>setF("especializacao",e.target.value)} placeholder="Ex: Ortopedia, Varizes..."/></div>
+            </div>
             <div style={css.sec}>Dados do negócio</div>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"12px",marginBottom:"10px"}}>
               <div><label style={css.lbl}>Nome *</label><input style={css.inp} value={form.nome} onChange={e=>setF("nome",e.target.value)} placeholder="Ex: Clínica Dra. Marina"/></div>
@@ -1106,6 +1110,7 @@ ${temDadosGoogle?`
     <div style="flex:1;min-width:180px">${gCrits}</div>
   </div>
   <div class="ac"><p>${t.problema}</p></div>
+  ${form.fichaScreenshot?`<div style="margin-bottom:14px;border-radius:10px;overflow:hidden;border:.5px solid ${T.n200}"><img src="${form.fichaScreenshot}" style="max-width:100%;max-height:200px;object-fit:contain;display:block;margin:0 auto"/></div>`:""}
   <div class="rank"><div class="rank-n">${form.posicao||"—"}</div><div><strong>${form.nome}</strong><br><span style="color:${T.n400};font-size:11px">${form.nota}★ · ${form.numAvals} avaliações · ${form.numFotos} fotos</span></div></div>
   <p style="font-size:12px;color:${T.n400};margin-top:8px">${t.dados}</p>
   ${pgNum()}
@@ -1124,6 +1129,7 @@ ${temIG?`
 <div class="pg"><div class="bar"></div><div class="cnt">
   <div class="st">${t.tituloIg}</div>
   <div style="background:${T.n50};border:.5px solid ${T.n200};border-radius:10px;padding:16px;text-align:center;margin-bottom:14px">
+    ${ig.printUrl?`<img src="${ig.printUrl}" style="max-width:100%;max-height:200px;object-fit:contain;border-radius:8px;display:block;margin:0 auto 10px"/>`:""}
     <div style="font-size:14px;font-weight:700;color:#1a1a1a;margin-bottom:3px">@${ig.handle||"perfil"}</div>
     <div style="font-size:12px;color:${T.n400}">${ig.seguidores?ig.seguidores+" seguidores":""}</div>
   </div>
@@ -1132,6 +1138,18 @@ ${temIG?`
     <div style="flex:1;min-width:180px">${igCrits}</div>
   </div>
   <div class="ac"><p>${t.igAnalise}</p></div>
+  
+  ${(()=>{
+    const tom = form.tom||"original";
+    const criticas = IG_CRITERIOS
+      .filter(c => {
+        const val = ig[c.k];
+        return c.criticaPositiva ? val===true : val===false;
+      })
+      .map(c => `<div style="margin-bottom:10px;padding:10px 13px;background:#FEE2E2;border-left:3px solid #DC2626;border-radius:0 8px 8px 0;font-size:12px;color:#7F1D1D;line-height:1.6"><strong style="display:block;margin-bottom:4px">${c.label.replace("?","")} — Ponto de atenção</strong>${c.critica[tom]||c.critica.original}</div>`)
+      .join("");
+    return criticas ? `<div style="margin-top:14px"><div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#9991AF;margin-bottom:10px">Pontos de melhoria identificados</div>${criticas}</div>` : "";
+  })()}
   ${pgNum()}
 </div></div>`:""}
 
