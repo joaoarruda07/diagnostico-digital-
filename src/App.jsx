@@ -233,6 +233,7 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [concLoad, setConcLoad] = useState(false);
   const [fichaLoad, setFichaLoad] = useState(false);
+  const [p2modo, setP2modo] = useState("manual"); // "manual" | "auto"
   const [igLoad, setIgLoad] = useState(false);
   const [presets, setPresets] = useState(loadPresets());
   const [presetName, setPresetName] = useState("");
@@ -527,20 +528,31 @@ Retorne SOMENTE JSON sem markdown:
 
         {/* P2 — Métricas Google (OPCIONAL) */}
         {pg===2&&<div>
-          <div style={css.card()}>
-            <div style={{fontSize:"13px",fontWeight:700,marginBottom:"4px",display:"flex",alignItems:"center",gap:"8px"}}>
-              Extrair dados da ficha Google
-              <span style={{background:"linear-gradient(90deg,#7C3AED,#4F46E5)",color:"#fff",fontSize:"10px",padding:"2px 8px",borderRadius:"20px",fontWeight:700}}>IA</span>
-            </div>
-            <p style={{fontSize:"12px",color:T.n400,marginBottom:"10px"}}>Cole o link do Google Maps. A IA extrai nota, avaliações, fotos e posição automaticamente.</p>
-            <div style={{display:"flex",gap:"8px"}}>
-              <input style={css.inp} value={form.fichaUrl} onChange={e=>setF("fichaUrl",e.target.value)} placeholder="https://maps.google.com/..."/>
-              <button onClick={extrairFicha} disabled={fichaLoad} style={{...css.btn(form.cor1,"#fff"),whiteSpace:"nowrap",opacity:fichaLoad?.7:1,fontSize:"12px",padding:"9px 14px"}}>
-                {fichaLoad?"Analisando...":"Extrair métricas"}
-              </button>
-            </div>
-            <SBar/>
+          {/* Seletor de modo */}
+          <div style={{display:"flex",gap:"8px",marginBottom:"14px"}}>
+            <button onClick={()=>setP2modo("manual")} style={{...css.btn(p2modo==="manual"?form.cor1:T.n0,p2modo==="manual"?"#fff":T.n600),border:`.5px solid ${p2modo==="manual"?form.cor1:T.n300}`,fontSize:"13px",padding:"9px 20px",flex:1}}>
+              Preencher manualmente
+            </button>
+            <button onClick={()=>setP2modo("auto")} style={{...css.btn(p2modo==="auto"?form.cor1:T.n0,p2modo==="auto"?"#fff":T.n600),border:`.5px solid ${p2modo==="auto"?form.cor1:T.n300}`,fontSize:"13px",padding:"9px 20px",flex:1,display:"flex",alignItems:"center",justifyContent:"center",gap:"7px"}}>
+              <span style={{background:"linear-gradient(90deg,#7C3AED,#4F46E5)",color:"#fff",fontSize:"10px",padding:"2px 7px",borderRadius:"10px",fontWeight:700}}>IA</span>
+              Extrair pelo link
+            </button>
           </div>
+
+          {/* Modo automático */}
+          {p2modo==="auto"&&(
+            <div style={css.card()}>
+              <div style={{fontSize:"13px",fontWeight:700,marginBottom:"4px"}}>Link da ficha Google Maps</div>
+              <p style={{fontSize:"12px",color:T.n400,marginBottom:"10px"}}>Cole o link do Google Maps. A IA extrai nota, avaliações, fotos e posição automaticamente.</p>
+              <div style={{display:"flex",gap:"8px"}}>
+                <input style={css.inp} value={form.fichaUrl} onChange={e=>setF("fichaUrl",e.target.value)} placeholder="https://maps.google.com/..."/>
+                <button onClick={extrairFicha} disabled={fichaLoad} style={{...css.btn(form.cor1,"#fff"),whiteSpace:"nowrap",opacity:fichaLoad?.7:1,fontSize:"12px",padding:"9px 14px"}}>
+                  {fichaLoad?"Analisando...":"Extrair"}
+                </button>
+              </div>
+              <SBar/>
+            </div>
+          )}
           <div style={{...css.card(T.goldL),border:`.5px solid ${T.goldM}`,marginBottom:"10px"}}>
             <div style={{fontSize:"12px",color:T.gold,fontWeight:600,display:"flex",alignItems:"center",gap:"6px"}}>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
