@@ -418,18 +418,16 @@ Retorne SOMENTE JSON sem markdown:
 
   const TxField=({label,campo,multi=true})=>{const val=tx[campo]||"";return(<div style={{marginBottom:"14px"}}><label style={css.lbl}>{label}</label>{multi?<textarea style={{...css.inp,minHeight:"72px",resize:"vertical"}} value={val} onChange={e=>setTx(campo,e.target.value)}/>:<input style={css.inp} value={val} onChange={e=>setTx(campo,e.target.value)}/>}{val.includes("<strong>")&&<div style={{marginTop:"5px",padding:"7px 11px",background:T.n50,borderRadius:"6px",border:`.5px solid ${T.n200}`,fontSize:"12px",color:T.n600,lineHeight:1.5}} dangerouslySetInnerHTML={{__html:val}}/>}</div>);};
 
-  const isMobile = typeof window !== "undefined" && window.innerWidth < 700;
-
   return(
-    <div style={{display:"flex",flexDirection:"column",minHeight:"100vh"}}>
+    <div style={{display:"grid",gridTemplateColumns:"210px 1fr",minHeight:"700px"}}>
 
       {/* SIDEBAR / TOP NAV */}
-      <div style={{background:"#0D0B12",display:"flex",flexDirection:isMobile?"row":"column",borderRadius:isMobile?"14px 14px 0 0":"14px 0 0 14px",width:isMobile?"100%":"210px",flexShrink:0,overflowX:isMobile?"auto":"visible"}}>
-        <div style={{padding:isMobile?"12px 16px":"18px 16px 14px",borderBottom:isMobile?"none":"1px solid #1a1628",display:"flex",alignItems:"center",gap:isMobile?"12px":"0",flexShrink:0}}>
-          <div style={{marginBottom:isMobile?"0":"12px",padding:isMobile?"0":"12px 8px 8px"}}>
+      <div style={{background:"#0D0B12",borderRadius:"14px 0 0 14px",display:"flex",flexDirection:"column"}}>
+        <div style={{padding:"18px 16px 14px",borderBottom:"1px solid #1a1628"}}>
+          <div style={{marginBottom:"12px",padding:"12px 8px 8px"}}>
             {logoUrl
-              ?<img src={logoUrl} style={{maxHeight:isMobile?"36px":"72px",maxWidth:isMobile?"100px":"190px",objectFit:"contain",display:"block",margin:"0 auto"}}/>
-              :<LogoIcon size={isMobile?36:110}/>
+              ?<img src={logoUrl} style={{maxHeight:"72px",maxWidth:"190px",objectFit:"contain",display:"block",margin:"0 auto"}}/>
+              :<LogoIcon size={110}/>
             }
           </div>
           {form.cslEmpresa&&<div style={{fontSize:"11px",fontWeight:600,color:"#888",marginBottom:"4px"}}>{form.cslEmpresa}</div>}
@@ -444,27 +442,27 @@ Retorne SOMENTE JSON sem markdown:
             </div>
           </div>
         </div>
-        <nav style={{flex:1,padding:isMobile?"4px 0":"8px 0",display:isMobile?"flex":"block",overflowX:isMobile?"auto":"visible",alignItems:isMobile?"center":"stretch"}}>
+        <nav style={{flex:1,padding:"8px 0"}}>
           {[{n:1,g:"Negócio",l:"Segmento & Dados"},{n:2,g:"Negócio",l:"Métricas Google"},{n:3,g:"Negócio",l:"Palavras-chave"},{n:4,g:"Análise",l:"Concorrentes"},{n:5,g:"Análise",l:"Instagram"},{n:6,g:"Design",l:"Cores & Logo"},{n:7,g:"Design",l:"Consultor"},{n:8,g:"Saída",l:"Editar & PDF"}].map(({n,l,g},i,arr)=>{
             const showG=i===0||arr[i-1].g!==g;
             const opcional = (n===2&&!temDadosGoogle&&form.nota==="")||(n===4&&!temConcs)||(n===5&&!temIG);
             return(<div key={n}>
-              {showG&&!isMobile&&<div style={{fontSize:"9px",color:"#2e2a3e",padding:"8px 16px 2px",textTransform:"uppercase",letterSpacing:".1em",fontWeight:700}}>{g}</div>}
-              <div onClick={()=>setPg(n)} style={{display:"flex",alignItems:"center",gap:isMobile?"4px":"9px",padding:isMobile?"8px 10px":"9px 16px",cursor:"pointer",color:pg===n?"#fff":"#555",background:pg===n?"#1C1730":"transparent",borderLeft:isMobile?"none":"none",borderBottom:isMobile?`3px solid ${pg===n?form.cor1:"transparent"}`:"none",borderLeftWidth:isMobile?"0":"3px",borderLeftStyle:"solid",borderLeftColor:isMobile?"transparent":(pg===n?form.cor1:"transparent"),fontSize:"12px",fontWeight:pg===n?600:400,transition:"all .12s",whiteSpace:"nowrap",flexShrink:0}}>
+              {showG&&<div style={{fontSize:"9px",color:"#2e2a3e",padding:"8px 16px 2px",textTransform:"uppercase",letterSpacing:".1em",fontWeight:700}}>{g}</div>}
+              <div onClick={()=>setPg(n)} style={{display:"flex",alignItems:"center",gap:"9px",padding:"9px 16px",cursor:"pointer",color:pg===n?"#fff":"#555",background:pg===n?"#1C1730":"transparent",borderLeft:`3px solid ${pg===n?form.cor1:"transparent"}`,fontSize:"12px",fontWeight:pg===n?600:400,transition:"all .12s"}}>
                 <span style={{fontSize:"11px",width:"18px",textAlign:"center",fontWeight:700,color:pg===n?form.cor1:"#333"}}>{n}</span>
-                {!isMobile&&<span style={{flex:1}}>{l}</span>}
-                {!isMobile&&opcional&&<span style={{fontSize:"9px",color:"#333",fontStyle:"italic"}}>opt.</span>}
+                <span style={{flex:1}}>{l}</span>
+                {opcional&&<span style={{fontSize:"9px",color:"#333",fontStyle:"italic"}}>opt.</span>}
               </div>
             </div>);
           })}
         </nav>
-        {!isMobile&&<div style={{padding:"14px 16px",borderTop:"1px solid #1a1628"}}>
+        <div style={{padding:"14px 16px",borderTop:"1px solid #1a1628"}}>
           <button onClick={()=>setPg(8)} style={{...css.btn(form.cor1,"#fff"),width:"100%",fontSize:"13px"}}>Editar & PDF</button>
-        </div>}
+        </div>
       </div>
 
       {/* MAIN */}
-      <div style={{padding:isMobile?"14px":"22px",background:T.n100,borderRadius:isMobile?"0 0 14px 14px":"0 14px 14px 0",overflowY:"auto",maxHeight:isMobile?"none":"760px",flex:1}}>
+      <div style={{padding:"22px",background:T.n100,borderRadius:"0 14px 14px 0",overflowY:"auto",maxHeight:"760px"}}>
 
         {/* P1 — Segmento & Dados */}
         {pg===1&&<div>
@@ -533,7 +531,7 @@ Retorne SOMENTE JSON sem markdown:
         {/* P2 — Métricas Google (OPCIONAL) */}
         {pg===2&&<div>
           {/* Seletor de modo */}
-          <div style={{display:"flex",flexDirection:isMobile?"column":"row",gap:"8px",marginBottom:"14px"}}>
+          <div style={{display:"flex",flexDirection:"row",gap:"8px",marginBottom:"14px"}}>
             <button onClick={()=>setP2modo("manual")} style={{...css.btn(p2modo==="manual"?form.cor1:T.n0,p2modo==="manual"?"#fff":T.n600),border:`.5px solid ${p2modo==="manual"?form.cor1:T.n300}`,fontSize:"13px",padding:"9px 20px",flex:1}}>
               Preencher manualmente
             </button>
@@ -570,7 +568,7 @@ Retorne SOMENTE JSON sem markdown:
               <input type="number" style={{...css.inp,width:"68px",marginLeft:"8px"}} value={form.nota} min="1" max="5" step="0.1" onChange={e=>setF("nota",e.target.value)} placeholder="0.0"/>
               <span style={{fontSize:"12px",color:T.n400}}>/5.0</span>
             </div>
-            <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"1fr 1fr 1fr",gap:"12px"}}>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"12px"}}>
               <div><label style={css.lbl}>Nº avaliações</label><input style={css.inp} type="number" value={form.numAvals} onChange={e=>setF("numAvals",e.target.value)} placeholder="—"/></div>
               <div><label style={css.lbl}>Fotos Google</label><input style={css.inp} type="number" value={form.numFotos} onChange={e=>setF("numFotos",e.target.value)} placeholder="—"/></div>
               <div><label style={css.lbl}>Posição ranking</label><input style={css.inp} type="number" value={form.posicao} onChange={e=>setF("posicao",e.target.value)} placeholder="—"/></div>
@@ -715,7 +713,7 @@ Retorne SOMENTE JSON sem markdown:
                   </select>
                 </div>
               </div>
-              <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"1fr 1fr 1fr",gap:"12px",marginBottom:"14px"}}>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"12px",marginBottom:"14px"}}>
                 <div><label style={css.lbl}>Qualidade visual</label>
                   <select style={css.inp} value={ig.qualVisual} onChange={e=>setIG("qualVisual",e.target.value)}>
                     <option value="ruim">Inconsistente</option><option value="media">Razoável</option><option value="boa">Profissional</option>
@@ -792,7 +790,7 @@ Retorne SOMENTE JSON sem markdown:
         {pg===7&&<div>
           <div style={css.card()}>
             <div style={css.sec}>Dados do consultor</div>
-            <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"1fr 1fr",gap:"12px",marginBottom:"10px"}}>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"12px",marginBottom:"10px"}}>
               <div><label style={css.lbl}>Seu nome *</label><input style={css.inp} value={form.cslNome} onChange={e=>setF("cslNome",e.target.value)} placeholder="Nathan"/></div>
               <div><label style={css.lbl}>Empresa *</label><input style={css.inp} value={form.cslEmpresa} onChange={e=>setF("cslEmpresa",e.target.value)} placeholder="SCentral"/></div>
             </div>
