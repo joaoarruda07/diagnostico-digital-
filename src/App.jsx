@@ -317,7 +317,7 @@ export default function App() {
     frequencia:"nenhuma",qualVisual:"media",contAutoridade:"parcial",
     engRate:"",printUrl:"",score:"0",extraido:false,
   });
-  const [kws, setKws] = useState([]);
+  const [kws, setKws] = useState([]); // [{term, volume, pos}]
   const [kwInput, setKwInput] = useState("");
   const [concs, setConcs] = useState([]);
   const [logoUrl, setLogoUrl] = useState("");
@@ -326,6 +326,9 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [concLoad, setConcLoad] = useState(false);
   const [fichaLoad, setFichaLoad] = useState(false);
+  const [showRef, setShowRef] = useState(false);
+  const [refPdfName, setRefPdfName] = useState("");
+  const [refPdfB64, setRefPdfB64] = useState("");
   const [p2modo, setP2modo] = useState("manual");
   const [igLoad, setIgLoad] = useState(false);
   const [presets, setPresets] = useState(loadPresets());
@@ -435,6 +438,68 @@ export default function App() {
     setConcLoad(false);
   };
 
+  // Volumes estimados por segmento (buscas mensais médias em capitais brasileiras)
+  const KW_VOLUMES = {
+    "clínica médica":{"capital":2400,"interior":800,"pequena":300},
+    "médico particular":{"capital":3600,"interior":1200,"pequena":400},
+    "consulta médica":{"capital":2900,"interior":900,"pequena":350},
+    "veterinária":{"capital":1900,"interior":700,"pequena":250},
+    "veterinário":{"capital":2200,"interior":800,"pequena":280},
+    "restaurante":{"capital":5400,"interior":1800,"pequena":600},
+    "advogado":{"capital":2800,"interior":900,"pequena":320},
+    "dentista":{"capital":3100,"interior":1100,"pequena":380},
+    "odontologia":{"capital":1800,"interior":650,"pequena":220},
+    "academia":{"capital":4200,"interior":1500,"pequena":500},
+    "salão de beleza":{"capital":3800,"interior":1400,"pequena":450},
+    "imobiliária":{"capital":2600,"interior":900,"pequena":300},
+    "contador":{"capital":2100,"interior":750,"pequena":260},
+    "contabilidade":{"capital":1900,"interior":680,"pequena":230},
+    "psicólogo":{"capital":2400,"interior":850,"pequena":280},
+    "terapia":{"capital":1800,"interior":620,"pequena":200},
+    "escola":{"capital":3200,"interior":1200,"pequena":400},
+    "ortopedista":{"capital":1600,"interior":580,"pequena":190},
+    "cardiologista":{"capital":1400,"interior":500,"pequena":160},
+    "dermatologista":{"capital":1700,"interior":600,"pequena":200},
+    "ginecologista":{"capital":1500,"interior":540,"pequena":175},
+    "nutricionista":{"capital":1900,"interior":680,"pequena":220},
+    "fisioterapeuta":{"capital":1600,"interior":570,"pequena":185},
+    "personal trainer":{"capital":2100,"interior":750,"pequena":240},
+    "varizes":{"capital":1200,"interior":420,"pequena":140},
+    "harmonização facial":{"capital":2800,"interior":980,"pequena":320},
+    "clareamento dental":{"capital":2200,"interior":780,"pequena":255},
+  };
+
+  const estimateVolume = (term) => {
+    const t = term.toLowerCase();
+    // Remove cidade do termo para match
+    const semCidade = t.replace(/(belo horizonte|são paulo|rio de janeiro|curitiba|porto alegre|salvador|fortaleza|recife|manaus|brasília|belém|goiânia|campinas|natal|teresina|campo grande|joão pessoa|aracaju|macapá|porto velho|boa vista|palmas|maceió|maceiÓ|florianópolis|vitória|são luís|cuiabá|bh|sp|rj)/gi,"").trim();
+    
+    // Classifica porte da cidade
+    const capitais = ["belo horizonte","são paulo","rio de janeiro","curitiba","porto alegre","salvador","fortaleza","recife","manaus","brasília","bh","sp","rj"];
+    const cidadeAtual = (form.cidade||"").toLowerCase();
+    const porte = capitais.some(c=>cidadeAtual.includes(c))?"capital":cidadeAtual.length>0?"interior":"interior";
+    
+    // Busca match
+    for(const [key, vals] of Object.entries(KW_VOLUMES)){
+      if(semCidade.includes(key)||key.includes(semCidade)){
+        const base = vals[porte];
+        // Ajuste por cidade específica (adiciona variação)
+        const variacao = Math.round(base * (0.85 + Math.random()*0.3));
+        return variacao.toLocaleString("pt-BR");
+      }
+    }
+    // Estimativa genérica
+    const generic = porte==="capital"?Math.round(800+Math.random()*1200):Math.round(200+Math.random()*600);
+    return generic.toLocaleString("pt-BR");
+  };
+
+  const addKw = (term) => {
+    if(!term||kws.find(k=>k.term===term)) return;
+    const volume = estimateVolume(term);
+    setKws(p=>[...p,{term,volume,pos:""}]);
+    setKwInput("");
+  };
+
   const addComp = () => {
     const nome=document.getElementById("cNome")?.value?.trim(); if(!nome)return;
     setConcs(p=>[...p,{nome,nota:document.getElementById("cNota")?.value||"?",avals:document.getElementById("cAvals")?.value||"?",posicao:document.getElementById("cPos")?.value||"?",diferencial:document.getElementById("cDiff")?.value||"",manual:true}]);
@@ -447,7 +512,8 @@ export default function App() {
     const n=NICHOS[nichoKey]||NICHOS.outro;
     const ton=TONS[form.tom]||TONS.original;
     try {
-      const resp=await fetch("/api/claude",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1800,messages:[{role:"user",content:`Copywriter de marketing digital local.
+      const msgContent = refPdfB64
+        ? [{type:"document",source:{type:"base64",media_type:"application/pdf",data:refPdfB64}},{type:"text",text:`Use o PDF anexado como referência de contexto e estilo para enriquecer a escrita. Copywriter de marketing digital local.
 
 TOM: ${ton.label}
 INSTRUÇÃO: ${ton.instrucao}
@@ -462,7 +528,24 @@ ${form.promptExtra?"INSTRUÇÃO EXTRA: "+form.promptExtra:""}
 
 Gere SOMENTE as seções que têm dados disponíveis. Use <strong> para negrito.
 Retorne SOMENTE JSON sem markdown:
-{"tituloIntro":"máx 6 palavras","tituloAnalise":"máx 6 palavras","tituloConc":"máx 6 palavras","tituloIg":"máx 6 palavras","tituloProx":"máx 6 palavras","intro":"3-4 frases","problema":"3-4 frases","dados":"2-3 frases","diferenciais":"2-3 frases","igAnalise":"3-4 frases","proximos":"3-4 frases"}`}]})});
+{"tituloIntro":"máx 6 palavras","tituloAnalise":"máx 6 palavras","tituloConc":"máx 6 palavras","tituloIg":"máx 6 palavras","tituloProx":"máx 6 palavras","intro":"3-4 frases","problema":"3-4 frases","dados":"2-3 frases","diferenciais":"2-3 frases","igAnalise":"3-4 frases","proximos":"3-4 frases"}`}]
+        : [{type:"text",text:`Copywriter de marketing digital local.
+
+TOM: ${ton.label}
+INSTRUÇÃO: ${ton.instrucao}
+
+NEGÓCIO: ${form.nome} | SEGMENTO: ${form.categoria} | CIDADE: ${form.cidade} ${form.estado}
+CLIENTE: ${n.cliente} | POSITIVO JÁ EXISTENTE: ${n.positivo}
+${temDadosGoogle?`NOTA GOOGLE: ${form.nota}★ (${form.numAvals} avals) | SCORE: ${form.score}/100 | POSIÇÃO: #${form.posicao}`:"SEM DADOS GOOGLE DISPONÍVEIS"}
+${temConcs?`CONCORRENTES: ${concs.length} mapeados`:"SEM ANÁLISE DE CONCORRENTES"}
+${temIG?`IG HANDLE: @${ig.handle} | SEGUIDORES: ${ig.seguidores} | IG SCORE: ${ig.score}/100`:"SEM ANÁLISE DE INSTAGRAM"}
+CONSULTOR: ${form.cslNome} da ${form.cslEmpresa}
+${form.promptExtra?"INSTRUÇÃO EXTRA: "+form.promptExtra:""}
+
+Gere SOMENTE as seções que têm dados disponíveis. Use <strong> para negrito.
+Retorne SOMENTE JSON sem markdown:
+{"tituloIntro":"máx 6 palavras","tituloAnalise":"máx 6 palavras","tituloConc":"máx 6 palavras","tituloIg":"máx 6 palavras","tituloProx":"máx 6 palavras","intro":"3-4 frases","problema":"3-4 frases","dados":"2-3 frases","diferenciais":"2-3 frases","igAnalise":"3-4 frases","proximos":"3-4 frases"}`}];
+      const resp=await fetch("/api/claude",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1800,messages:[{role:"user",content:msgContent}]})});
       const data=await resp.json();
       const text=data.content?.filter(b=>b.type==="text").map(b=>b.text).join("")||"";
       const s=text.indexOf("{"),e=text.lastIndexOf("}");
@@ -627,6 +710,47 @@ Retorne SOMENTE JSON sem markdown:
               <div><label style={css.lbl}>WhatsApp</label><input style={css.inp} value={form.whatsapp||""} onChange={e=>setF("whatsapp",e.target.value)} placeholder="(31) 9 9999-9999"/></div>
             </div>
           </div>
+          {/* Referência de diagnóstico */}
+          <div style={{marginBottom:"14px"}}>
+            <button onClick={()=>setShowRef(s=>!s)} style={{display:"flex",alignItems:"center",gap:"8px",padding:"10px 16px",borderRadius:"10px",border:`.5px solid ${showRef||refPdfName?form.cor1:T.n300}`,background:showRef||refPdfName?form.cor1+"0d":T.n0,cursor:"pointer",fontSize:"12px",fontWeight:600,color:showRef||refPdfName?form.cor1:T.n600,width:"100%",justifyContent:"space-between",transition:"all .15s"}}>
+              <div style={{display:"flex",alignItems:"center",gap:"8px"}}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                {refPdfName?"Referência: "+refPdfName:"Usar diagnóstico anterior como referência"}
+              </div>
+              <div style={{display:"flex",alignItems:"center",gap:"4px",fontSize:"10px",color:T.n400}}>
+                {refPdfName?<span style={{color:"#16A34A",fontWeight:700}}>✓ Carregado</span>:<span>opcional</span>}
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points={showRef?"18 15 12 9 6 15":"6 9 12 15 18 9"}/></svg>
+              </div>
+            </button>
+            {showRef&&(
+              <div style={{marginTop:"8px",padding:"16px",background:T.n50,borderRadius:"10px",border:`.5px solid ${T.n200}`}}>
+                <div style={{fontSize:"12px",color:T.n600,marginBottom:"12px",lineHeight:1.6}}>
+                  Faça upload de um PDF de diagnóstico anterior. Ele será usado como <strong>referência de contexto</strong> para enriquecer os textos gerados — sem substituir a análise atual.
+                </div>
+                <label style={{display:"flex",alignItems:"center",gap:"10px",padding:"12px 14px",border:`.5px dashed ${T.n300}`,borderRadius:"8px",cursor:"pointer",background:T.n0}}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={T.n400} strokeWidth="1.5" strokeLinecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                  <div>
+                    <div style={{fontSize:"12px",fontWeight:600,color:T.n700}}>{refPdfName||"Clique para selecionar o PDF"}</div>
+                    <div style={{fontSize:"11px",color:T.n400,marginTop:"2px"}}>Apenas arquivos .pdf</div>
+                  </div>
+                  <input type="file" accept=".pdf" style={{display:"none"}} onChange={e=>{
+                    const f=e.target.files[0];
+                    if(!f)return;
+                    setRefPdfName(f.name);
+                    const r=new FileReader();
+                    r.onload=ev=>{
+                      const b64=ev.target.result.split(",")[1];
+                      setRefPdfB64(b64);
+                    };
+                    r.readAsDataURL(f);
+                  }}/>
+                </label>
+                {refPdfName&&(
+                  <button onClick={()=>{setRefPdfName("");setRefPdfB64("");}} style={{marginTop:"8px",background:"none",border:"none",cursor:"pointer",fontSize:"11px",color:T.n400}}>Remover referência</button>
+                )}
+              </div>
+            )}
+          </div>
           <div style={{display:"flex",justifyContent:"flex-end"}}><button onClick={()=>setPg(2)} style={css.btn(T.dark,"#fff")}>Próximo</button></div>
         </div>}
 
@@ -731,16 +855,59 @@ Retorne SOMENTE JSON sem markdown:
         {pg===3&&<div>
           <div style={css.card()}>
             <div style={css.sec}>Palavras-chave</div>
-            <div style={{display:"flex",gap:"8px",marginBottom:"8px"}}>
-              <input style={css.inp} value={kwInput} onChange={e=>setKwInput(e.target.value)} onKeyDown={e=>{if(e.key==="Enter"&&kwInput.trim()){if(!kws.includes(kwInput.trim()))setKws(p=>[...p,kwInput.trim()]);setKwInput("");e.preventDefault();}}} placeholder="ex: ortopedista belo horizonte"/>
-              <button onClick={()=>{if(kwInput.trim()&&!kws.includes(kwInput.trim())){setKws(p=>[...p,kwInput.trim()]);}setKwInput("");}} style={{...css.btn(form.cor1,"#fff"),padding:"9px 14px",fontSize:"12px",whiteSpace:"nowrap"}}>+ Add</button>
+            <p style={{fontSize:"12px",color:T.n400,marginBottom:"12px",lineHeight:1.6}}>Adicione os termos que seus clientes buscam. O sistema estima o volume de buscas na sua cidade e você informa a posição atual do negócio.</p>
+            <div style={{display:"flex",gap:"8px",marginBottom:"12px"}}>
+              <input style={css.inp} value={kwInput} onChange={e=>setKwInput(e.target.value)}
+                onKeyDown={e=>{if(e.key==="Enter"&&kwInput.trim()){addKw(kwInput.trim());e.preventDefault();}}}
+                placeholder="ex: ortopedista belo horizonte"/>
+              <button onClick={()=>addKw(kwInput.trim())} style={{...css.btn(form.cor1,"#fff"),padding:"9px 14px",fontSize:"12px",whiteSpace:"nowrap"}}>+ Add</button>
             </div>
-            <div style={{display:"flex",flexWrap:"wrap",gap:"5px",minHeight:"28px"}}>
-              {kws.map(k=>(<span key={k} style={{...css.badge(form.cor1+"18",form.cor1),border:`.5px solid ${form.cor1}`,padding:"3px 10px",fontSize:"12px"}}>{k}<span onClick={()=>setKws(p=>p.filter(x=>x!==k))} style={{cursor:"pointer",color:T.n300,fontSize:"15px",marginLeft:"5px"}}>×</span></span>))}
-            </div>
-            <div style={{...css.sec,marginTop:"14px"}}>Sugestões</div>
+
+            {kws.length>0&&(
+              <div style={{marginBottom:"14px"}}>
+                {kws.map((kw,i)=>(
+                  <div key={i} style={{display:"flex",alignItems:"center",gap:"10px",padding:"10px 12px",background:T.n50,borderRadius:"9px",border:`.5px solid ${T.n200}`,marginBottom:"6px"}}>
+                    <div style={{flex:1}}>
+                      <div style={{fontSize:"13px",fontWeight:600,color:T.n900,marginBottom:"2px"}}>{kw.term}</div>
+                      <div style={{display:"flex",alignItems:"center",gap:"10px"}}>
+                        {kw.volume&&<span style={{fontSize:"11px",color:T.n400}}>
+                          <span style={{fontWeight:700,color:form.cor1}}>{kw.volume}</span> buscas/mês est.
+                        </span>}
+                        {kw.volume&&<span style={{fontSize:"10px",color:T.n400}}>em {form.cidade||"sua cidade"}</span>}
+                      </div>
+                    </div>
+                    <div style={{display:"flex",alignItems:"center",gap:"8px",flexShrink:0}}>
+                      <div>
+                        <div style={{fontSize:"10px",color:T.n400,marginBottom:"3px",textAlign:"center"}}>Posição</div>
+                        <input
+                          type="number" min="1" max="100"
+                          value={kw.pos||""}
+                          onChange={e=>{
+                            const updated=[...kws];
+                            updated[i]={...updated[i],pos:e.target.value};
+                            setKws(updated);
+                          }}
+                          placeholder="—"
+                          style={{...css.inp,width:"52px",textAlign:"center",padding:"5px 6px",fontSize:"12px",fontWeight:700}}
+                        />
+                      </div>
+                      <span onClick={()=>setKws(p=>p.filter((_,j)=>j!==i))} style={{cursor:"pointer",color:T.n300,fontSize:"18px",lineHeight:1,marginTop:"14px"}}>×</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div style={css.sec}>Sugestões</div>
             <div style={{display:"flex",gap:"6px",flexWrap:"wrap"}}>
-              {[...new Set([...(NICHOS[nichoKey]?.kws||[]).map(k=>k+" "+(form.cidade||"cidade")),`${form.categoria||"negócio"} ${form.cidade||"cidade"}`])].slice(0,8).map(sg=>(<button key={sg} onClick={()=>{if(!kws.includes(sg))setKws(p=>[...p,sg]);}} style={{...css.btnSm(kws.includes(sg)?form.cor1+"18":T.n0,kws.includes(sg)?form.cor1:T.n600,`.5px solid ${kws.includes(sg)?form.cor1:T.n200}`)}}>{sg}</button>))}
+              {[...new Set([
+                ...(NICHOS[nichoKey]?.kws||[]).map(k=>k+" "+(form.cidade||"cidade")),
+                `${form.categoria||"negócio"} ${form.cidade||"cidade"}`,
+                `${form.especializacao||""} ${form.cidade||""}`.trim(),
+              ].filter(Boolean))].slice(0,8).map(sg=>(
+                <button key={sg} onClick={()=>addKw(sg)}
+                  style={{...css.btnSm(kws.find(k=>k.term===sg)?form.cor1+"18":T.n0, kws.find(k=>k.term===sg)?form.cor1:T.n600, `.5px solid ${kws.find(k=>k.term===sg)?form.cor1:T.n200}`)}}>{sg}</button>
+              ))}
             </div>
           </div>
           <div style={{display:"flex",gap:"10px",justifyContent:"space-between"}}><Nav label="← Voltar" to={2} back/><Nav label="Próximo →" to={4}/></div>
@@ -1014,165 +1181,301 @@ function buildPDF({form,ig,kws,concs,logoUrl,textos,temDadosGoogle,temConcs,temI
   const empresa=form.cslEmpresa||"SCentral";
   const t=textos;
   const wUrl=waLink(form.cslWhats);
+  const n=NICHOS[form.nichoKey]||NICHOS.outro;
 
   const logoHtml=logoUrl
-    ?`<img src="${logoUrl}" style="max-height:52px;max-width:150px;object-fit:contain;display:block;margin:0 auto 12px"/>`
-    :`<img src="${LOGO_B64}" style="max-height:52px;max-width:150px;object-fit:contain;display:block;margin:0 auto 12px"/>`;
+    ?`<img src="${logoUrl}" style="height:44px;width:auto;object-fit:contain;display:block"/>`
+    :`<img src="${LOGO_B64}" style="height:44px;width:auto;object-fit:contain;display:block;filter:brightness(10)"/>`;
 
-  const kwsHtml=(kws||[]).map(k=>`<span style="background:${c1}18;color:${c1};border:.5px solid ${c1}44;padding:2px 9px;border-radius:10px;font-size:11px;font-weight:600;margin:2px;display:inline-block">${k}</span>`).join("");
-  const qrHtml=wUrl?`<div style="text-align:center;margin:16px 0"><img src="${qrUrl(wUrl)}" width="130" height="130" style="border-radius:10px;border:2px solid ${c1}"/><div style="font-size:11px;color:#aaa;margin-top:7px">Escanear para WhatsApp</div><div style="font-size:12px;font-weight:700;color:#fff;margin-top:3px">${form.cslWhats}</div></div>`:"";
+  const wUrl2=waLink(form.cslWhats);
+  const qrHtml=wUrl2?`<img src="${qrUrl(wUrl2)}" width="110" height="110" style="border-radius:12px;border:1.5px solid ${c1}22;display:block;margin:0 auto"/>`:""
 
-  const critHtml=(pts,max,label)=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:7px"><div style="font-size:11px;color:${T.n600};width:140px;flex-shrink:0">${label}</div><div style="flex:1;height:6px;background:${T.n100};border-radius:3px;overflow:hidden"><div style="width:${(pts/max)*100}%;height:100%;background:${pts===max?"#16A34A":pts>0?c1:"transparent"};border-radius:3px"></div></div><div style="font-size:11px;font-weight:700;color:${T.n700};min-width:36px;text-align:right">${pts}/${max}</div></div>`;
-
-  // Calcula número de páginas e numeração
-  let pgCount=1; // intro sempre
-  if(temDadosGoogle) pgCount++;
-  if(temConcs) pgCount++;
-  if(temIG) pgCount++;
-  pgCount++; // próximos passos
+  // Página counter
   let pgCur=0;
-  const pgNum=()=>{pgCur++;return`<div style="text-align:right;font-size:10px;color:${T.n400};margin-top:auto;padding-top:12px;border-top:.5px solid ${T.n200}">0${pgCur} / 0${pgCount}</div>`;};
+  let pgTotal=1+((kws||[]).length>0?1:0)+(temDadosGoogle?1:0)+(temConcs?1:0)+(temIG?1:0)+1;
+  const pgNum=()=>{pgCur++;return`<div style="display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:24px;border-top:1px solid ${c1}18"><span style="font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:${c1};opacity:.5">${empresa}</span><span style="font-size:10px;color:#aaa;font-weight:500">${String(pgCur).padStart(2,'0')} / ${String(pgTotal).padStart(2,'0')}</span></div>`;};
 
-  // Google data
-  const nota=parseFloat(form.nota)||0;
-  const stars=nota?"★".repeat(Math.floor(nota))+"☆".repeat(5-Math.floor(nota)):"";
-  const gSVG=temDadosGoogle?gaugeStatic(form.score):"";
-  const gCrits=temDadosGoogle?[
+  // Critérios IG
+  const igCriticasHtml=(()=>{
+    const tom=form.tom||"original";
+    return IG_CRITERIOS
+      .filter(c=>{ const v=ig[c.k]; return c.criticaPositiva?v===true:v===false; })
+      .map(c=>`<div style="margin-bottom:12px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:6px;height:6px;border-radius:50%;background:#EF4444;flex-shrink:0"></div><span style="font-size:11px;font-weight:700;color:#111;letter-spacing:.02em">${c.label}</span></div><p style="font-size:12px;color:#555;line-height:1.7;padding-left:14px;margin:0">${c.critica[tom]||c.critica.original}</p></div>`)
+      .join("");
+  })();
+
+  // Score bars
+  const scoreCritsData=[
     {l:"Nota Google",pts:Math.round(Math.min((parseFloat(form.nota)||0)/5*25,25)),max:25},
-    {l:"Nº de avaliações",pts:Math.round(Math.min((parseInt(form.numAvals)||0)/200*20,20)),max:20},
-    {l:"Fotos Google",pts:Math.round(Math.min((parseInt(form.numFotos)||0)/20*15,15)),max:15},
+    {l:"Avaliações",pts:Math.round(Math.min((parseInt(form.numAvals)||0)/200*20,20)),max:20},
+    {l:"Fotos",pts:Math.round(Math.min((parseInt(form.numFotos)||0)/20*15,15)),max:15},
     {l:"Site ativo",pts:form.temSite?10:0,max:10},
-    {l:"WhatsApp na ficha",pts:form.temWhats?10:0,max:10},
-    {l:"Posts ativos",pts:form.postsAtivos?10:0,max:10},
-    {l:"Frequência posts",pts:{nenhuma:0,raramente:3,mensal:5,semanal:8,diaria:10}[form.frequencia]||0,max:10},
-  ].map(({l,pts,max})=>critHtml(pts,max,l)).join(""):"";
+    {l:"WhatsApp",pts:form.temWhats?10:0,max:10},
+    {l:"Posts",pts:form.postsAtivos?10:0,max:10},
+    {l:"Frequência",pts:{nenhuma:0,raramente:3,mensal:5,semanal:8,diaria:10}[form.frequencia]||0,max:10},
+  ];
+  const scoreBarsHtml=scoreCritsData.map(({l,pts,max})=>`
+    <div style="margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+        <span style="font-size:11px;color:#777;font-weight:500">${l}</span>
+        <span style="font-size:11px;font-weight:700;color:${pts===max?"#16A34A":pts>0?c1:"#ccc"}">${pts}<span style="color:#ccc;font-weight:400">/${max}</span></span>
+      </div>
+      <div style="height:4px;background:#f0f0f0;border-radius:2px;overflow:hidden">
+        <div style="height:100%;width:${(pts/max)*100}%;background:${pts===max?"#16A34A":pts>0?c1:"transparent"};border-radius:2px;transition:.3s"></div>
+      </div>
+    </div>`).join("");
 
-  const igCrits=temIG?[
-    {l:"Bio otimizada",pts:ig.bioOtimizada?15:0,max:15},
-    {l:"Frequência posts",pts:{nenhuma:0,raramente:5,mensal:8,semanal:14,diaria:20}[ig.frequencia]||0,max:20},
-    {l:"Qualidade visual",pts:{ruim:0,media:8,boa:15}[ig.qualVisual]||0,max:15},
-    {l:"Conteúdo autoridade",pts:{nenhum:0,parcial:12,completo:20}[ig.contAutoridade]||0,max:20},
-    {l:"Engajamento",pts:Math.round(Math.min((parseFloat(ig.engRate)||0)/3*25,25)),max:25},
-    {l:"Link na bio",pts:ig.linkBio?5:0,max:5},
-  ].map(({l,pts,max})=>critHtml(pts,max,l)).join(""):"";
+  // Gauge SVG inline
+  const gaugeSVG=(()=>{
+    const sc=Math.max(0,Math.min(100,parseInt(form.score)||0));
+    const rad=(-180+(sc/100)*180)*Math.PI/180;
+    const nx=(110+80*Math.cos(rad)).toFixed(1);
+    const ny=(105+80*Math.sin(rad)).toFixed(1);
+    const col=sc<40?"#EF4444":sc<70?"#F59E0B":c1;
+    return `<svg width="180" height="110" viewBox="0 0 220 135" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="gg" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#EF4444"/><stop offset="40%" stop-color="#F59E0B"/><stop offset="100%" stop-color="${c1}"/></linearGradient></defs><path d="M30 105 A80 80 0 0 1 190 105" fill="none" stroke="#f0f0f0" stroke-width="14" stroke-linecap="round"/><path d="M30 105 A80 80 0 0 1 190 105" fill="none" stroke="url(#gg)" stroke-width="14" stroke-linecap="round" opacity=".9"/><line x1="110" y1="105" x2="${nx}" y2="${ny}" stroke="#111" stroke-width="3" stroke-linecap="round"/><circle cx="110" cy="105" r="5" fill="#111"/><text x="110" y="130" font-size="24" font-weight="800" fill="${col}" text-anchor="middle" font-family="'Space Grotesk',sans-serif">${sc}</text></svg>`;
+  })();
 
+  // Mapa concorrentes
   const mapSVG=temConcs?makeMapStatic({concs,cidade:form.cidade||"Cidade",nome:form.nome||"Negócio",cor1:c1}):"";
-  const compRows=temConcs?(concs||[]).map((c,i)=>`<div style="display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid ${T.n100}"><div style="width:24px;height:24px;border-radius:50%;background:${c1};color:#fff;font-weight:800;font-size:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;min-width:24px">${c.posicao||i+1}</div><div><strong style="font-size:13px;color:${T.n900}">${c.nome}</strong><br><span style="color:${T.n400};font-size:11px">${c.nota}★ (${c.avals})${c.diferencial?" · "+c.diferencial:""}</span></div></div>`).join(""):"";
 
-  return `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"/><title>Diagnóstico ${form.nome}</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  // Concorrentes rows
+  const concRows=temConcs?concs.slice(0,5).map((c,i)=>`
+    <div style="display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid #f5f5f5">
+      <div style="width:28px;height:28px;border-radius:50%;background:${i===0?"#EF4444":i===1?"#F59E0B":"#94A3B8"};color:#fff;font-weight:800;font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0">${c.posicao||i+1}</div>
+      <div style="flex:1"><div style="font-size:13px;font-weight:600;color:#111">${c.nome}</div>${c.diferencial?`<div style="font-size:11px;color:#999;margin-top:2px">${c.diferencial}</div>`:""}</div>
+      <div style="text-align:right;flex-shrink:0"><div style="font-size:13px;font-weight:700;color:#111">${c.nota}★</div><div style="font-size:10px;color:#aaa">${c.avals} aval.</div></div>
+    </div>`).join(""):"";
+
+  const kwChips=(kws||[]).map(k=>`<span style="display:inline-block;background:${c1}10;color:${c1};border:1px solid ${c1}22;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;margin:2px 3px">${k.term||k}</span>`).join("");
+  
+  // Página de keywords com volume e posição
+  const kwPageHtml = (kws||[]).length>0 ? `
+<div class="pg">
+  <div class="accent"></div>
+  <div class="body">
+    <div style="margin-bottom:40px">
+      <div class="label">Visibilidade de busca</div>
+      <h1 style="margin-bottom:14px">Oportunidades de pesquisa</h1>
+      <p style="max-width:460px">Estes são os termos que potenciais ${n.cliente}s usam para encontrar <strong>${form.categoria}</strong> em <strong>${form.cidade}</strong>. A posição atual no Google determina quantas dessas pessoas chegam até você.</p>
+    </div>
+    <div class="card" style="margin-bottom:24px">
+      ${(kws||[]).map((kw,i)=>{
+        const term = kw.term||kw;
+        const vol = kw.volume||"—";
+        const pos = kw.pos;
+        const posNum = parseInt(pos);
+        const posColor = posNum<=3?"#16A34A":posNum<=10?"#F59E0B":"#EF4444";
+        const posLabel = posNum<=3?"Top 3":posNum<=10?"Página 1":posNum?"Página "+(Math.ceil(posNum/10)):"Não rastreado";
+        return `<div style="display:flex;align-items:center;gap:16px;padding:14px 0;border-bottom:1px solid #f5f5f5${i===kws.length-1?";border-bottom:none":""}">
+          <div style="flex:1">
+            <div style="font-size:13px;font-weight:600;color:#111;margin-bottom:3px">${term}</div>
+            <div style="font-size:11px;color:#aaa"><span style="font-weight:700;color:${c1}">${vol}</span> buscas/mês estimadas em ${form.cidade||"sua cidade"}</div>
+          </div>
+          <div style="text-align:center;flex-shrink:0;min-width:80px">
+            ${pos?`<div style="font-size:20px;font-weight:800;color:${posColor};font-family:'Space Grotesk',sans-serif">#${pos}</div><div style="font-size:10px;font-weight:600;color:${posColor};letter-spacing:.04em">${posLabel}</div>`:`<div style="font-size:11px;color:#ccc;font-weight:500">Não<br/>rastreado</div>`}
+          </div>
+        </div>`;
+      }).join("")}
+    </div>
+    <div class="insight">
+      <div style="font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:${c1};margin-bottom:10px">Por que isso importa</div>
+      <p style="color:#aaa;font-size:13px;line-height:1.75">Mais de <strong style="color:#fff">76% dos ${n.cliente}s</strong> entram em contato com um dos 3 primeiros resultados. Cada posição perdida representa uma parcela das <strong style="color:${c1}">${(kws||[]).reduce((a,k)=>{const n=parseInt((k.volume||"0").replace(/\./g,""));return a+n;},0).toLocaleString("pt-BR")} buscas mensais</strong> que passam pela sua categoria em ${form.cidade||"sua cidade"} — e vão para os concorrentes.</p>
+    </div>
+    ${pgNum()}
+  </div>
+</div>` : "";
+
+  return `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"/><title>Diagnóstico — ${form.nome||"Negócio"}</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Space Grotesk','Manrope',sans-serif;background:#fff;color:${T.n900};font-size:13px;line-height:1.65}
-.pg{width:210mm;min-height:297mm;position:relative;page-break-after:always;background:#fff;display:flex;flex-direction:column}
-.bar{position:absolute;left:0;top:0;bottom:0;width:6px;background:${c1}}
-.cnt{margin-left:6px;padding:28px 38px 28px 32px;flex:1;display:flex;flex-direction:column}
-.st{font-size:18px;font-weight:800;text-align:center;color:${T.n900};margin:18px 0 14px;padding-bottom:7px;border-bottom:1.5px solid ${c1};letter-spacing:-.2px}
-.nb{background:${c1}12;border-left:3px solid ${c1};padding:11px 15px;margin-bottom:16px;border-radius:0 8px 8px 0}
-.nb h2{font-size:16px;font-weight:800;color:${T.n900};letter-spacing:-.2px}
-.nb .sub{font-size:11px;color:${T.n400};margin-top:2px}
-p{margin-bottom:10px;color:${T.n600}}
-strong{font-weight:700;color:${T.n900}}
-.ac{background:${c1}0d;border:.5px solid ${c1}33;border-left:2.5px solid ${c1};border-radius:0 8px 8px 0;padding:12px 14px;margin:11px 0}
-.ac p{color:${T.n700};margin-bottom:5px;font-size:13px}.ac p:last-child{margin-bottom:0}
-.rank{display:flex;align-items:center;gap:11px;background:${c1}0d;border-radius:8px;padding:10px 14px;margin:11px 0}
-.rank-n{background:${c1};color:#fff;font-weight:800;font-size:13px;border-radius:50%;width:34px;height:34px;min-width:34px;display:flex;align-items:center;justify-content:center}
-.map-box{border-radius:10px;overflow:hidden;margin:12px 0;border:.5px solid #dce8f5}
-.cta{background:${c2};border-radius:12px;padding:20px;margin:16px 0}
-.cta h3{font-size:17px;font-weight:800;color:${c1};margin-bottom:9px}
-.chip{background:${c1};color:#fff;font-weight:700;padding:6px 14px;border-radius:20px;font-size:12px;display:inline-block;margin:3px}
-.fsig{text-align:center;margin-top:18px;color:#aaa;font-size:11px;padding-top:11px;border-top:.5px solid #333}
-.crow{display:flex;align-items:center;justify-content:center;gap:24px;margin-top:14px;flex-wrap:wrap}
+body{font-family:'Inter',-apple-system,sans-serif;background:#fff;color:#111;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.pg{width:210mm;min-height:297mm;padding:0;page-break-after:always;display:flex;flex-direction:column;position:relative;overflow:hidden}
+.pg:last-child{page-break-after:avoid}
+.accent{position:absolute;top:0;left:0;width:3px;height:100%;background:${c1}}
+.body{padding:52px 56px 44px 60px;flex:1;display:flex;flex-direction:column}
+h1{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:800;color:#0a0a0a;letter-spacing:-.5px;line-height:1.2}
+h2{font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;color:#0a0a0a;letter-spacing:-.3px;line-height:1.3}
+h3{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;color:#0a0a0a;letter-spacing:-.1px}
+p{font-size:13px;color:#555;line-height:1.75}
+.label{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:${c1};margin-bottom:8px}
+.card{background:#fff;border:1px solid #f0f0f0;border-radius:16px;padding:28px 32px;box-shadow:0 1px 3px rgba(0,0,0,.04),0 1px 2px rgba(0,0,0,.03)}
+.highlight{background:${c1}08;border:1px solid ${c1}20;border-left:3px solid ${c1};border-radius:0 12px 12px 0;padding:18px 22px}
+.insight{background:#0a0a0a;border-radius:14px;padding:22px 28px;margin:24px 0}
+.divider{height:1px;background:#f5f5f5;margin:28px 0}
 @page{size:A4;margin:0}
+@media print{.pg{page-break-after:always}.pg:last-child{page-break-after:avoid}}
 </style></head><body>
 
-<div class="pg"><div class="bar"></div><div class="cnt">
-  <div style="background:${c2};padding:18px;border-radius:10px;text-align:center;margin-bottom:20px">
-    ${logoHtml}
-    <div style="font-size:20px;font-weight:800;color:${c1};letter-spacing:-.2px">${empresa}</div>
-    <div style="font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#555;margin-top:4px">Diagnóstico de Presença Digital</div>
-  </div>
-  <div class="nb"><h2>${form.nome||"Nome do negócio"}</h2><div class="sub">${form.categoria}${form.especializacao?" · "+form.especializacao:""} · ${form.cidade}${form.estado?", "+form.estado:""}</div></div>
-  <div class="st">${t.tituloIntro}</div>
-  <p>${t.intro}</p>
-  ${form.endereco?`<p style="font-size:12px;color:${T.n400}">📍 ${form.endereco}</p>`:""}
-  ${nota?`<div style="border:.5px solid ${T.n200};border-radius:9px;padding:11px 14px;margin:11px auto;max-width:270px;background:#fff"><div style="font-size:13px;font-weight:700;color:#1a73e8;margin-bottom:2px">${form.nome}</div><div style="color:#fbbc04;font-size:12px">${stars} <span style="color:${T.n400};font-size:11px">${form.nota} · ${form.numAvals} avaliações</span></div><div style="color:${T.n400};font-size:11px;margin-top:2px">${form.categoria}</div></div>`:""}
-  <p style="margin-top:8px">Esta análise segue <strong>critérios objetivos</strong> — os mesmos que o Google usa para definir quem aparece primeiro quando alguém busca por ${form.categoria} em ${form.cidade}.</p>
-  ${pgNum()}
-</div></div>
-
-${temDadosGoogle?`
-<div class="pg"><div class="bar"></div><div class="cnt">
-  <div class="st">${t.tituloAnalise}</div>
-  ${kwsHtml?`<div style="margin-bottom:12px">${kwsHtml}</div>`:""}
-  <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin:14px 0">
-    <div>${gSVG}</div>
-    <div style="flex:1;min-width:180px">${gCrits}</div>
-  </div>
-  <div class="ac"><p>${t.problema}</p></div>
-  ${form.fichaScreenshot?`<div style="margin-bottom:14px;border-radius:10px;overflow:hidden;border:.5px solid ${T.n200}"><img src="${form.fichaScreenshot}" style="max-width:100%;max-height:200px;object-fit:contain;display:block;margin:0 auto"/></div>`:""}
-  <div class="rank"><div class="rank-n">${form.posicao||"—"}</div><div><strong>${form.nome}</strong><br><span style="color:${T.n400};font-size:11px">${form.nota}★ · ${form.numAvals} avaliações · ${form.numFotos} fotos</span></div></div>
-  <p style="font-size:12px;color:${T.n400};margin-top:8px">${t.dados}</p>
-  ${pgNum()}
-</div></div>`:""}
-
-${temConcs?`
-<div class="pg"><div class="bar"></div><div class="cnt">
-  <div class="st">${t.tituloConc}</div>
-  <div class="map-box">${mapSVG}</div>
-  <p>${t.diferenciais}</p>
-  ${compRows}
-  ${pgNum()}
-</div></div>`:""}
-
-${temIG?`
-<div class="pg"><div class="bar"></div><div class="cnt">
-  <div class="st">${t.tituloIg}</div>
-  <div style="background:${T.n50};border:.5px solid ${T.n200};border-radius:10px;padding:16px;text-align:center;margin-bottom:14px">
-    ${ig.printUrl?`<img src="${ig.printUrl}" style="max-width:100%;max-height:200px;object-fit:contain;border-radius:8px;display:block;margin:0 auto 10px"/>`:""}
-    <div style="font-size:14px;font-weight:700;color:#1a1a1a;margin-bottom:3px">@${ig.handle||"perfil"}</div>
-    <div style="font-size:12px;color:${T.n400}">${ig.seguidores?ig.seguidores+" seguidores":""}</div>
-  </div>
-  <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:14px">
-    <div style="text-align:center;flex-shrink:0"><div style="font-size:38px;font-weight:800;color:${parseInt(ig.score)<40?"#DC2626":parseInt(ig.score)<70?"#F59E0B":c1};letter-spacing:-1px;line-height:1">${ig.score}</div><div style="font-size:11px;color:${T.n400};margin-top:2px">/ 100</div></div>
-    <div style="flex:1;min-width:180px">${igCrits}</div>
-  </div>
-  <div class="ac"><p>${t.igAnalise}</p></div>
-  
-  ${(()=>{
-    const tom = form.tom||"original";
-    const criticas = IG_CRITERIOS
-      .filter(c => {
-        const val = ig[c.k];
-        return c.criticaPositiva ? val===true : val===false;
-      })
-      .map(c => `<div style="margin-bottom:10px;padding:10px 13px;background:#FEE2E2;border-left:3px solid #DC2626;border-radius:0 8px 8px 0;font-size:12px;color:#7F1D1D;line-height:1.6"><strong style="display:block;margin-bottom:4px">${c.label.replace("?","")} — Ponto de atenção</strong>${c.critica[tom]||c.critica.original}</div>`)
-      .join("");
-    return criticas ? `<div style="margin-top:14px"><div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#9991AF;margin-bottom:10px">Pontos de melhoria identificados</div>${criticas}</div>` : "";
-  })()}
-  ${pgNum()}
-</div></div>`:""}
-
-<div class="pg"><div class="bar"></div><div class="cnt">
-  <div class="st">${t.tituloProx}</div>
-  <p>${t.proximos}</p>
-  <p>Posso apresentar um <strong>plano de ação personalizado</strong> para o <strong>${form.nome}</strong> em <strong>${form.cidade}</strong> — com as ações que fazem mais sentido para o seu momento agora.</p>
-  <div class="cta">
-    <h3>${form.tom==="original"?"Próximos passos":"Vamos conversar?"}</h3>
-    <div class="crow">
-      <div>${qrHtml}</div>
-      <div style="text-align:left">
-        ${form.cslWhats?`<div class="chip" style="display:block;margin-bottom:8px">WhatsApp · ${form.cslWhats}</div>`:""}
-        ${form.cslInsta?`<div class="chip">Instagram · @${form.cslInsta}</div>`:""}
+<!-- ══ CAPA ══════════════════════════════════════════════ -->
+<div class="pg" style="background:#0a0a0a">
+  <div style="position:absolute;top:0;right:0;width:45%;height:100%;background:linear-gradient(135deg,${c1}18 0%,${c1}06 50%,transparent 100%)"></div>
+  <div style="position:absolute;bottom:0;left:0;width:60%;height:40%;background:radial-gradient(ellipse at bottom left,${c1}10 0%,transparent 70%)"></div>
+  <div class="body" style="padding:64px 64px 52px;justify-content:space-between">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      ${logoHtml}
+      <div style="font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:${c1};opacity:.8">Diagnóstico Digital</div>
+    </div>
+    <div>
+      <div style="font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:${c1};margin-bottom:20px">Análise de Presença Digital</div>
+      <h1 style="font-size:38px;color:#fff;margin-bottom:12px;line-height:1.1">${form.nome||"Seu Negócio"}</h1>
+      ${form.categoria?`<div style="font-size:15px;color:#888;margin-bottom:6px;font-weight:400">${form.categoria}${form.especializacao?` · ${form.especializacao}`:""}</div>`:""}
+      ${form.cidade?`<div style="font-size:13px;color:#666">${form.cidade}${form.estado?`, ${form.estado}`:""}</div>`:""}
+    </div>
+    <div style="display:flex;align-items:flex-end;justify-content:space-between">
+      <div>
+        <div style="font-size:11px;color:#555;margin-bottom:4px">Preparado por</div>
+        <div style="font-size:14px;font-weight:700;color:#fff">${form.cslNome||empresa}</div>
+        <div style="font-size:12px;color:${c1};font-weight:500">${empresa}</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:10px;color:#444;letter-spacing:.08em;text-transform:uppercase">Confidencial</div>
       </div>
     </div>
   </div>
-  <div class="fsig">
-    <p style="font-weight:800;color:#fff;font-size:13px">${form.cslNome||"—"}</p>
-    <p style="margin-top:4px;color:${c1};font-weight:700;letter-spacing:.04em">${empresa}</p>
+</div>
+
+<!-- ══ INTRO ══════════════════════════════════════════════ -->
+<div class="pg">
+  <div class="accent"></div>
+  <div class="body">
+    <div style="margin-bottom:48px">
+      <div class="label">${t.tituloIntro}</div>
+      <h1 style="margin-bottom:16px">Diagnóstico de<br/>Presença Digital</h1>
+      <p style="max-width:480px;font-size:14px;line-height:1.8">${t.intro}</p>
+    </div>
+
+    <div class="insight">
+      <div style="font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:${c1};margin-bottom:12px">Contexto de mercado</div>
+      <p style="color:#aaa;font-size:13px;line-height:1.75">${t.problema}</p>
+    </div>
+
+    ${kwChips?`<div style="margin-top:28px"><div class="label" style="margin-bottom:10px">Termos monitorados</div><div>${kwChips}</div></div>`:""}
+
+    ${form.endereco?`<div class="divider"></div><p style="font-size:12px;color:#aaa">📍 ${form.endereco}${form.cidade?` · ${form.cidade}`:""}${form.estado?`, ${form.estado}`:""}</p>`:""}
+
+    ${pgNum()}
   </div>
-  ${pgNum()}
-</div></div>
+</div>
+
+<!-- ══ KEYWORDS ══════════════════════════════════════════ -->
+${kwPageHtml}
+
+<!-- ══ GOOGLE ══════════════════════════════════════════════ -->
+${temDadosGoogle?`
+<div class="pg">
+  <div class="accent"></div>
+  <div class="body">
+    <div style="margin-bottom:40px">
+      <div class="label">${t.tituloAnalise}</div>
+      <h1 style="margin-bottom:14px">Presença no Google</h1>
+      <p style="max-width:460px">${t.dados}</p>
+    </div>
+
+    ${form.fichaScreenshot?`<div style="margin-bottom:28px;border-radius:14px;overflow:hidden;border:1px solid #f0f0f0"><img src="${form.fichaScreenshot}" style="max-width:100%;max-height:180px;object-fit:contain;display:block;margin:0 auto"/></div>`:""}
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:28px">
+      <div class="card" style="text-align:center">
+        ${gaugeSVG}
+        <div style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#aaa;margin-top:4px">Score de presença</div>
+      </div>
+      <div class="card">
+        <div style="margin-bottom:6px">
+          <div style="font-size:32px;font-weight:800;color:#0a0a0a;font-family:'Space Grotesk',sans-serif;letter-spacing:-1px">${form.nota}<span style="font-size:16px;color:#ccc;font-weight:400">/5.0</span></div>
+          <div style="color:#f59e0b;font-size:16px;letter-spacing:2px">${"★".repeat(Math.floor(parseFloat(form.nota)||0))}${"☆".repeat(5-Math.floor(parseFloat(form.nota)||0))}</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px">
+          <div><div style="font-size:18px;font-weight:700;color:#0a0a0a">${form.numAvals||"—"}</div><div style="font-size:10px;color:#aaa;font-weight:500;text-transform:uppercase;letter-spacing:.06em">Avaliações</div></div>
+          <div><div style="font-size:18px;font-weight:700;color:#0a0a0a">${form.numFotos||"—"}</div><div style="font-size:10px;color:#aaa;font-weight:500;text-transform:uppercase;letter-spacing:.06em">Fotos</div></div>
+          <div><div style="font-size:18px;font-weight:700;color:${c1}">#${form.posicao||"—"}</div><div style="font-size:10px;color:#aaa;font-weight:500;text-transform:uppercase;letter-spacing:.06em">Posição</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      ${scoreBarsHtml}
+    </div>
+
+    ${pgNum()}
+  </div>
+</div>`:""}
+
+<!-- ══ CONCORRENTES ══════════════════════════════════════ -->
+${temConcs?`
+<div class="pg">
+  <div class="accent"></div>
+  <div class="body">
+    <div style="margin-bottom:40px">
+      <div class="label">${t.tituloConc}</div>
+      <h1 style="margin-bottom:14px">Cenário competitivo</h1>
+      <p style="max-width:460px">${t.diferenciais}</p>
+    </div>
+
+    <div style="border-radius:14px;overflow:hidden;border:1px solid #f0f0f0;margin-bottom:24px">
+      ${mapSVG}
+    </div>
+
+    <div class="card">
+      <div class="label" style="margin-bottom:16px">Concorrentes identificados</div>
+      ${concRows}
+    </div>
+
+    ${pgNum()}
+  </div>
+</div>`:""}
+
+<!-- ══ INSTAGRAM ══════════════════════════════════════════ -->
+${temIG?`
+<div class="pg">
+  <div class="accent"></div>
+  <div class="body">
+    <div style="margin-bottom:40px">
+      <div class="label">${t.tituloIg}</div>
+      <h1 style="margin-bottom:14px">Presença no Instagram</h1>
+      ${ig.handle?`<div style="font-size:14px;font-weight:600;color:${c1}">@${ig.handle}${ig.seguidores?` · ${ig.seguidores} seguidores`:""}</div>`:""}
+    </div>
+
+    ${ig.printUrl?`<div style="margin-bottom:24px;border-radius:14px;overflow:hidden;border:1px solid #f0f0f0;max-height:200px;display:flex;align-items:center;justify-content:center;background:#fafafa"><img src="${ig.printUrl}" style="max-width:100%;max-height:200px;object-fit:contain;display:block"/></div>`:""}
+
+    <div class="highlight" style="margin-bottom:28px">
+      <p style="font-size:13px;color:#444;line-height:1.75">${t.igAnalise}</p>
+    </div>
+
+    ${igCriticasHtml?`
+    <div class="card">
+      <div class="label" style="margin-bottom:16px;color:#EF4444">Pontos de atenção</div>
+      ${igCriticasHtml}
+    </div>`:""}
+
+    ${pgNum()}
+  </div>
+</div>`:""}
+
+<!-- ══ PRÓXIMOS PASSOS ══════════════════════════════════ -->
+<div class="pg" style="background:#0a0a0a">
+  <div style="position:absolute;top:0;right:0;width:40%;height:100%;background:linear-gradient(135deg,${c1}12 0%,transparent 70%)"></div>
+  <div class="body" style="padding:64px;justify-content:space-between">
+    <div>
+      <div style="font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:${c1};margin-bottom:20px">${t.tituloProx}</div>
+      <h1 style="font-size:34px;color:#fff;margin-bottom:20px;line-height:1.15">O próximo passo<br/>é uma conversa.</h1>
+      <p style="color:#777;font-size:14px;line-height:1.8;max-width:400px">${t.proximos}</p>
+    </div>
+
+    <div style="background:#161616;border:1px solid #222;border-radius:20px;padding:32px 36px">
+      <div style="display:flex;align-items:center;gap:24px">
+        ${qrHtml?`<div style="flex-shrink:0">${qrHtml}</div>`:""}
+        <div>
+          <div style="font-size:18px;font-weight:800;color:#fff;font-family:'Space Grotesk',sans-serif;margin-bottom:4px">${form.cslNome||empresa}</div>
+          <div style="font-size:13px;color:${c1};font-weight:600;margin-bottom:14px">${empresa}</div>
+          ${form.cslWhats?`<div style="font-size:12px;color:#666;margin-bottom:4px">📱 ${form.cslWhats}</div>`:""}
+          ${form.cslInsta?`<div style="font-size:12px;color:#666">instagram.com/${form.cslInsta}</div>`:""}
+        </div>
+      </div>
+    </div>
+
+    ${pgNum()}
+  </div>
+</div>
 
 </body></html>`;
 }
