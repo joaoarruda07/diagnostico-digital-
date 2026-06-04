@@ -230,7 +230,7 @@ function PasteImage({value, onChange, label="Cole um print (Ctrl+V)", hint=""}) 
 
 
 const LogoIcon = ({size=40}) => (
-  <img src={LOGO_B64} alt="SCentral" style={{height:`${size}px`,width:`${size}px`,objectFit:"cover",display:"block",margin:"0 auto",mixBlendMode:"lighten",borderRadius:"14px"}}/>
+  <img src={LOGO_B64} alt="SCentral" style={{height:`${size}px`,width:"auto",maxWidth:`${size*1.8}px`,objectFit:"contain",display:"block",margin:"0 auto",mixBlendMode:"lighten"}}/>
 );
 
 /* ─── APP ────────────────────────────────────────────────── */
@@ -760,7 +760,7 @@ Retorne SOMENTE JSON sem markdown:
         <div style={{padding:"16px 20px",borderBottom:`1px solid ${V.sidebarBdr}`,display:"flex",justifyContent:"center",alignItems:"center"}}>
           {logoUrl
             ?<img src={logoUrl} style={{height:"44px",width:"44px",objectFit:"cover",borderRadius:"10px",display:"block"}}/>
-            :<LogoIcon size={72}/>
+            :<LogoIcon size={120}/>
           }
         </div>
 
