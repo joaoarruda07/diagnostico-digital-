@@ -368,9 +368,6 @@ export default function App() {
   useEffect(()=>{ setForm(f=>({...f,nichoKey})); },[nichoKey]);
 
   // Verifica se seção tem dados para gerar no PDF
-  const temDadosGoogle = !!(form.nota||form.numAvals||form.posicao||form.score);
-  const temConcs = concs.length > 0;
-  const temIG = !!(ig.handle||ig.url||ig.printUrl);
 
   const setNicho = key => { setNichoKey(key); setF("categoria",NICHOS[key].label); };
   const txAtual = () => textos || textosPadrao({...form,nichoKey}, concs);
@@ -687,57 +684,6 @@ Retorne SOMENTE JSON sem markdown:
   const Tog=({checked,onChange,label})=>(<div style={{display:"flex",alignItems:"center",gap:"10px",padding:"5px 0"}}><label style={{position:"relative",width:"34px",height:"18px",flexShrink:0}}><input type="checkbox" checked={checked} onChange={e=>onChange(e.target.checked)} style={{opacity:0,width:0,height:0}}/><span style={{position:"absolute",inset:0,background:checked?form.cor1:T.n300,borderRadius:"9px",cursor:"pointer",transition:".2s"}}><span style={{position:"absolute",width:"12px",height:"12px",left:checked?"19px":"3px",top:"3px",background:"#fff",borderRadius:"50%",transition:".2s"}}/></span></label><span style={{fontSize:"13px",color:T.n700}}>{label}</span></div>);
   const Nav=({label,to,back})=>(<button onClick={()=>setPg(to)} style={{...css.btn(back?T.n0:T.dark,back?T.n700:"#fff"),border:back?`.5px solid ${T.n300}`:"none"}}>{label}</button>);
 
-  const scoreCrit=[
-    {l:"Nota Google",pts:Math.round(Math.min((parseFloat(form.nota)||0)/5*25,25)),max:25},
-    {l:"Nº avaliações",pts:Math.round(Math.min((parseInt(form.numAvals)||0)/200*20,20)),max:20},
-    {l:"Fotos Google",pts:Math.round(Math.min((parseInt(form.numFotos)||0)/20*15,15)),max:15},
-    {l:"Site ativo",pts:form.temSite?10:0,max:10},
-    {l:"WhatsApp na ficha",pts:form.temWhats?10:0,max:10},
-    {l:"Posts ativos",pts:form.postsAtivos?10:0,max:10},
-    {l:"Frequência posts",pts:{nenhuma:0,raramente:3,mensal:5,semanal:8,diaria:10}[form.frequencia]||0,max:10},
-  ];
-  const igCrit=[
-    {l:"Bio otimizada",pts:ig.bioOtimizada?15:0,max:15},
-    {l:"Frequência posts",pts:{nenhuma:0,raramente:5,mensal:8,semanal:14,diaria:20}[ig.frequencia]||0,max:20},
-    {l:"Qualidade visual",pts:{ruim:0,media:8,boa:15}[ig.qualVisual]||0,max:15},
-    {l:"Conteúdo autoridade",pts:{nenhum:0,parcial:12,completo:20}[ig.contAutoridade]||0,max:20},
-    {l:"Engajamento",pts:Math.round(Math.min((parseFloat(ig.engRate)||0)/3*25,25)),max:25},
-    {l:"Link na bio",pts:ig.linkBio?5:0,max:5},
-  ];
-
-  const mapHtml=makeMapSVG({concs,cidade:form.cidade||"Cidade",nome:form.nome||"Negócio",cor1:form.cor1});
-  const tx=txAtual();
-  const tonAtual=TONS[form.tom]||TONS.original;
-
-  const TxField=({label,campo,multi=true})=>{const val=tx[campo]||"";return(<div style={{marginBottom:"14px"}}><label style={css.lbl}>{label}</label>{multi?<textarea style={{...css.inp,minHeight:"72px",resize:"vertical"}} value={val} onChange={e=>setTx(campo,e.target.value)}/>:<input style={css.inp} value={val} onChange={e=>setTx(campo,e.target.value)}/>}{val.includes("<strong>")&&<div style={{marginTop:"5px",padding:"7px 11px",background:T.n50,borderRadius:"6px",border:`.5px solid ${T.n200}`,fontSize:"12px",color:T.n600,lineHeight:1.5}} dangerouslySetInnerHTML={{__html:val}}/>}</div>);};
-
-
-  const scoreCrit=[
-    {l:"Nota Google",pts:Math.round(Math.min((parseFloat(form.nota)||0)/5*25,25)),max:25},
-    {l:"Nº avaliações",pts:Math.round(Math.min((parseInt(form.numAvals)||0)/200*20,20)),max:20},
-    {l:"Fotos Google",pts:Math.round(Math.min((parseInt(form.numFotos)||0)/20*15,15)),max:15},
-    {l:"Site ativo",pts:form.temSite?10:0,max:10},
-    {l:"WhatsApp na ficha",pts:form.temWhats?10:0,max:10},
-    {l:"Posts ativos",pts:form.postsAtivos?10:0,max:10},
-    {l:"Frequência posts",pts:{nenhuma:0,raramente:3,mensal:5,semanal:8,diaria:10}[form.frequencia]||0,max:10},
-  ];
-
-  const salvarPreset = () => {
-    if(!presetName.trim()) return;
-    const p = {id:Date.now(),name:presetName.trim(),cor1:form.cor1,cor2:form.cor2,cslNome:form.cslNome,cslEmpresa:form.cslEmpresa,cslWhats:form.cslWhats,cslInsta:form.cslInsta,tom:form.tom,logoUrl};
-    const updated = [...presets,p]; setPresets(updated); savePresets(updated);
-    setPresetName(""); setShowSave(false);
-    setStatus({t:"ok",m:`Preset "${p.name}" salvo!`});
-  };
-  const aplicarPreset = p => {
-    setForm(f=>({...f,cor1:p.cor1,cor2:p.cor2,cslNome:p.cslNome,cslEmpresa:p.cslEmpresa,cslWhats:p.cslWhats,cslInsta:p.cslInsta,tom:p.tom}));
-    if(p.logoUrl) setLogoUrl(p.logoUrl);
-    setStatus({t:"ok",m:`Preset "${p.name}" aplicado!`});
-  };
-
-  const mapHtml=makeMapSVG({concs,cidade:form.cidade||"Cidade",nome:form.nome||"Negócio",cor1:form.cor1});
-
-
   // ─── Computed ──────────────────────────────────────────
   const tonAtual = TONS[form.tom]||TONS.original;
   const txAtual = () => textos || textosPadrao({...form,nichoKey}, concs);
@@ -847,6 +793,8 @@ Retorne SOMENTE JSON sem markdown:
   };
 
   // ─── SIDEBAR ───────────────────────────────────────────
+  const mapHtml=makeMapSVG({concs,cidade:form.cidade||"Cidade",nome:form.nome||"Negócio",cor1:form.cor1});
+
   const Sidebar = () => {
     const groups = [...new Set(navItems.map(n=>n.group).filter(Boolean))];
     return(
