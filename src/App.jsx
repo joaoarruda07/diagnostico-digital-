@@ -230,7 +230,7 @@ function PasteImage({value, onChange, label="Cole um print (Ctrl+V)", hint=""}) 
 
 
 const LogoIcon = ({size=40,fill=false}) => (
-  <img src={LOGO_B64} alt="SCentral" style={{width:fill?"100%":`${size}px`,height:"auto",objectFit:"contain",display:"block",margin:"0 auto",mixBlendMode:"screen"}}/>
+  <img src={LOGO_B64} alt="SCentral" style={{width:fill?"100%":`${size}px`,height:"auto",objectFit:"contain",display:"block",margin:"0 auto"}}/>
 );
 
 /* ─── APP ────────────────────────────────────────────────── */
@@ -656,9 +656,9 @@ Retorne SOMENTE JSON sem markdown:
   const _accent = form?.cor1||"#7C3AED";
   const V = {
     // Sidebar escura
-    sidebar:    "#0F0E1A",
-    sidebarB:   "#1A1828",
-    sidebarBdr: "rgba(255,255,255,.07)",
+    sidebar:    "#000000",
+    sidebarB:   "#0A0A0A",
+    sidebarBdr: "rgba(255,255,255,.08)",
     sidebarTxt: "#fff",
     sidebarMut: "#6B6880",
     sidebarSub: "#9E9BB0",
@@ -780,11 +780,10 @@ Retorne SOMENTE JSON sem markdown:
     {id:1,label:"Segmento & Dados",group:"NEGÓCIO"},
     {id:2,label:"Análise de Presença",group:"NEGÓCIO",opt:!temDadosGoogle},
     {id:3,label:"Oportunidades",group:"NEGÓCIO"},
-    {id:4,label:"Concorrentes",group:"ANÁLISE",opt:!temConcs},
-    {id:5,label:"Instagram",group:"ANÁLISE",opt:!temIG},
-    {id:6,label:"Identidade Visual",group:"DESIGN"},
-    {id:7,label:"Consultor",group:"DESIGN"},
-    {id:8,label:"Editar & PDF",group:"SAÍDA"},
+    {id:4,label:"Instagram",group:"ANÁLISE",opt:!temIG},
+    {id:5,label:"Identidade Visual",group:"DESIGN"},
+    {id:6,label:"Consultor",group:"DESIGN"},
+    {id:7,label:"Editar & PDF",group:"SAÍDA"},
   ];
   const navAuto = [
     {id:1,label:"Diagnóstico IA",group:"AUTO IA"},
@@ -803,7 +802,7 @@ Retorne SOMENTE JSON sem markdown:
       <aside style={{width:"200px",height:"100vh",background:V.sidebar,display:"flex",flexDirection:"column",position:"fixed",top:0,left:0,zIndex:100,flexShrink:0}}>
 
         {/* Logo */}
-        <div style={{padding:"16px 16px 12px",borderBottom:`1px solid ${V.sidebarBdr}`,background:"transparent"}}>
+        <div style={{padding:"16px 16px 12px",borderBottom:`1px solid ${V.sidebarBdr}`,background:"#000"}}>
           {logoUrl
             ?<img src={logoUrl} style={{width:"100%",height:"auto",objectFit:"contain",display:"block"}}/>
             :<LogoIcon size={168} fill={true}/>
@@ -852,7 +851,7 @@ Retorne SOMENTE JSON sem markdown:
 
         {/* Footer */}
         <div style={{padding:"8px 10px",borderTop:`1px solid ${V.sidebarBdr}`,flexShrink:0}}>
-          <button onClick={()=>setPg(8)} style={{width:"100%",padding:"7px",borderRadius:"7px",border:"none",background:V.accent,color:"#fff",fontSize:"12px",fontWeight:600,cursor:"pointer",fontFamily:"'Inter',sans-serif",marginBottom:form.cslNome?"10px":"0"}}>
+          <button onClick={()=>setPg(7)} style={{width:"100%",padding:"7px",borderRadius:"7px",border:"none",background:V.accent,color:"#fff",fontSize:"12px",fontWeight:600,cursor:"pointer",fontFamily:"'Inter',sans-serif",marginBottom:form.cslNome?"10px":"0"}}>
             Gerar PDF
           </button>
           {form.cslNome&&<div style={{display:"flex",alignItems:"center",gap:"8px",padding:"6px 4px"}}>
@@ -1200,60 +1199,12 @@ Retorne SOMENTE JSON sem markdown:
               </Card>
               <div style={{display:"flex",gap:"12px",justifyContent:"space-between"}}>
                 <BtnS onClick={()=>setPg(2)}>← Voltar</BtnS>
-                <BtnP onClick={()=>setPg(4)}>Próximo →</BtnP>
+                <BtnP onClick={()=>setPg(3)}>Próximo →</BtnP>
               </div>
             </div>}
 
             {/* ══ P4 CONCORRENTES ══════════════════════ */}
             {pg===4&&<div>
-              <PageHead title="Cenário Competitivo" sub="Mapeie os principais concorrentes da região."/>
-              <div style={{padding:"12px 16px",background:"#FFFBEB",border:"1px solid #FDE68A",borderRadius:"12px",fontSize:"13px",color:"#92400E",marginBottom:"16px"}}>Seção opcional — sem concorrentes, a página não será gerada no PDF</div>
-              {p2modo==="manual"
-                ?<Card><p style={{fontSize:"13px",color:V.txtSec}}>A busca automática está disponível no modo <span style={{color:V.accent,fontWeight:600}}>Auto IA</span>.</p></Card>
-                :<>
-                  <Card>
-                    <BtnP onClick={buscarConcs} disabled={concLoad}>{concLoad?"Buscando...":"Buscar concorrentes com IA"}</BtnP>
-                    <SBar/>
-                    {concs.length>0&&<div style={{marginTop:"16px"}}>
-                      {concs.map((c,i)=>(
-                        <div key={i} style={{display:"flex",alignItems:"center",gap:"12px",padding:"13px 16px",background:V.bg,borderRadius:"14px",border:`1px solid ${V.border}`,marginBottom:"8px"}}>
-                          <div style={{width:"28px",height:"28px",borderRadius:"50%",background:i===0?"#FEE2E2":i===1?"#FEF3C7":"#F3F4F6",color:i===0?V.err:i===1?V.warn:"#6B7280",fontWeight:700,fontSize:"12px",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>{c.posicao||i+1}</div>
-                          <div style={{flex:1}}>
-                            <div style={{fontSize:"13px",fontWeight:500,color:V.txt}}>{c.nome}</div>
-                            <div style={{fontSize:"12px",color:V.txtSec,marginTop:"2px"}}>{c.nota}★ · {c.avals} avaliações{c.diferencial?" · "+c.diferencial:""}</div>
-                          </div>
-                          <button onClick={()=>setConcs(p=>p.filter((_,j)=>j!==i))} style={{background:"none",border:"none",color:V.txtMut,cursor:"pointer",fontSize:"18px"}}>×</button>
-                        </div>
-                      ))}
-                    </div>}
-                  </Card>
-                  {temConcs&&<Card>
-                    <SLabel>Mapa de posicionamento</SLabel>
-                    <div style={{borderRadius:"14px",overflow:"hidden",border:`1px solid ${V.border}`}} dangerouslySetInnerHTML={{__html:mapHtml}}/>
-                  </Card>}
-                </>
-              }
-              <Card>
-                <SLabel>Adicionar manualmente</SLabel>
-                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"12px",marginBottom:"12px"}}>
-                  <Field label="Nome"><input id="cNome" style={{width:"100%",padding:"11px 16px",border:`1px solid ${V.border}`,borderRadius:"12px",fontSize:"13px",color:V.txt,background:V.surface,outline:"none",boxSizing:"border-box",fontFamily:"'Inter',sans-serif"}} placeholder="Concorrente"/></Field>
-                  <Field label="Nota"><input id="cNota" type="number" style={{width:"100%",padding:"11px 16px",border:`1px solid ${V.border}`,borderRadius:"12px",fontSize:"13px",color:V.txt,background:V.surface,outline:"none",boxSizing:"border-box",fontFamily:"'Inter',sans-serif"}} placeholder="4.5"/></Field>
-                </div>
-                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"12px",marginBottom:"12px"}}>
-                  <Field label="Avaliações"><input id="cAvals" type="number" style={{width:"100%",padding:"11px 16px",border:`1px solid ${V.border}`,borderRadius:"12px",fontSize:"13px",color:V.txt,background:V.surface,outline:"none",boxSizing:"border-box",fontFamily:"'Inter',sans-serif"}} placeholder="300"/></Field>
-                  <Field label="Posição"><input id="cPos" type="number" style={{width:"100%",padding:"11px 16px",border:`1px solid ${V.border}`,borderRadius:"12px",fontSize:"13px",color:V.txt,background:V.surface,outline:"none",boxSizing:"border-box",fontFamily:"'Inter',sans-serif"}} placeholder="1"/></Field>
-                </div>
-                <Field label="Diferencial"><input id="cDiff" style={{width:"100%",padding:"11px 16px",border:`1px solid ${V.border}`,borderRadius:"12px",fontSize:"13px",color:V.txt,background:V.surface,outline:"none",boxSizing:"border-box",fontFamily:"'Inter',sans-serif"}} placeholder="Mais fotos, site otimizado..."/></Field>
-                <BtnS onClick={addComp}>Adicionar</BtnS>
-              </Card>
-              <div style={{display:"flex",gap:"12px",justifyContent:"space-between"}}>
-                <BtnS onClick={()=>setPg(3)}>← Voltar</BtnS>
-                <BtnP onClick={()=>setPg(5)}>Próximo →</BtnP>
-              </div>
-            </div>}
-
-            {/* ══ P5 INSTAGRAM ═════════════════════════ */}
-            {pg===5&&<div>
               <PageHead title="Autoridade no Instagram" sub="Análise da presença e qualidade do perfil."/>
               <div style={{padding:"12px 16px",background:"#FFFBEB",border:"1px solid #FDE68A",borderRadius:"12px",fontSize:"13px",color:"#92400E",marginBottom:"16px"}}>Seção opcional — sem dados, a página não será gerada no PDF</div>
               {p2modo==="auto"&&<Card>
@@ -1292,13 +1243,13 @@ Retorne SOMENTE JSON sem markdown:
                 })}
               </Card>
               <div style={{display:"flex",gap:"12px",justifyContent:"space-between"}}>
-                <BtnS onClick={()=>setPg(4)}>← Voltar</BtnS>
-                <BtnP onClick={()=>setPg(6)}>Próximo →</BtnP>
+                <BtnS onClick={()=>setPg(3)}>← Voltar</BtnS>
+                <BtnP onClick={()=>setPg(5)}>Próximo →</BtnP>
               </div>
             </div>}
 
             {/* ══ P6 CORES ═════════════════════════════ */}
-            {pg===6&&<div>
+            {pg===5&&<div>
               <PageHead title="Identidade Visual" sub="Cores e logo que serão aplicados no relatório."/>
               <Card>
                 <SLabel>Paleta de cores</SLabel>
@@ -1351,12 +1302,12 @@ Retorne SOMENTE JSON sem markdown:
               </Card>
               <div style={{display:"flex",gap:"12px",justifyContent:"space-between"}}>
                 <BtnS onClick={()=>setPg(5)}>← Voltar</BtnS>
-                <BtnP onClick={()=>setPg(7)}>Próximo →</BtnP>
+                <BtnP onClick={()=>setPg(6)}>Próximo →</BtnP>
               </div>
             </div>}
 
             {/* ══ P7 CONSULTOR ═════════════════════════ */}
-            {pg===7&&<div>
+            {pg===6&&<div>
               <PageHead title="Dados do Consultor" sub="Informações que aparecem na página final do relatório."/>
               <Card>
                 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"14px",marginBottom:"14px"}}>
@@ -1376,8 +1327,8 @@ Retorne SOMENTE JSON sem markdown:
                 </Field>
               </Card>
               <div style={{display:"flex",gap:"12px",justifyContent:"space-between"}}>
-                <BtnS onClick={()=>setPg(6)}>← Voltar</BtnS>
-                <BtnP onClick={()=>setPg(8)}>Editar & PDF →</BtnP>
+                <BtnS onClick={()=>setPg(5)}>← Voltar</BtnS>
+                <BtnP onClick={()=>setPg(7)}>Editar & PDF →</BtnP>
               </div>
             </div>}
 
@@ -1429,7 +1380,7 @@ Retorne SOMENTE JSON sem markdown:
                 ))}
               </Card>
               <div style={{display:"flex",gap:"12px",justifyContent:"space-between",marginTop:"8px"}}>
-                <BtnS onClick={()=>setPg(7)}>← Voltar</BtnS>
+                <BtnS onClick={()=>setPg(6)}>← Voltar</BtnS>
                 <BtnP onClick={abrirPDF} style={{padding:"13px 28px",fontSize:"14px"}}>Gerar PDF</BtnP>
               </div>
             </div>}
