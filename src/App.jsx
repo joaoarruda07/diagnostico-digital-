@@ -236,7 +236,7 @@ function PasteImage({value, onChange, label="Cole um print (Ctrl+V)", hint=""}) 
 
 
 const LogoIcon = ({size=40}) => (
-  <img src={LOGO_B64} alt="SCentral" style={{height:`${size}px`,width:"auto",objectFit:"contain",display:"block",margin:"0 auto",mixBlendMode:"lighten"}}/>
+  <img src={LOGO_B64} alt="SCentral" style={{height:`${size}px`,width:`${size}px`,objectFit:"cover",display:"block",margin:"0 auto",mixBlendMode:"lighten",borderRadius:"14px"}}/>
 );
 
 /* ─── APP ────────────────────────────────────────────────── */
@@ -299,6 +299,21 @@ const IG_CRITERIOS = [
     }
   },
 ];
+
+const NICHO_PLACE_TYPES = {
+  clinica: ["doctor","medical_clinic","health"],
+  vet: ["veterinary_care"],
+  restaurante: ["restaurant","food","meal_delivery"],
+  adv: ["lawyer","legal_services"],
+  odonto: ["dentist","dental_clinic"],
+  academia: ["gym","fitness_center","sports_club"],
+  salao: ["beauty_salon","hair_care","spa"],
+  imob: ["real_estate_agency"],
+  contabil: ["accounting","finance"],
+  escola: ["school","university","education"],
+  psico: ["psychologist","mental_health"],
+  outro: ["establishment"],
+};
 
 export default function App() {
   const [pg, setPg] = useState(1);
@@ -376,65 +391,147 @@ export default function App() {
   };
 
   const extrairFicha = async () => {
-    const url=form.fichaUrl.trim(); if(!url){setStatus({t:"err",m:"Cole o link da ficha Google."});return;}
-    setFichaLoad(true); setStatus({t:"load",m:"Analisando ficha Google..."});
+    const url=form.fichaUrl.trim();
+    if(!url){setStatus({t:"err",m:"Cole o link da ficha Google."});return;}
+    setFichaLoad(true);
+    setStatus({t:"load",m:"Buscando ficha no Google Maps..."});
     try {
-      const resp=await fetch("/api/claude",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:900,messages:[{role:"user",content:`Acesse a ficha Google Meu Negócio em: ${url}\nSe não conseguir diretamente, busque pelo nome na URL.\nRetorne SOMENTE JSON sem markdown:\n{"nome":"","categoria":"","endereco":"","cidade":"","estado":"","nota":"","numAvals":"","numFotos":"","temSite":false,"temWhats":false,"postsAtivos":false,"frequencia":"nenhuma","site":"","whatsapp":"","posicao":"","social":""}`}]})});
-      const data=await resp.json();
-      const text=data.content?.filter(b=>b.type==="text").map(b=>b.text).join("")||"";
-      const s=text.indexOf("{"),e=text.lastIndexOf("}"); if(s<0)throw new Error();
-      const p=JSON.parse(text.slice(s,e+1));
+      let query=url;
+      const m=url.match(/place\/([^/@?]+)/);
+      if(m) query=decodeURIComponent(m[1].replace(/\+/g," ").replace(/%20/g," "));
+      const r1=await fetch("/api/places",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"search",query})});
+      const d1=await r1.json();
+      const place=d1.places?.[0];
+      if(!place) throw new Error("Não encontrado");
+      const r2=await fetch("/api/places",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"details",placeId:place.id})});
+      const det=await r2.json();
       const next={...form,nichoKey};
-      ["nome","categoria","endereco","cidade","estado","nota","numAvals","numFotos","site","whatsapp","posicao","social"].forEach(k=>{if(p[k]!=null&&String(p[k]).trim())next[k]=String(p[k]);});
-      if(typeof p.temSite==="boolean")next.temSite=p.temSite;
-      if(typeof p.temWhats==="boolean")next.temWhats=p.temWhats;
-      if(typeof p.postsAtivos==="boolean")next.postsAtivos=p.postsAtivos;
-      if(p.frequencia)next.frequencia=p.frequencia;
-      if(next.nota||next.numAvals)next.score=String(calcScore(next));
+      next.nome=det.displayName?.text||"";
+      next.nota=String(det.rating||"");
+      next.numAvals=String(det.userRatingCount||"");
+      next.numFotos=String(det.photos?.length||"");
+      next.site=det.websiteUri||"";
+      next.whatsapp=det.nationalPhoneNumber||"";
+      next.temSite=!!(det.websiteUri);
+      next.temWhats=!!(det.nationalPhoneNumber);
+      next.placeLat=det.location?.latitude||"";
+      next.placeLng=det.location?.longitude||"";
+      next.placeId=place.id||"";
+      const addr=det.formattedAddress||"";
+      const parts=addr.split(",");
+      if(parts.length>=3){
+        next.endereco=parts.slice(0,-2).join(",").trim();
+        const cf=parts[parts.length-2]?.trim()||"";
+        const cp=cf.split("-");
+        next.cidade=cp[0]?.trim()||"";
+        next.estado=cp[1]?.trim()||"";
+      }
+      if(next.nota||next.numAvals) next.score=String(calcScore(next));
       setForm(next);
-      if(p.categoria){const k=Object.entries(NICHOS).find(([,v])=>p.categoria.toLowerCase().includes(v.label.toLowerCase().split(" ")[0].toLowerCase()));if(k)setNichoKey(k[0]);}
-      setStatus({t:"ok",m:"Dados extraídos! Confira e edite se necessário."});
-    } catch { setStatus({t:"err",m:"Não foi possível extrair. Preencha manualmente."}); }
+      const types=det.types||[];
+      for(const [k,vals] of Object.entries(NICHO_PLACE_TYPES)){
+        if(vals.some(t=>types.includes(t))){setNichoKey(k);break;}
+      }
+      setStatus({t:"ok",m:`✓ Ficha de "${next.nome}" carregada!`});
+    } catch(e){
+      setStatus({t:"err",m:"Não foi possível extrair. Preencha manualmente."});
+    }
     setFichaLoad(false);
   };
 
   const extrairIG = async () => {
-    const url=ig.url.trim(); if(!url){setStatus({t:"err",m:"Cole o link do Instagram."});return;}
-    setIgLoad(true); setStatus({t:"load",m:"Analisando perfil do Instagram..."});
+    const url=ig.url.trim();
+    if(!url){setStatus({t:"err",m:"Cole o link do perfil."});return;}
+    setIgLoad(true);
+    setStatus({t:"load",m:"Analisando perfil do Instagram..."});
     try {
-      const resp=await fetch("/api/claude",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:900,messages:[{role:"user",content:`Acesse o perfil do Instagram neste link e analise: ${url}\nRetorne SOMENTE JSON sem markdown:\n{"handle":"username sem @","seguidores":"número","bioOtimizada":false,"linkBio":false,"frequencia":"nenhuma ou raramente ou mensal ou semanal ou diaria","qualVisual":"ruim ou media ou boa","contAutoridade":"nenhum ou parcial ou completo","engRate":"porcentagem numérica","observacoes":"observação breve sobre o perfil"}`}]})});
+      // Extrai o handle da URL
+      const handleMatch=url.match(/instagram\.com\/([^/?#]+)/);
+      const handle=handleMatch?handleMatch[1].replace("@",""):url.replace("@","").replace(/.*instagram\.com\//,"");
+      
+      const resp=await fetch("/api/claude",{method:"POST",headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({
+          model:"claude-sonnet-4-20250514",
+          max_tokens:900,
+          messages:[{role:"user",content:`Você é um especialista em marketing digital brasileiro.
+Analise o perfil do Instagram @${handle} do segmento "${form.categoria||"negócio local"}" em ${form.cidade||"Brasil"}.
+
+Com base no seu conhecimento sobre este perfil ou perfis similares deste segmento, estime os critérios abaixo.
+Se não conhecer o perfil específico, use benchmarks típicos do segmento.
+
+Retorne SOMENTE JSON sem markdown:
+{
+  "handle":"${handle}",
+  "seguidores":"estimativa numérica",
+  "bioOtimizada":true/false,
+  "linkBio":true/false,
+  "frequencia":"nenhuma/raramente/mensal/semanal/diaria",
+  "qualVisual":"ruim/media/boa",
+  "contAutoridade":"nenhum/parcial/completo",
+  "engRate":"porcentagem estimada",
+  "postaFreq":true/false,
+  "temIA":false,
+  "temVitrine":true/false,
+  "temBio":true/false,
+  "temIdentidade":true/false,
+  "comunicaAutoridade":true/false,
+  "temProvaSocial":true/false
+}`}]})});
       const data=await resp.json();
       const text=data.content?.filter(b=>b.type==="text").map(b=>b.text).join("")||"";
-      const s=text.indexOf("{"),e=text.lastIndexOf("}"); if(s<0)throw new Error();
+      const s=text.indexOf("{"),e=text.lastIndexOf("}");
+      if(s<0) throw new Error();
       const p=JSON.parse(text.slice(s,e+1));
       const next={...ig,url,extraido:true};
-      if(p.handle)next.handle=p.handle;
-      if(p.seguidores)next.seguidores=String(p.seguidores);
-      if(typeof p.bioOtimizada==="boolean")next.bioOtimizada=p.bioOtimizada;
-      if(typeof p.linkBio==="boolean")next.linkBio=p.linkBio;
-      if(p.frequencia)next.frequencia=p.frequencia;
-      if(p.qualVisual)next.qualVisual=p.qualVisual;
-      if(p.contAutoridade)next.contAutoridade=p.contAutoridade;
-      if(p.engRate)next.engRate=String(p.engRate);
+      Object.keys(p).forEach(k=>{if(p[k]!==undefined)next[k]=p[k];});
       next.score=String(calcIgScore(next));
       setIg(next);
-      setStatus({t:"ok",m:"Perfil analisado! Confira e ajuste se necessário."});
-    } catch { setStatus({t:"err",m:"Não foi possível analisar. Preencha manualmente."}); }
+      setStatus({t:"ok",m:`✓ Perfil @${handle} analisado!`});
+    } catch(e){
+      setStatus({t:"err",m:"Não foi possível analisar. Preencha manualmente."});
+    }
     setIgLoad(false);
   };
 
   const buscarConcs = async () => {
-    if(!form.categoria||!form.cidade){setStatus({t:"err",m:"Preencha categoria e cidade."});return;}
-    setConcLoad(true); setStatus({t:"load",m:"Buscando concorrentes..."});
+    if(!form.categoria&&!form.cidade){setStatus({t:"err",m:"Preencha categoria e cidade."});return;}
+    setConcLoad(true);
+    setStatus({t:"load",m:"Buscando concorrentes no Google Maps..."});
     try {
-      const resp=await fetch("/api/claude",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1200,messages:[{role:"user",content:`Pesquise no Google Maps os TOP 5 concorrentes do segmento "${form.categoria}${form.especializacao?" - "+form.especializacao:""}" em ${form.cidade}, Brasil. Liste os negócios reais que aparecem nessa busca. Retorne SOMENTE JSON sem markdown: {"concorrentes":[{"posicao":1,"nome":"Nome completo","nota":"4.5","avals":"300","diferencial":"principal diferencial em 1 frase"}]}`}]})});
-      const data=await resp.json();
-      const text=data.content?.filter(b=>b.type==="text").map(b=>b.text).join("")||"";
-      const s=text.indexOf("{"),e=text.lastIndexOf("}");
-      const parsed=JSON.parse(text.slice(s,e+1));
-      setConcs([...(parsed.concorrentes||[]).map(c=>({...c,manual:false})),...concs.filter(c=>c.manual)]);
-      setStatus({t:"ok",m:`${parsed.concorrentes?.length||0} concorrentes encontrados!`});
-    } catch { setStatus({t:"err",m:"Erro. Adicione manualmente."}); }
+      let results=[];
+      // Se temos lat/lng da ficha, usa Nearby Search
+      if(form.placeLat&&form.placeLng){
+        const types=NICHO_PLACE_TYPES[nichoKey]||["establishment"];
+        const r=await fetch("/api/places",{method:"POST",headers:{"Content-Type":"application/json"},
+          body:JSON.stringify({action:"nearby",lat:form.placeLat,lng:form.placeLng,types})});
+        const d=await r.json();
+        results=d.places||[];
+      } else {
+        // Fallback: busca textual
+        const query=`${form.categoria}${form.especializacao?" "+form.especializacao:""} ${form.cidade}`;
+        const r=await fetch("/api/places",{method:"POST",headers:{"Content-Type":"application/json"},
+          body:JSON.stringify({action:"search",query})});
+        const d=await r.json();
+        results=d.places||[];
+      }
+      // Filtra o próprio negócio e mapeia
+      const concsFormatted=results
+        .filter(p=>!form.nome||!p.displayName?.text?.toLowerCase().includes(form.nome.toLowerCase().slice(0,10)))
+        .slice(0,5)
+        .map((p,i)=>({
+          posicao:i+1,
+          nome:p.displayName?.text||"",
+          nota:String(p.rating||"?"),
+          avals:String(p.userRatingCount||"?"),
+          diferencial:p.formattedAddress||"",
+          manual:false,
+          placeId:p.id,
+        }));
+      setConcs([...concsFormatted,...concs.filter(c=>c.manual)]);
+      setStatus({t:"ok",m:`✓ ${concsFormatted.length} concorrentes encontrados no Google Maps!`});
+    } catch(e){
+      setStatus({t:"err",m:"Erro ao buscar. Verifique a chave da API."});
+    }
     setConcLoad(false);
   };
 
@@ -602,7 +699,7 @@ Retorne SOMENTE JSON sem markdown:
         <div style={{padding:"18px 16px 14px",borderBottom:"1px solid #1a1628"}}>
           <div style={{marginBottom:"12px",padding:"12px 8px 8px"}}>
             {logoUrl
-              ?<img src={logoUrl} style={{maxHeight:"72px",maxWidth:"190px",objectFit:"contain",display:"block",margin:"0 auto"}}/>
+              ?<img src={logoUrl} style={{height:"80px",width:"80px",objectFit:"cover",display:"block",margin:"0 auto",borderRadius:"16px"}}/>
               :<LogoIcon size={110}/>
             }
           </div>
@@ -696,11 +793,7 @@ Retorne SOMENTE JSON sem markdown:
               <div><label style={css.lbl}>Especialização</label><input style={css.inp} value={form.especializacao||""} onChange={e=>setF("especializacao",e.target.value)} placeholder="Ex: Ortopedia, Varizes..."/></div>
             </div>
             <div style={css.sec}>Dados do negócio</div>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"12px",marginBottom:"10px"}}>
-              <div><label style={css.lbl}>Nome *</label><input style={css.inp} value={form.nome} onChange={e=>setF("nome",e.target.value)} placeholder="Ex: Clínica Dra. Marina"/></div>
-              <div><label style={css.lbl}>Responsável</label><input style={css.inp} value={form.responsavel||""} onChange={e=>setF("responsavel",e.target.value)} placeholder="Nome do proprietário"/></div>
-            </div>
-            <div style={{marginBottom:"10px"}}><label style={css.lbl}>Endereço</label><input style={css.inp} value={form.endereco||""} onChange={e=>setF("endereco",e.target.value)} placeholder="Rua, nº, bairro"/></div>
+            <div style={{marginBottom:"10px"}}><label style={css.lbl}>Nome *</label><input style={css.inp} value={form.nome} onChange={e=>setF("nome",e.target.value)} placeholder="Ex: Clínica Dra. Marina"/></div>
             <div style={{display:"grid",gridTemplateColumns:"1fr 80px",gap:"12px",marginBottom:"10px"}}>
               <div><label style={css.lbl}>Cidade *</label><input style={css.inp} value={form.cidade} onChange={e=>setF("cidade",e.target.value)} placeholder="Belo Horizonte"/></div>
               <div><label style={css.lbl}>UF</label><input style={css.inp} value={form.estado||""} onChange={e=>setF("estado",e.target.value)} placeholder="MG"/></div>
