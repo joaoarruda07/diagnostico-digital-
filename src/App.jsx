@@ -644,7 +644,7 @@ Retorne SOMENTE JSON sem markdown:
 
   // ─── ATOMS ────────────────────────────────────────────
   const Card = ({children,style={}}) => (
-    <div style={{background:V.surface,border:`1px solid ${V.border}`,borderRadius:"20px",padding:"28px 32px",marginBottom:"16px",boxShadow:V.shadow,...style}}>
+    <div style={{background:V.surface,border:`1px solid ${V.border}`,borderRadius:"16px",padding:"20px 24px",marginBottom:"12px",boxShadow:V.shadow,...style}}>
       {children}
     </div>
   );
@@ -656,7 +656,7 @@ Retorne SOMENTE JSON sem markdown:
   );
 
   const PageHead = ({title,sub}) => (
-    <div style={{marginBottom:"16px",paddingBottom:"14px",borderBottom:`1px solid ${V.border}`}}>
+    <div style={{marginBottom:"12px",paddingBottom:"10px",borderBottom:`1px solid ${V.border}`}}>
       <div style={{display:"flex",alignItems:"baseline",gap:"10px"}}>
         <h1 style={{fontSize:"16px",fontWeight:700,color:V.txt,fontFamily:"'Sora',sans-serif",letterSpacing:"-.2px",margin:0}}>{title}</h1>
         {sub&&<span style={{fontSize:"12px",color:V.txtMut}}>{sub}</span>}
@@ -754,22 +754,22 @@ Retorne SOMENTE JSON sem markdown:
       <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 
       {/* ══ SIDEBAR ══════════════════════════════════════ */}
-      <aside style={{width:"220px",height:"100vh",background:V.sidebar,display:"flex",flexDirection:"column",position:"fixed",top:0,left:0,zIndex:100,flexShrink:0,overflow:"hidden"}}>
+      <aside style={{width:"200px",height:"100vh",background:V.sidebar,display:"flex",flexDirection:"column",position:"fixed",top:0,left:0,zIndex:100,flexShrink:0}}>
 
         {/* Logo — grande, centralizada, sem texto */}
-        <div style={{padding:"28px 20px 24px",borderBottom:`1px solid ${V.sidebarBdr}`,display:"flex",justifyContent:"center",alignItems:"center"}}>
+        <div style={{padding:"16px 20px",borderBottom:`1px solid ${V.sidebarBdr}`,display:"flex",justifyContent:"center",alignItems:"center"}}>
           {logoUrl
-            ?<img src={logoUrl} style={{height:"64px",width:"64px",objectFit:"cover",borderRadius:"16px",display:"block"}}/>
-            :<LogoIcon size={110}/>
+            ?<img src={logoUrl} style={{height:"44px",width:"44px",objectFit:"cover",borderRadius:"10px",display:"block"}}/>
+            :<LogoIcon size={72}/>
           }
         </div>
 
         {/* Toggle */}
-        <div style={{padding:"8px 12px",borderBottom:`1px solid ${V.sidebarBdr}`}}>
+        <div style={{padding:"6px 10px",borderBottom:`1px solid ${V.sidebarBdr}`}}>
           <div style={{display:"flex",background:"rgba(255,255,255,.06)",borderRadius:"8px",padding:"2px"}}>
             {["manual","auto"].map(m=>(
               <button key={m} onClick={()=>setP2modo(m)}
-                style={{flex:1,padding:"7px",fontSize:"11px",fontWeight:600,cursor:"pointer",border:"none",borderRadius:"8px",background:p2modo===m?V.accent:"transparent",color:p2modo===m?"#fff":V.sidebarMut,transition:"all .2s",letterSpacing:".03em",textTransform:"uppercase"}}>
+                style={{flex:1,padding:"5px",fontSize:"10px",fontWeight:600,cursor:"pointer",border:"none",borderRadius:"8px",background:p2modo===m?V.accent:"transparent",color:p2modo===m?"#fff":V.sidebarMut,transition:"all .2s",letterSpacing:".03em",textTransform:"uppercase"}}>
                 {m==="auto"?"Auto IA":"Manual"}
               </button>
             ))}
@@ -777,7 +777,7 @@ Retorne SOMENTE JSON sem markdown:
         </div>
 
         {/* Projeto atual */}
-        {form.nome&&<div style={{padding:"8px 12px",borderBottom:`1px solid ${V.sidebarBdr}`}}>
+        {form.nome&&<div style={{padding:"6px 10px",borderBottom:`1px solid ${V.sidebarBdr}`}}>
           <div style={{display:"flex",alignItems:"center",gap:"8px",padding:"8px 10px",background:"rgba(255,255,255,.05)",borderRadius:"8px",border:`1px solid ${V.sidebarBdr}`}}>
             <div style={{width:"6px",height:"6px",borderRadius:"50%",background:V.ok,flexShrink:0,boxShadow:`0 0 5px ${V.ok}`}}/>
             <div style={{overflow:"hidden",flex:1}}>
@@ -788,15 +788,15 @@ Retorne SOMENTE JSON sem markdown:
         </div>}
 
         {/* Nav — scroll próprio, hierarquia forte */}
-        <nav style={{flex:1,padding:"8px 10px",overflowY:"auto",overflowX:"hidden"}}>
+        <nav style={{flex:1,padding:"4px 8px",overflow:"visible"}}>
           {groups.map(g=>(
-            <div key={g} style={{marginBottom:"4px"}}>
-              <div style={{fontSize:"9px",fontWeight:700,color:V.sidebarMut,letterSpacing:".16em",padding:"10px 10px 4px",textTransform:"uppercase"}}>{g}</div>
+            <div key={g} style={{marginBottom:"2px"}}>
+              <div style={{fontSize:"9px",fontWeight:700,color:V.sidebarMut,letterSpacing:".14em",padding:"8px 8px 2px",textTransform:"uppercase"}}>{g}</div>
               {navItems.filter(n=>n.group===g).map(n=>(
                 <div key={n.id} onClick={()=>setPg(n.id)}
-                  style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"8px 10px",borderRadius:"8px",cursor:"pointer",background:pg===n.id?V.accent:"transparent",marginBottom:"1px",transition:"all .15s",position:"relative"}}>
+                  style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"5px 8px",borderRadius:"6px",cursor:"pointer",background:pg===n.id?V.accent:"transparent",marginBottom:"1px",transition:"all .15s",position:"relative"}}>
                   {pg===n.id&&<div style={{position:"absolute",left:0,top:"50%",transform:"translateY(-50%)",width:"3px",height:"18px",borderRadius:"0 2px 2px 0",background:"rgba(255,255,255,.5)"}}/>}
-                  <span style={{fontSize:"13px",fontWeight:pg===n.id?600:400,color:pg===n.id?"#fff":V.sidebarSub,paddingLeft:pg===n.id?"6px":"0",transition:"all .15s"}}>{n.label}</span>
+                  <span style={{fontSize:"12px",fontWeight:pg===n.id?600:400,color:pg===n.id?"#fff":V.sidebarSub,paddingLeft:pg===n.id?"6px":"0",transition:"all .15s"}}>{n.label}</span>
                   {n.opt&&<span style={{fontSize:"9px",color:V.sidebarMut,background:"rgba(255,255,255,.06)",padding:"1px 5px",borderRadius:"4px"}}>opt</span>}
                 </div>
               ))}
@@ -805,8 +805,8 @@ Retorne SOMENTE JSON sem markdown:
         </nav>
 
         {/* Footer */}
-        <div style={{padding:"12px 12px",borderTop:`1px solid ${V.sidebarBdr}`,flexShrink:0}}>
-          <button onClick={()=>setPg(8)} style={{width:"100%",padding:"9px",borderRadius:"8px",border:"none",background:V.accent,color:"#fff",fontSize:"12px",fontWeight:600,cursor:"pointer",fontFamily:"'Inter',sans-serif",marginBottom:form.cslNome?"10px":"0"}}>
+        <div style={{padding:"8px 10px",borderTop:`1px solid ${V.sidebarBdr}`,flexShrink:0}}>
+          <button onClick={()=>setPg(8)} style={{width:"100%",padding:"7px",borderRadius:"7px",border:"none",background:V.accent,color:"#fff",fontSize:"12px",fontWeight:600,cursor:"pointer",fontFamily:"'Inter',sans-serif",marginBottom:form.cslNome?"10px":"0"}}>
             Gerar PDF
           </button>
           {form.cslNome&&<div style={{display:"flex",alignItems:"center",gap:"8px",padding:"6px 4px"}}>
@@ -844,10 +844,10 @@ Retorne SOMENTE JSON sem markdown:
         </header>
 
         {/* Content */}
-        <div style={{flex:1,padding:"28px 32px 28px 28px",display:"flex",gap:"24px",alignItems:"flex-start"}}>
+        <div style={{flex:1,padding:"20px 24px 20px 20px",display:"flex",gap:"20px",alignItems:"flex-start",minWidth:0}}>
 
           {/* Main col */}
-          <div style={{flex:1,minWidth:0}}>
+          <div style={{flex:1,minWidth:0,maxWidth:"100%"}}>
 
             {/* ══ AUTO IA ══════════════════════════════ */}
             {pg===1&&p2modo==="auto"&&<div>
