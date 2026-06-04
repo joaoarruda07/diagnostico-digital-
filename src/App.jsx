@@ -354,10 +354,28 @@ export default function App() {
   useEffect(()=>{ setForm(f=>({...f,nichoKey})); },[nichoKey]);
 
   // Verifica se seção tem dados para gerar no PDF
+  const temDadosGoogle = !!(form.nota||form.numAvals||form.posicao||form.score);
+  const temConcs = concs.length > 0;
+  const temIG = !!(ig.handle||ig.url||ig.printUrl);
 
   const setNicho = key => { setNichoKey(key); setF("categoria",NICHOS[key].label); };
+  const txAtual = () => textos || textosPadrao({...form,nichoKey}, concs);
+  const setTx = (k,v) => setTextos(t=>({...(t||textosPadrao({...form,nichoKey},concs)),[k]:v}));
 
+  const loadLogo = e => { const f=e.target.files[0]; if(!f)return; const r=new FileReader(); r.onload=ev=>setLogoUrl(ev.target.result); r.readAsDataURL(f); };
 
+  const salvarPreset = () => {
+    if(!presetName.trim()) return;
+    const p = {id:Date.now(),name:presetName.trim(),cor1:form.cor1,cor2:form.cor2,cslNome:form.cslNome,cslEmpresa:form.cslEmpresa,cslWhats:form.cslWhats,cslInsta:form.cslInsta,tom:form.tom,logoUrl};
+    const updated = [...presets,p]; setPresets(updated); savePresets(updated);
+    setPresetName(""); setShowSave(false);
+    setStatus({t:"ok",m:`Preset "${p.name}" salvo!`});
+  };
+  const aplicarPreset = p => {
+    setForm(f=>({...f,cor1:p.cor1,cor2:p.cor2,cslNome:p.cslNome,cslEmpresa:p.cslEmpresa,cslWhats:p.cslWhats,cslInsta:p.cslInsta,tom:p.tom}));
+    if(p.logoUrl) setLogoUrl(p.logoUrl);
+    setStatus({t:"ok",m:`Preset "${p.name}" aplicado!`});
+  };
 
   const extrairFicha = async () => {
     const url=form.fichaUrl.trim();
@@ -647,7 +665,7 @@ Retorne SOMENTE JSON sem markdown:
     if(!win){setStatus({t:"err",m:"Popup bloqueado!"});return;}
     win.document.write(html); win.document.close();
     setTimeout(()=>{win.focus();win.print();},1600);
-    setStatus({t:"ok",m:"Aberto! Ctrl+P  Salvar como PDF."});
+    setStatus({t:"ok",m:"Aberto! Ctrl+P → Salvar como PDF."});
   };
 
   /* helpers UI */
@@ -655,911 +673,395 @@ Retorne SOMENTE JSON sem markdown:
   const Tog=({checked,onChange,label})=>(<div style={{display:"flex",alignItems:"center",gap:"10px",padding:"5px 0"}}><label style={{position:"relative",width:"34px",height:"18px",flexShrink:0}}><input type="checkbox" checked={checked} onChange={e=>onChange(e.target.checked)} style={{opacity:0,width:0,height:0}}/><span style={{position:"absolute",inset:0,background:checked?form.cor1:T.n300,borderRadius:"9px",cursor:"pointer",transition:".2s"}}><span style={{position:"absolute",width:"12px",height:"12px",left:checked?"19px":"3px",top:"3px",background:"#fff",borderRadius:"50%",transition:".2s"}}/></span></label><span style={{fontSize:"13px",color:T.n700}}>{label}</span></div>);
   const Nav=({label,to,back})=>(<button onClick={()=>setPg(to)} style={{...css.btn(back?T.n0:T.dark,back?T.n700:"#fff"),border:back?`.5px solid ${T.n300}`:"none"}}>{label}</button>);
 
-
-  // ─── Computed ──────────────────────────────────────────
-  const tonAtual = TONS[form.tom]||TONS.original;
-  const txAtual = () => textos || textosPadrao({...form,nichoKey}, concs);
-  const setTx = (k,v) => setTextos(t=>({...(t||textosPadrao({...form,nichoKey},concs)),[k]:v}));
-  const loadLogo = e => { const f=e.target.files[0]; if(!f)return; const r=new FileReader(); r.onload=ev=>setLogoUrl(ev.target.result); r.readAsDataURL(f); };
-  const temDadosGoogle = !!(form.nota||form.numAvals||form.posicao||form.score);
-  const temConcs = concs.length > 0;
-  const temIG = !!(ig.handle||ig.url||ig.printUrl);
-  const mapHtml = makeMapSVG({concs,cidade:form.cidade||"Cidade",nome:form.nome||"Negócio",cor1:"#8B5CF6"});
-
   const scoreCrit=[
     {l:"Nota Google",pts:Math.round(Math.min((parseFloat(form.nota)||0)/5*25,25)),max:25},
-    {l:"Avaliações",pts:Math.round(Math.min((parseInt(form.numAvals)||0)/200*20,20)),max:20},
-    {l:"Fotos",pts:Math.round(Math.min((parseInt(form.numFotos)||0)/20*15,15)),max:15},
+    {l:"Nº avaliações",pts:Math.round(Math.min((parseInt(form.numAvals)||0)/200*20,20)),max:20},
+    {l:"Fotos Google",pts:Math.round(Math.min((parseInt(form.numFotos)||0)/20*15,15)),max:15},
     {l:"Site ativo",pts:form.temSite?10:0,max:10},
-    {l:"WhatsApp",pts:form.temWhats?10:0,max:10},
-    {l:"Posts",pts:form.postsAtivos?10:0,max:10},
-    {l:"Frequência",pts:{nenhuma:0,raramente:3,mensal:5,semanal:8,diaria:10}[form.frequencia]||0,max:10},
+    {l:"WhatsApp na ficha",pts:form.temWhats?10:0,max:10},
+    {l:"Posts ativos",pts:form.postsAtivos?10:0,max:10},
+    {l:"Frequência posts",pts:{nenhuma:0,raramente:3,mensal:5,semanal:8,diaria:10}[form.frequencia]||0,max:10},
+  ];
+  const igCrit=[
+    {l:"Bio otimizada",pts:ig.bioOtimizada?15:0,max:15},
+    {l:"Frequência posts",pts:{nenhuma:0,raramente:5,mensal:8,semanal:14,diaria:20}[ig.frequencia]||0,max:20},
+    {l:"Qualidade visual",pts:{ruim:0,media:8,boa:15}[ig.qualVisual]||0,max:15},
+    {l:"Conteúdo autoridade",pts:{nenhum:0,parcial:12,completo:20}[ig.contAutoridade]||0,max:20},
+    {l:"Engajamento",pts:Math.round(Math.min((parseFloat(ig.engRate)||0)/3*25,25)),max:25},
+    {l:"Link na bio",pts:ig.linkBio?5:0,max:5},
   ];
 
-  const salvarPreset = () => {
-    if(!presetName.trim())return;
-    const p={id:Date.now(),name:presetName.trim(),cor1:form.cor1,cor2:form.cor2,cslNome:form.cslNome,cslEmpresa:form.cslEmpresa,cslWhats:form.cslWhats,cslInsta:form.cslInsta,tom:form.tom,logoUrl};
-    const u=[...presets,p];setPresets(u);savePresets(u);setPresetName("");setShowSave(false);
-    setStatus({t:"ok",m:`Preset "${p.name}" salvo!`});
-  };
-  const aplicarPreset = p => {
-    setForm(f=>({...f,cor1:p.cor1,cor2:p.cor2,cslNome:p.cslNome,cslEmpresa:p.cslEmpresa,cslWhats:p.cslWhats,cslInsta:p.cslInsta,tom:p.tom}));
-    if(p.logoUrl)setLogoUrl(p.logoUrl);
-    setStatus({t:"ok",m:`Preset "${p.name}" aplicado!`});
-  };
+  const mapHtml=makeMapSVG({concs,cidade:form.cidade||"Cidade",nome:form.nome||"Negócio",cor1:form.cor1});
+  const tx=txAtual();
+  const tonAtual=TONS[form.tom]||TONS.original;
 
-  // ─── DESIGN SYSTEM ─────────────────────────────────────
-  const DS = {
-    // Layers
-    bg:     '#0A0A0F',
-    layer1: '#0A0A0F',
-    layer2: '#111827',
-    layer3: '#1A2234',
-    layer4: '#1F2937',
-    // Accent
-    accent: '#8B5CF6',
-    accentHover: '#A855F7',
-    accentGlow: 'rgba(139,92,246,.15)',
-    // Text
-    textPrimary: '#FFFFFF',
-    textSecondary: '#94A3B8',
-    textMuted: '#4B5563',
-    // Borders
-    border: 'rgba(255,255,255,.06)',
-    borderHover: 'rgba(255,255,255,.12)',
-    borderAccent: 'rgba(139,92,246,.4)',
-    // Status
-    success: '#10B981',
-    warning: '#F59E0B',
-    danger:  '#EF4444',
-    // Shadows
-    shadowSm: '0 1px 3px rgba(0,0,0,.4)',
-    shadowMd: '0 4px 16px rgba(0,0,0,.5)',
-    shadowLg: '0 8px 32px rgba(0,0,0,.6)',
-    shadowAccent: '0 0 20px rgba(139,92,246,.2)',
-    // Spacing
-    sp: [0,4,8,12,16,24,32,48,64],
-    // Radius
-    rSm: '8px', rMd: '12px', rLg: '16px', rXl: '24px',
-  };
+  const TxField=({label,campo,multi=true})=>{const val=tx[campo]||"";return(<div style={{marginBottom:"14px"}}><label style={css.lbl}>{label}</label>{multi?<textarea style={{...css.inp,minHeight:"72px",resize:"vertical"}} value={val} onChange={e=>setTx(campo,e.target.value)}/>:<input style={css.inp} value={val} onChange={e=>setTx(campo,e.target.value)}/>}{val.includes("<strong>")&&<div style={{marginTop:"5px",padding:"7px 11px",background:T.n50,borderRadius:"6px",border:`.5px solid ${T.n200}`,fontSize:"12px",color:T.n600,lineHeight:1.5}} dangerouslySetInnerHTML={{__html:val}}/>}</div>);};
 
-  // ─── ATOMS ─────────────────────────────────────────────
-  const Tag = ({children, color=DS.accent}) => (
-    <span style={{display:'inline-block',padding:'2px 8px',borderRadius:'4px',fontSize:'10px',fontWeight:600,letterSpacing:'.06em',textTransform:'uppercase',background:color+'20',color,border:`1px solid ${color}30`}}>{children}</span>
-  );
+  return(
+    <div style={{display:"grid",gridTemplateColumns:"210px 1fr",minHeight:"700px"}}>
 
-  const Divider = () => <div style={{height:'1px',background:DS.border,margin:'20px 0'}}/>;
-
-  const StatusDot = ({active, color=DS.success}) => (
-    <span style={{display:'inline-block',width:'6px',height:'6px',borderRadius:'50%',background:active?color:DS.textMuted,boxShadow:active?`0 0 6px ${color}`:''}}/>
-  );
-
-  const Kbd = ({children}) => (
-    <kbd style={{display:'inline-block',padding:'1px 6px',borderRadius:'4px',fontSize:'10px',fontWeight:600,background:DS.layer3,color:DS.textSecondary,border:`1px solid ${DS.border}`,fontFamily:'monospace'}}>{children}</kbd>
-  );
-
-  const Card = ({children, style={}, onClick, hover=false}) => (
-    <div onClick={onClick} style={{background:DS.layer2,border:`1px solid ${DS.border}`,borderRadius:DS.rLg,padding:'24px',marginBottom:'12px',boxShadow:DS.shadowSm,transition:'all .2s',cursor:onClick?'pointer':'default',...style}}>
-      {children}
-    </div>
-  );
-
-  const GlassCard = ({children, style={}}) => (
-    <div style={{background:'rgba(17,24,39,.8)',backdropFilter:'blur(12px)',border:`1px solid ${DS.border}`,borderRadius:DS.rXl,padding:'28px',marginBottom:'12px',boxShadow:DS.shadowMd,...style}}>
-      {children}
-    </div>
-  );
-
-  const SectionLabel = ({children}) => (
-    <div style={{fontSize:'10px',fontWeight:700,letterSpacing:'.12em',textTransform:'uppercase',color:DS.textMuted,marginBottom:'12px',fontFamily:"'Sora',sans-serif"}}>{children}</div>
-  );
-
-  const PageTitle = ({title, subtitle}) => (
-    <div style={{marginBottom:'28px'}}>
-      <h1 style={{fontSize:'22px',fontWeight:700,color:DS.textPrimary,fontFamily:"'Sora',sans-serif",letterSpacing:'-.4px',margin:0,marginBottom:'6px'}}>{title}</h1>
-      {subtitle&&<p style={{fontSize:'13px',color:DS.textSecondary,margin:0,lineHeight:1.6}}>{subtitle}</p>}
-    </div>
-  );
-
-  const Input = ({value,onChange,placeholder,type='text',style={},prefix}) => (
-    <div style={{position:'relative',display:'flex',alignItems:'center'}}>
-      {prefix&&<div style={{position:'absolute',left:'14px',color:DS.textMuted,fontSize:'12px',fontWeight:500,pointerEvents:'none',zIndex:1}}>{prefix}</div>}
-      <input type={type} value={value} onChange={onChange} placeholder={placeholder}
-        style={{width:'100%',padding:`10px ${prefix?'14px 10px 38px':'14px'}`,background:DS.layer3,border:`1px solid ${DS.border}`,borderRadius:DS.rMd,fontSize:'13px',color:DS.textPrimary,outline:'none',boxSizing:'border-box',fontFamily:"'Inter',sans-serif",transition:'all .2s',caretColor:DS.accent,...style}}
-        onFocus={e=>{e.target.style.border=`1px solid ${DS.borderAccent}`;e.target.style.boxShadow=`0 0 0 3px ${DS.accentGlow}`;}}
-        onBlur={e=>{e.target.style.border=`1px solid ${DS.border}`;e.target.style.boxShadow='none';}}
-      />
-    </div>
-  );
-
-  const Textarea = ({value,onChange,placeholder,rows=3}) => (
-    <textarea value={value} onChange={onChange} placeholder={placeholder} rows={rows}
-      style={{width:'100%',padding:'10px 14px',background:DS.layer3,border:`1px solid ${DS.border}`,borderRadius:DS.rMd,fontSize:'13px',color:DS.textPrimary,outline:'none',boxSizing:'border-box',fontFamily:"'Inter',sans-serif",resize:'vertical',lineHeight:1.6,transition:'all .2s',caretColor:DS.accent}}
-      onFocus={e=>{e.target.style.border=`1px solid ${DS.borderAccent}`;e.target.style.boxShadow=`0 0 0 3px ${DS.accentGlow}`;}}
-      onBlur={e=>{e.target.style.border=`1px solid ${DS.border}`;e.target.style.boxShadow='none';}}
-    />
-  );
-
-  const BtnPrimary = ({onClick,children,disabled,style={}}) => (
-    <button onClick={onClick} disabled={disabled}
-      style={{display:'inline-flex',alignItems:'center',justifyContent:'center',gap:'8px',padding:'10px 20px',borderRadius:DS.rMd,border:'none',background:disabled?DS.layer4:DS.accent,color:'#fff',fontSize:'13px',fontWeight:600,cursor:disabled?'not-allowed':'pointer',opacity:disabled?.5:1,fontFamily:"'Inter',sans-serif",transition:'all .2s',boxShadow:disabled?'none':DS.shadowAccent,letterSpacing:'.01em',...style}}
-      onMouseEnter={e=>{if(!disabled){e.target.style.background=DS.accentHover;e.target.style.transform='translateY(-1px)';}}}
-      onMouseLeave={e=>{if(!disabled){e.target.style.background=DS.accent;e.target.style.transform='translateY(0)';}}}
-    >
-      {children}
-    </button>
-  );
-
-  const BtnSecondary = ({onClick,children,style={}}) => (
-    <button onClick={onClick}
-      style={{display:'inline-flex',alignItems:'center',justifyContent:'center',gap:'8px',padding:'10px 18px',borderRadius:DS.rMd,border:`1px solid ${DS.border}`,background:'transparent',color:DS.textSecondary,fontSize:'13px',fontWeight:500,cursor:'pointer',fontFamily:"'Inter',sans-serif",transition:'all .2s',letterSpacing:'.01em',...style}}
-      onMouseEnter={e=>{e.currentTarget.style.borderColor=DS.borderHover;e.currentTarget.style.color=DS.textPrimary;e.currentTarget.style.background=DS.layer3;}}
-      onMouseLeave={e=>{e.currentTarget.style.borderColor=DS.border;e.currentTarget.style.color=DS.textSecondary;e.currentTarget.style.background='transparent';}}
-    >
-      {children}
-    </button>
-  );
-
-  const BtnGhost = ({onClick,children}) => (
-    <button onClick={onClick} style={{background:'none',border:'none',color:DS.textSecondary,fontSize:'12px',cursor:'pointer',padding:'4px 8px',borderRadius:'6px',fontFamily:"'Inter',sans-serif",transition:'all .15s'}}
-      onMouseEnter={e=>e.currentTarget.style.color=DS.textPrimary}
-      onMouseLeave={e=>e.currentTarget.style.color=DS.textSecondary}
-    >{children}</button>
-  );
-
-  const FieldLabel = ({children,hint}) => (
-    <div style={{marginBottom:'6px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-      <span style={{fontSize:'12px',fontWeight:500,color:DS.textSecondary,letterSpacing:'.01em'}}>{children}</span>
-      {hint&&<span style={{fontSize:'11px',color:DS.textMuted}}>{hint}</span>}
-    </div>
-  );
-
-  const StatusBar = () => {
-    if(!status)return null;
-    const s = {
-      err:{bg:'rgba(239,68,68,.1)',col:'#FCA5A5',border:'rgba(239,68,68,.2)'},
-      ok:{bg:'rgba(16,185,129,.1)',col:'#6EE7B7',border:'rgba(16,185,129,.2)'},
-      load:{bg:'rgba(139,92,246,.1)',col:'#C4B5FD',border:'rgba(139,92,246,.2)'},
-      warn:{bg:'rgba(245,158,11,.1)',col:'#FCD34D',border:'rgba(245,158,11,.2)'},
-    }[status.t]||{};
-    return(
-      <div style={{padding:'10px 14px',borderRadius:DS.rMd,background:s.bg,border:`1px solid ${s.border}`,color:s.col,fontSize:'12px',display:'flex',alignItems:'center',gap:'10px',marginTop:'12px',fontFamily:"'Inter',sans-serif"}}>
-        {status.m}
-      </div>
-    );
-  };
-
-  // ─── CONNECTION CARD ────────────────────────────────────
-  const ConnectionCard = ({logo, title, subtitle, connected, children, onRefresh, loading}) => (
-    <div style={{background:DS.layer2,border:`1px solid ${connected?DS.borderAccent:DS.border}`,borderRadius:DS.rLg,padding:'20px',marginBottom:'12px',boxShadow:connected?DS.shadowAccent:DS.shadowSm,transition:'all .3s'}}>
-      <div style={{display:'flex',alignItems:'flex-start',justifyContent:'space-between',marginBottom:children?'16px':'0'}}>
-        <div style={{display:'flex',alignItems:'center',gap:'12px'}}>
-          <div style={{width:'40px',height:'40px',borderRadius:'10px',background:DS.layer3,border:`1px solid ${DS.border}`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:'18px',flexShrink:0}}>{logo}</div>
-          <div>
-            <div style={{fontSize:'14px',fontWeight:600,color:DS.textPrimary,fontFamily:"'Sora',sans-serif"}}>{title}</div>
-            <div style={{fontSize:'12px',color:DS.textSecondary,marginTop:'2px'}}>{subtitle}</div>
+      {/* SIDEBAR / TOP NAV */}
+      <div style={{background:"#0D0B12",borderRadius:"14px 0 0 14px",display:"flex",flexDirection:"column"}}><div style={{padding:"18px 16px 14px",borderBottom:"1px solid #1a1628"}}><div style={{marginBottom:"12px",padding:"12px 8px 8px"}}>
+            {logoUrl
+              ?<img src={logoUrl} style={{height:"80px",width:"80px",objectFit:"cover",display:"block",margin:"0 auto",borderRadius:"16px"}}/>
+              :<LogoIcon size={80}/>
+            }
           </div>
-        </div>
-        <div style={{display:'flex',alignItems:'center',gap:'8px'}}>
-          {connected&&<Tag color={DS.success}>Conectado</Tag>}
-          {!connected&&<Tag color={DS.textMuted}>Aguardando</Tag>}
-          {onRefresh&&<BtnGhost onClick={onRefresh}>{loading?'..':'Atualizar'}</BtnGhost>}
-        </div>
-      </div>
-      {children}
-    </div>
-  );
+          {form.cslEmpresa&&<div style={{fontSize:"11px",fontWeight:600,color:"#888",marginBottom:"4px"}}>{form.cslEmpresa}</div>}
+          <div style={{display:"flex",flexDirection:"column",gap:"8px"}}><div style={{padding:"4px 10px",background:form.cor1+"22",borderRadius:"6px",fontSize:"10px",color:form.cor1,fontWeight:700,letterSpacing:".06em",display:"inline-block"}}>{tonAtual.label}</div><div style={{display:"flex",background:"#111",borderRadius:"8px",overflow:"hidden",border:`1px solid ${form.cor1}44`,width:"100%"}}><button onClick={()=>setP2modo("manual")} style={{flex:1,padding:"7px 6px",fontSize:"10px",fontWeight:700,cursor:"pointer",border:"none",background:p2modo==="manual"?form.cor1:"transparent",color:p2modo==="manual"?"#fff":"#555",letterSpacing:".05em",transition:"all .15s"}}>MANUAL</button><div style={{width:"1px",background:form.cor1+"33"}}/><button onClick={()=>setP2modo("auto")} style={{flex:1,padding:"7px 6px",fontSize:"10px",fontWeight:700,cursor:"pointer",border:"none",background:p2modo==="auto"?form.cor1:"transparent",color:p2modo==="auto"?"#fff":"#555",letterSpacing:".05em",transition:"all .15s",display:"flex",alignItems:"center",justifyContent:"center",gap:"4px"}}><span style={{width:"6px",height:"6px",borderRadius:"50%",background:p2modo==="auto"?"#fff":form.cor1,display:"inline-block"}}/>AUTO IA
+              </button></div></div></div><nav style={{flex:1,padding:"8px 0"}}>
+          {(p2modo==="auto"
+              ?[{n:1,g:"Auto IA",l:"Diagnóstico IA"},{n:8,g:"Saída",l:"Editar & PDF"}]
+              :[{n:1,g:"Negócio",l:"Segmento & Dados"},{n:2,g:"Negócio",l:"Métricas Google"},{n:3,g:"Negócio",l:"Palavras-chave"},{n:4,g:"Análise",l:"Concorrentes"},{n:5,g:"Análise",l:"Instagram"},{n:6,g:"Design",l:"Cores & Logo"},{n:7,g:"Design",l:"Consultor"},{n:8,g:"Saída",l:"Editar & PDF"}]
+            ).map(({n,l,g},i,arr)=>{
+            const showG=i===0||arr[i-1].g!==g;
+            const opcional = (n===2&&!temDadosGoogle&&form.nota==="")||(n===4&&!temConcs)||(n===5&&!temIG);
+            return(<div key={n}>
+              {showG&&<div style={{fontSize:"9px",color:"#2e2a3e",padding:"8px 16px 2px",textTransform:"uppercase",letterSpacing:".1em",fontWeight:700}}>{g}</div>}
+              <div onClick={()=>setPg(n)} style={{display:"flex",alignItems:"center",gap:"9px",padding:"9px 16px",cursor:"pointer",color:pg===n?"#fff":"#555",background:pg===n?"#1C1730":"transparent",borderLeft:`3px solid ${pg===n?form.cor1:"transparent"}`,fontSize:"12px",fontWeight:pg===n?600:400,transition:"all .12s"}}><span style={{fontSize:"11px",width:"18px",textAlign:"center",fontWeight:700,color:pg===n?form.cor1:"#333"}}>{n}</span><span style={{flex:1}}>{l}</span>
+                {opcional&&<span style={{fontSize:"9px",color:"#333",fontStyle:"italic"}}>opt.</span>}
+              </div></div>);
+          })}
+        </nav><div style={{padding:"14px 16px",borderTop:"1px solid #1a1628"}}><button onClick={()=>setPg(8)} style={{...css.btn(form.cor1,"#fff"),width:"100%",fontSize:"13px"}}>Editar & PDF</button></div></div>
 
-  // ─── SIDEBAR ───────────────────────────────────────────
-  const navManual = [
-    {id:1,label:'Dados do Negócio',group:'Coleta'},
-    {id:2,label:'Presença Google',group:'Coleta'},
-    {id:3,label:'Palavras-chave',group:'Coleta'},
-    {id:4,label:'Concorrentes',group:'Análise',opt:!temConcs},
-    {id:5,label:'Instagram',group:'Análise',opt:!temIG},
-    {id:6,label:'Identidade Visual',group:'Design'},
-    {id:7,label:'Consultor',group:'Design'},
-    {id:8,label:'Relatório',group:'Saída'},
-  ];
-  const navAuto = [
-    {id:1,label:'Conectar fontes',group:'Diagnóstico'},
-    {id:8,label:'Relatório',group:'Saída'},
-  ];
-  const navItems = p2modo==='auto'?navAuto:navManual;
+      {/* MAIN */}
+      <div style={{padding:"22px",background:T.n100,borderRadius:"0 14px 14px 0",overflowY:"auto",maxHeight:"760px"}}>
 
-  const progressSteps = [
-    {label:'Coleta',done:pg>3,active:pg<=3},
-    {label:'Análise',done:pg>5,active:pg>=4&&pg<=5},
-    {label:'Oportunidades',done:false,active:pg===3},
-    {label:'Plano de ação',done:false,active:pg===8},
-    {label:'PDF',done:false,active:false},
-  ];
+        {/* ═══ AUTO IA — Página única ═══ */}
+        {pg===1&&p2modo==="auto"&&<div><div style={{...css.card(),background:"#0D0B12",border:`.5px solid ${form.cor1}22`,marginBottom:"16px",padding:"28px 36px"}}><div style={{display:"flex",alignItems:"center",gap:"12px",marginBottom:"8px"}}><div style={{width:"36px",height:"36px",borderRadius:"10px",background:form.cor1+"22",display:"flex",alignItems:"center",justifyContent:"center"}}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={form.cor1} strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg></div><div><div style={{fontSize:"15px",fontWeight:700,color:"#fff"}}>Diagnóstico Automático</div><div style={{fontSize:"12px",color:"#555"}}>Preencha os links e a IA faz o resto</div></div></div></div>
 
-  const Sidebar = () => (
-    <div style={{width:'240px',minHeight:'100vh',background:DS.layer1,borderRight:`1px solid ${DS.border}`,display:'flex',flexDirection:'column',position:'fixed',top:0,left:0,zIndex:100}}>
-      {/* Logo */}
-      <div style={{padding:'24px 20px',borderBottom:`1px solid ${DS.border}`}}>
-        <div style={{display:'flex',alignItems:'center',gap:'12px'}}>
-          {logoUrl
-            ?<img src={logoUrl} style={{height:'36px',width:'36px',objectFit:'cover',borderRadius:'10px',flexShrink:0}}/>
-            :<div style={{width:'36px',height:'36px',flexShrink:0}}><LogoIcon size={36}/></div>
-          }
-          <div>
-            <div style={{fontSize:'14px',fontWeight:700,color:DS.textPrimary,fontFamily:"'Sora',sans-serif",letterSpacing:'-.2px'}}>{form.cslEmpresa||'SCentral'}</div>
-            <div style={{fontSize:'10px',color:DS.textMuted,marginTop:'1px',letterSpacing:'.04em'}}>Diagnóstico Digital</div>
-          </div>
-        </div>
-      </div>
+          {/* LINKS */}
+          <div style={css.card()}><div style={css.sec}>Links do negócio</div><div style={{marginBottom:"12px"}}><label style={css.lbl}>Link da ficha Google Maps *</label><div style={{display:"flex",gap:"8px"}}><input style={css.inp} value={form.fichaUrl} onChange={e=>setF("fichaUrl",e.target.value)} placeholder="https://maps.google.com/place/..."/><button onClick={extrairFicha} disabled={fichaLoad} style={{...css.btn(form.cor1,"#fff"),whiteSpace:"nowrap",opacity:fichaLoad?.7:1,fontSize:"12px",padding:"9px 16px"}}>
+                  {fichaLoad?"Buscando...":"Extrair"}
+                </button></div>
+              {form.nome&&<div style={{marginTop:"8px",padding:"8px 12px",background:"#DCFCE7",borderRadius:"8px",fontSize:"12px",color:"#166534",fontWeight:600}}> {form.nome} · {form.nota} · {form.numAvals} avaliações</div>}
+            </div><div><label style={css.lbl}>Perfil do Instagram <span style={{fontWeight:400,color:T.n400,textTransform:"none",letterSpacing:0}}>(opcional)</span></label><div style={{display:"flex",gap:"8px"}}><input style={css.inp} value={ig.url} onChange={e=>setIG("url",e.target.value)} placeholder="https://instagram.com/perfil ou @handle"/><button onClick={extrairIG} disabled={igLoad} style={{...css.btn(T.n700,"#fff"),whiteSpace:"nowrap",opacity:igLoad?.7:1,fontSize:"12px",padding:"9px 16px",border:`.5px solid ${T.n300}`}}>
+                  {igLoad?"Analisando...":"Analisar"}
+                </button></div>
+              {ig.handle&&<div style={{marginTop:"8px",padding:"8px 12px",background:"#DCFCE7",borderRadius:"8px",fontSize:"12px",color:"#166534",fontWeight:600}}> @{ig.handle} · {ig.seguidores} seguidores</div>}
+            </div></div>
 
-      {/* Toggle */}
-      <div style={{padding:'12px 16px',borderBottom:`1px solid ${DS.border}`}}>
-        <div style={{display:'flex',background:DS.layer3,borderRadius:'8px',padding:'3px',gap:'2px'}}>
-          {['manual','auto'].map(m=>(
-            <button key={m} onClick={()=>setP2modo(m)}
-              style={{flex:1,padding:'6px 0',fontSize:'11px',fontWeight:600,cursor:'pointer',border:'none',borderRadius:'6px',background:p2modo===m?DS.accent:'transparent',color:p2modo===m?'#fff':DS.textMuted,transition:'all .15s',letterSpacing:'.04em',textTransform:'uppercase'}}>
-              {m==='auto'?'Auto IA':'Manual'}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Projeto */}
-      {form.nome&&<div style={{padding:'12px 16px',borderBottom:`1px solid ${DS.border}`}}>
-        <SectionLabel>Projeto atual</SectionLabel>
-        <div style={{background:DS.layer3,borderRadius:DS.rMd,padding:'12px',border:`1px solid ${DS.border}`}}>
-          <div style={{display:'flex',alignItems:'center',gap:'8px',marginBottom:'6px'}}>
-            <StatusDot active/>
-            <span style={{fontSize:'13px',fontWeight:600,color:DS.textPrimary,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{form.nome}</span>
-          </div>
-          {form.categoria&&<div style={{fontSize:'11px',color:DS.textMuted}}>{form.categoria}{form.especializacao?' · '+form.especializacao:''}</div>}
-          {form.cidade&&<div style={{fontSize:'11px',color:DS.textMuted,marginTop:'2px'}}>{form.cidade}{form.estado?', '+form.estado:''}</div>}
-        </div>
-      </div>}
-
-      {/* Progress */}
-      <div style={{padding:'12px 16px',borderBottom:`1px solid ${DS.border}`}}>
-        <SectionLabel>Progresso</SectionLabel>
-        {progressSteps.map((s,i)=>(
-          <div key={i} style={{display:'flex',alignItems:'center',gap:'10px',marginBottom:'8px'}}>
-            <div style={{width:'18px',height:'18px',borderRadius:'50%',border:`1.5px solid ${s.done?DS.success:s.active?DS.accent:DS.border}`,background:s.done?DS.success:s.active?DS.accentGlow:'transparent',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,fontSize:'9px',color:s.done?'#fff':s.active?DS.accent:'transparent',fontWeight:700,transition:'all .3s'}}>
-              {s.done?'✓':''}
-            </div>
-            <span style={{fontSize:'12px',color:s.done?DS.success:s.active?DS.textPrimary:DS.textMuted,fontWeight:s.active?600:400,transition:'all .3s'}}>{s.label}</span>
-          </div>
-        ))}
-      </div>
-
-      {/* Conexões rápidas */}
-      <div style={{padding:'12px 16px',borderBottom:`1px solid ${DS.border}`}}>
-        <SectionLabel>Fontes conectadas</SectionLabel>
-        {[
-          {label:'Google Business',active:temDadosGoogle},
-          {label:'Instagram',active:temIG},
-          {label:'Site',active:!!form.site},
-        ].map(({label,active})=>(
-          <div key={label} style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'8px'}}>
-            <span style={{fontSize:'12px',color:active?DS.textSecondary:DS.textMuted}}>{label}</span>
-            <StatusDot active={active} color={DS.success}/>
-          </div>
-        ))}
-      </div>
-
-      {/* Nav */}
-      <nav style={{flex:1,padding:'12px 8px',overflowY:'auto'}}>
-        {[...new Set(navItems.map(n=>n.group))].map(g=>(
-          <div key={g} style={{marginBottom:'16px'}}>
-            <SectionLabel>{g}</SectionLabel>
-            {navItems.filter(n=>n.group===g).map(n=>(
-              <div key={n.id} onClick={()=>setPg(n.id)}
-                style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'8px 12px',borderRadius:DS.rMd,cursor:'pointer',background:pg===n.id?DS.accentGlow:'transparent',marginBottom:'2px',border:`1px solid ${pg===n.id?DS.borderAccent:'transparent'}`,transition:'all .15s'}}>
-                <span style={{fontSize:'13px',fontWeight:pg===n.id?600:400,color:pg===n.id?DS.textPrimary:DS.textSecondary}}>{n.label}</span>
-                {n.opt&&<Tag color={DS.textMuted}>opt</Tag>}
+          {/* TOM */}
+          <div style={css.card()}><div style={css.sec}>Tom de comunicação</div>
+            {Object.entries(TONS).map(([k,v])=>(
+              <div key={k} onClick={()=>setF("tom",k)} style={{display:"flex",alignItems:"center",gap:"12px",padding:"11px 14px",borderRadius:"10px",border:form.tom===k?`1.5px solid ${form.cor1}`:`.5px solid ${T.n200}`,background:form.tom===k?form.cor1+"0d":T.n0,cursor:"pointer",marginBottom:"7px",transition:"all .12s"}}><div style={{flex:1}}><div style={{fontSize:"13px",fontWeight:700,color:form.tom===k?form.cor1:T.n900}}>{v.label}</div><div style={{fontSize:"11px",color:T.n400,marginTop:"2px"}}>{v.desc}</div></div>
+                {form.tom===k&&<div style={{width:"8px",height:"8px",borderRadius:"50%",background:form.cor1,flexShrink:0}}/>}
               </div>
             ))}
           </div>
-        ))}
-      </nav>
 
-      {/* Footer */}
-      <div style={{padding:'12px 16px',borderTop:`1px solid ${DS.border}`}}>
-        <BtnPrimary onClick={()=>setPg(8)} style={{width:'100%',justifyContent:'center',fontSize:'12px',padding:'9px'}}>
-          Gerar Relatório
-        </BtnPrimary>
-        {form.cslNome&&<div style={{display:'flex',alignItems:'center',gap:'8px',marginTop:'10px',padding:'8px',borderRadius:DS.rMd}}>
-          <div style={{width:'26px',height:'26px',borderRadius:'50%',background:DS.accentGlow,border:`1px solid ${DS.borderAccent}`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:'11px',fontWeight:700,color:DS.accent,flexShrink:0}}>{form.cslNome[0]}</div>
-          <div><div style={{fontSize:'12px',color:DS.textPrimary,fontWeight:500}}>{form.cslNome}</div><div style={{fontSize:'10px',color:DS.textMuted}}>Admin</div></div>
-        </div>}
-      </div>
-    </div>
-  );
-
-  // ─── HEADER ────────────────────────────────────────────
-  const Header = () => {
-    const cur = navItems.find(n=>n.id===pg);
-    return(
-      <div style={{position:'fixed',top:0,left:'240px',right:0,height:'56px',background:'rgba(10,10,15,.9)',backdropFilter:'blur(12px)',borderBottom:`1px solid ${DS.border}`,display:'flex',alignItems:'center',justifyContent:'space-between',padding:'0 28px',zIndex:99}}>
-        <div style={{display:'flex',alignItems:'center',gap:'16px'}}>
-          <div>
-            <div style={{fontSize:'14px',fontWeight:600,color:DS.textPrimary,fontFamily:"'Sora',sans-serif",letterSpacing:'-.1px'}}>{cur?.label||'Diagnóstico Digital'}</div>
-            {form.nome&&<div style={{fontSize:'11px',color:DS.textMuted,marginTop:'1px'}}>{form.categoria||''}{form.cidade?' · '+form.cidade:''}</div>}
-          </div>
-        </div>
-        <div style={{display:'flex',alignItems:'center',gap:'12px'}}>
-          {p2modo==='auto'&&[{l:'Links',i:1},{l:'Análise',i:null},{l:'Relatório',i:8}].map((s,idx)=>(
-            <div key={idx} style={{display:'flex',alignItems:'center',gap:'8px'}}>
-              <div style={{display:'flex',alignItems:'center',gap:'6px'}}>
-                <div style={{width:'20px',height:'20px',borderRadius:'50%',background:pg===s.i?DS.accent:DS.layer3,border:`1px solid ${pg===s.i?DS.borderAccent:DS.border}`,color:pg===s.i?'#fff':DS.textMuted,fontSize:'9px',fontWeight:700,display:'flex',alignItems:'center',justifyContent:'center'}}>{idx+1}</div>
-                <span style={{fontSize:'11px',color:pg===s.i?DS.textPrimary:DS.textMuted,fontWeight:pg===s.i?600:400}}>{s.l}</span>
-              </div>
-              {idx<2&&<div style={{width:'20px',height:'1px',background:DS.border}}/>}
-            </div>
-          ))}
-          {form.score>0&&<div style={{padding:'4px 10px',borderRadius:'6px',background:DS.accentGlow,border:`1px solid ${DS.borderAccent}`,fontSize:'11px',fontWeight:700,color:DS.accent}}>Score: {form.score}</div>}
-        </div>
-      </div>
-    );
-  };
-
-  // ─── MAIN UI ───────────────────────────────────────────
-  return(
-    <div style={{display:'flex',minHeight:'100vh',background:DS.bg,fontFamily:"'Inter',sans-serif",color:DS.textPrimary}}>
-      <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
-      <Sidebar/>
-      <div style={{marginLeft:'240px',flex:1,display:'flex',flexDirection:'column',minHeight:'100vh'}}>
-        <Header/>
-        <main style={{marginTop:'56px',flex:1,padding:'32px',maxWidth:'900px'}}>
-
-          {/* ══ AUTO IA ══ */}
-          {pg===1&&p2modo==='auto'&&<div>
-            <PageTitle title="Conectar fontes de dados" subtitle="Forneça os links abaixo. Nossa IA extrai e analisa todos os dados automaticamente."/>
-
-            <ConnectionCard logo="G" title="Google Business Profile" subtitle="Ficha no Google Maps" connected={!!form.nome} onRefresh={extrairFicha} loading={fichaLoad}>
-              <div style={{display:'flex',gap:'8px',marginBottom:form.nome?'12px':'0'}}>
-                <Input value={form.fichaUrl} onChange={e=>setF('fichaUrl',e.target.value)} placeholder="https://maps.google.com/place/..." prefix=""/>
-                <BtnPrimary onClick={extrairFicha} disabled={fichaLoad} style={{whiteSpace:'nowrap',flexShrink:0}}>
-                  {fichaLoad?'Buscando...':'Conectar'}
-                </BtnPrimary>
-              </div>
-              {form.nome&&<div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:'8px'}}>
-                {[
-                  {l:'Negócio',v:form.nome},
-                  {l:'Nota',v:form.nota?form.nota+'★':'—'},
-                  {l:'Avaliações',v:form.numAvals||'—'},
-                ].map(({l,v})=>(
-                  <div key={l} style={{background:DS.layer3,borderRadius:DS.rMd,padding:'10px 12px',border:`1px solid ${DS.border}`}}>
-                    <div style={{fontSize:'10px',color:DS.textMuted,marginBottom:'3px',letterSpacing:'.04em',textTransform:'uppercase'}}>{l}</div>
-                    <div style={{fontSize:'13px',fontWeight:600,color:DS.textPrimary,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{v}</div>
-                  </div>
+          {/* CORES & LOGO */}
+          <div style={css.card()}><div style={css.sec}>Identidade visual</div><div style={{display:"flex",gap:"16px",alignItems:"center",marginBottom:"14px",flexWrap:"wrap"}}><div style={{display:"flex",gap:"7px",flexWrap:"wrap"}}>
+                {[["#C9A84C","#0D0D0B"],["#0F4FD1","#0D0D0B"],["#0D9488","#0D0D0B"],["#7C3AED","#0D0D0B"],["#DC2626","#0D0D0B"],["#0891B2","#0D0D0B"]].map(([c1,c2],i)=>(
+                  <div key={i} onClick={()=>setForm(f=>({...f,cor1:c1,cor2:c2}))} style={{width:"26px",height:"26px",borderRadius:"50%",background:c1,cursor:"pointer",border:form.cor1===c1?`3px solid #0a0a0a`:`2px solid transparent`,transform:form.cor1===c1?"scale(1.2)":"scale(1)",transition:".12s"}}/>
                 ))}
-              </div>}
-              <StatusBar/>
-            </ConnectionCard>
-
-            <ConnectionCard logo="IG" title="Instagram" subtitle="Análise de autoridade digital" connected={!!ig.handle} onRefresh={extrairIG} loading={igLoad}>
-              <div style={{display:'flex',gap:'8px',marginBottom:ig.handle?'12px':'0'}}>
-                <Input value={ig.url} onChange={e=>setIG('url',e.target.value)} placeholder="https://instagram.com/perfil/"/>
-                <BtnSecondary onClick={extrairIG} style={{whiteSpace:'nowrap',flexShrink:0,opacity:igLoad?.5:1}}>
-                  {igLoad?'Analisando...':'Analisar'}
-                </BtnSecondary>
-              </div>
-              {ig.handle&&<div style={{display:'flex',alignItems:'center',gap:'12px',padding:'10px 12px',background:DS.layer3,borderRadius:DS.rMd,border:`1px solid ${DS.border}`}}>
-                <div style={{width:'36px',height:'36px',borderRadius:'50%',background:DS.accentGlow,border:`1px solid ${DS.borderAccent}`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:'14px',fontWeight:700,color:DS.accent,flexShrink:0}}>@</div>
-                <div>
-                  <div style={{fontSize:'13px',fontWeight:600,color:DS.textPrimary}}>@{ig.handle}</div>
-                  {ig.seguidores&&<div style={{fontSize:'11px',color:DS.textMuted,marginTop:'2px'}}>{ig.seguidores} seguidores</div>}
-                </div>
-                {ig.score&&<div style={{marginLeft:'auto',padding:'4px 10px',background:DS.accentGlow,borderRadius:'6px',border:`1px solid ${DS.borderAccent}`,fontSize:'12px',fontWeight:700,color:DS.accent}}>{ig.score}/100</div>}
-              </div>}
-              <StatusBar/>
-            </ConnectionCard>
-
-            {/* Tom de comunicação */}
-            <Card>
-              <SectionLabel>Tom de comunicação</SectionLabel>
-              <div style={{display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:'10px'}}>
-                {Object.entries(TONS).map(([k,v])=>(
-                  <div key={k} onClick={()=>setF('tom',k)}
-                    style={{padding:'16px',borderRadius:DS.rLg,border:`1px solid ${form.tom===k?DS.borderAccent:DS.border}`,background:form.tom===k?DS.accentGlow:DS.layer3,cursor:'pointer',transition:'all .2s'}}>
-                    <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'8px'}}>
-                      <div style={{fontSize:'14px',fontWeight:600,color:form.tom===k?DS.textPrimary:DS.textSecondary,fontFamily:"'Sora',sans-serif"}}>{v.label}</div>
-                      <div style={{width:'16px',height:'16px',borderRadius:'50%',border:`2px solid ${form.tom===k?DS.accent:DS.border}`,background:form.tom===k?DS.accent:'transparent',transition:'all .2s'}}/>
-                    </div>
-                    <div style={{fontSize:'12px',color:DS.textMuted,lineHeight:1.5}}>{v.desc}</div>
-                  </div>
-                ))}
-              </div>
-            </Card>
-
-            {/* Identidade + Consultor */}
-            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'12px',marginBottom:'12px'}}>
-              <Card style={{marginBottom:0}}>
-                <SectionLabel>Identidade visual</SectionLabel>
-                <div style={{display:'flex',gap:'6px',flexWrap:'wrap',marginBottom:'14px'}}>
-                  {[['#8B5CF6','#0D0B12'],['#2563EB','#0D0B12'],['#0D9488','#0D0B12'],['#C9A84C','#0D0B12'],['#DC2626','#0D0B12'],['#0891B2','#0D0B12']].map(([c1,c2],i)=>(
-                    <div key={i} onClick={()=>setForm(f=>({...f,cor1:c1,cor2:c2}))}
-                      style={{width:'24px',height:'24px',borderRadius:'50%',background:c1,cursor:'pointer',border:form.cor1===c1?`2px solid #fff`:`2px solid transparent`,transform:form.cor1===c1?'scale(1.2)':'scale(1)',transition:'.15s',boxShadow:form.cor1===c1?`0 0 8px ${c1}`:''}}/>
-                  ))}
-                  <input type="color" value={form.cor1} onChange={e=>setForm(f=>({...f,cor1:e.target.value}))} style={{width:'24px',height:'24px',border:'none',borderRadius:'50%',cursor:'pointer',padding:0,background:'transparent'}}/>
-                </div>
-                <div onClick={()=>logoRef.current?.click()} style={{border:`1px dashed ${DS.border}`,borderRadius:DS.rLg,padding:'16px',textAlign:'center',cursor:'pointer',background:DS.layer3,transition:'all .2s'}}
-                  onMouseEnter={e=>e.currentTarget.style.borderColor=DS.borderHover}
-                  onMouseLeave={e=>e.currentTarget.style.borderColor=DS.border}>
-                  {logoUrl
-                    ?<img src={logoUrl} style={{height:'48px',width:'48px',objectFit:'cover',borderRadius:'10px',display:'block',margin:'0 auto'}}/>
-                    :<div style={{fontSize:'12px',color:DS.textMuted}}>Upload da logo</div>
-                  }
-                </div>
-                <input ref={logoRef} type="file" accept="image/*" style={{display:'none'}} onChange={loadLogo}/>
-              </Card>
-              <Card style={{marginBottom:0}}>
-                <SectionLabel>Consultor</SectionLabel>
-                <div style={{display:'flex',flexDirection:'column',gap:'10px'}}>
-                  <div><FieldLabel>Nome</FieldLabel><Input value={form.cslNome} onChange={e=>setF('cslNome',e.target.value)} placeholder="Seu nome"/></div>
-                  <div><FieldLabel>Empresa</FieldLabel><Input value={form.cslEmpresa} onChange={e=>setF('cslEmpresa',e.target.value)} placeholder="SCentral"/></div>
-                  <div><FieldLabel>WhatsApp</FieldLabel><Input value={form.cslWhats} onChange={e=>setF('cslWhats',e.target.value)} placeholder="(37) 9 9999-9999"/></div>
-                  <div><FieldLabel>Instagram</FieldLabel><Input value={form.cslInsta} onChange={e=>setF('cslInsta',e.target.value)} placeholder="scentral.ia"/></div>
-                </div>
-              </Card>
-            </div>
-
-            <BtnPrimary onClick={async()=>{
-              if(form.placeLat&&form.placeLng&&concs.length===0)await buscarConcs();
-              await gerarTextoIA();setPg(8);
-            }} disabled={loading||fichaLoad} style={{width:'100%',padding:'14px',fontSize:'14px',fontWeight:700,borderRadius:DS.rLg,justifyContent:'center',letterSpacing:'.01em'}}>
-              {loading?'Gerando diagnóstico...':fichaLoad?'Carregando dados...':'Iniciar Diagnóstico'}
-            </BtnPrimary>
-            <StatusBar/>
-          </div>}
-
-          {/* ══ P1 MANUAL ══ */}
-          {pg===1&&p2modo==='manual'&&<div>
-            <PageTitle title="Dados do Negócio" subtitle="Preencha as informações base para o diagnóstico."/>
-            <Card>
-              <SectionLabel>Segmento</SectionLabel>
-              <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(110px,1fr))',gap:'6px',marginBottom:'20px'}}>
-                {Object.entries(NICHOS).map(([k,v])=>(
-                  <div key={k} onClick={()=>setNicho(k)}
-                    style={{padding:'10px 8px',borderRadius:DS.rMd,border:`1px solid ${nichoKey===k?DS.borderAccent:DS.border}`,background:nichoKey===k?DS.accentGlow:DS.layer3,cursor:'pointer',textAlign:'center',transition:'all .15s'}}>
-                    <div style={{fontSize:'11px',fontWeight:600,color:nichoKey===k?DS.textPrimary:DS.textSecondary}}>{v.label}</div>
-                  </div>
-                ))}
-              </div>
-              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'12px',marginBottom:'12px'}}>
-                <div><FieldLabel>Categoria</FieldLabel><Input value={form.categoria} onChange={e=>setF('categoria',e.target.value)} placeholder="Ex: Clínica Médica"/></div>
-                <div><FieldLabel>Especialização</FieldLabel><Input value={form.especializacao||''} onChange={e=>setF('especializacao',e.target.value)} placeholder="Ex: Ortopedia"/></div>
-              </div>
-            </Card>
-            <Card>
-              <SectionLabel>Identificação</SectionLabel>
-              <div style={{display:'flex',flexDirection:'column',gap:'12px'}}>
-                <div><FieldLabel>Nome do negócio</FieldLabel><Input value={form.nome} onChange={e=>setF('nome',e.target.value)} placeholder="Ex: Clínica Dra. Marina"/></div>
-                <div style={{display:'grid',gridTemplateColumns:'1fr 80px',gap:'12px'}}>
-                  <div><FieldLabel>Cidade</FieldLabel><Input value={form.cidade} onChange={e=>setF('cidade',e.target.value)} placeholder="Belo Horizonte"/></div>
-                  <div><FieldLabel>UF</FieldLabel><Input value={form.estado||''} onChange={e=>setF('estado',e.target.value)} placeholder="MG"/></div>
-                </div>
-                <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'12px'}}>
-                  <div><FieldLabel>Site</FieldLabel><Input value={form.site||''} onChange={e=>setF('site',e.target.value)} placeholder="https://site.com.br"/></div>
-                  <div><FieldLabel>WhatsApp</FieldLabel><Input value={form.whatsapp||''} onChange={e=>setF('whatsapp',e.target.value)} placeholder="(31) 9 9999-9999"/></div>
-                </div>
-                {/* Referência PDF */}
-                <div>
-                  <button onClick={()=>setShowRef(s=>!s)} style={{display:'flex',alignItems:'center',justifyContent:'space-between',width:'100%',padding:'10px 14px',borderRadius:DS.rMd,border:`1px solid ${showRef||refPdfName?DS.borderAccent:DS.border}`,background:showRef||refPdfName?DS.accentGlow:DS.layer3,color:showRef||refPdfName?DS.textPrimary:DS.textSecondary,fontSize:'12px',fontWeight:500,cursor:'pointer',transition:'all .15s',fontFamily:"'Inter',sans-serif"}}>
-                    <span>{refPdfName?'Referência: '+refPdfName:'Usar diagnóstico anterior como referência'}</span>
-                    <span style={{fontSize:'11px',color:DS.textMuted}}>{refPdfName?'Carregado':'opcional'}</span>
-                  </button>
-                  {showRef&&<div style={{marginTop:'8px',padding:'14px',background:DS.layer3,borderRadius:DS.rMd,border:`1px solid ${DS.border}`}}>
-                    <label style={{display:'flex',alignItems:'center',gap:'10px',padding:'10px 14px',border:`1px dashed ${DS.border}`,borderRadius:DS.rMd,cursor:'pointer',transition:'all .15s'}}>
-                      <span style={{fontSize:'12px',color:DS.textSecondary}}>{refPdfName||'Clique para selecionar o PDF'}</span>
-                      <input type="file" accept=".pdf" style={{display:'none'}} onChange={e=>{const f=e.target.files[0];if(!f)return;setRefPdfName(f.name);const r=new FileReader();r.onload=ev=>setRefPdfB64(ev.target.result.split(',')[1]);r.readAsDataURL(f);}}/>
-                    </label>
-                    {refPdfName&&<BtnGhost onClick={()=>{setRefPdfName('');setRefPdfB64('');}}>Remover</BtnGhost>}
-                  </div>}
-                </div>
-              </div>
-            </Card>
-            <Card>
-              <SectionLabel>Tom de comunicação</SectionLabel>
-              <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:'8px'}}>
-                {Object.entries(TONS).map(([k,v])=>(
-                  <div key={k} onClick={()=>setF('tom',k)}
-                    style={{padding:'14px',borderRadius:DS.rLg,border:`1px solid ${form.tom===k?DS.borderAccent:DS.border}`,background:form.tom===k?DS.accentGlow:DS.layer3,cursor:'pointer',transition:'all .2s'}}>
-                    <div style={{fontSize:'13px',fontWeight:600,color:form.tom===k?DS.textPrimary:DS.textSecondary,marginBottom:'4px',fontFamily:"'Sora',sans-serif"}}>{v.label}</div>
-                    <div style={{fontSize:'11px',color:DS.textMuted,lineHeight:1.4}}>{v.desc}</div>
-                  </div>
-                ))}
-              </div>
-            </Card>
-            <div style={{display:'flex',justifyContent:'flex-end'}}><BtnPrimary onClick={()=>setPg(2)}>Continuar</BtnPrimary></div>
-          </div>}
-
-          {/* ══ P2 GOOGLE ══ */}
-          {pg===2&&<div>
-            <PageTitle title="Presença no Google" subtitle="Dados da ficha Google Business Profile."/>
-            {p2modo==='auto'&&<ConnectionCard logo="G" title="Google Business Profile" subtitle="Extração automática" connected={!!form.nome} onRefresh={extrairFicha} loading={fichaLoad}>
-              <div style={{display:'flex',gap:'8px'}}>
-                <Input value={form.fichaUrl} onChange={e=>setF('fichaUrl',e.target.value)} placeholder="https://maps.google.com/place/..."/>
-                <BtnPrimary onClick={extrairFicha} disabled={fichaLoad} style={{whiteSpace:'nowrap',flexShrink:0}}>{fichaLoad?'Buscando...':'Extrair'}</BtnPrimary>
-              </div>
-              <StatusBar/>
-            </ConnectionCard>}
-            <Card>
-              <SectionLabel>Métricas</SectionLabel>
-              <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:'10px',marginBottom:'20px'}}>
-                {[
-                  {l:'Nota',v:form.nota,set:v=>setF('nota',v),ph:'4.8',type:'number'},
-                  {l:'Avaliações',v:form.numAvals,set:v=>setF('numAvals',v),ph:'320',type:'number'},
-                  {l:'Fotos',v:form.numFotos,set:v=>setF('numFotos',v),ph:'45',type:'number'},
-                  {l:'Posição',v:form.posicao,set:v=>setF('posicao',v),ph:'1',type:'number'},
-                ].map(({l,v,set,ph,type})=>(
-                  <div key={l} style={{background:DS.layer3,borderRadius:DS.rMd,padding:'14px',border:`1px solid ${DS.border}`}}>
-                    <div style={{fontSize:'10px',color:DS.textMuted,letterSpacing:'.06em',textTransform:'uppercase',marginBottom:'8px'}}>{l}</div>
-                    <input type={type} value={v} onChange={e=>set(e.target.value)} placeholder={ph}
-                      style={{width:'100%',background:'transparent',border:'none',outline:'none',fontSize:'22px',fontWeight:700,color:DS.textPrimary,fontFamily:"'Sora',sans-serif",padding:0}}/>
-                  </div>
-                ))}
-              </div>
-              <Divider/>
-              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'20px'}}>
-                <div>
-                  <SectionLabel>Presença na ficha</SectionLabel>
-                  {[{k:'temSite',l:'Site ativo'},{k:'temWhats',l:'WhatsApp'},{k:'postsAtivos',l:'Posts ativos'}].map(({k,l})=>(
-                    <div key={k} style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'10px'}}>
-                      <span style={{fontSize:'13px',color:DS.textSecondary}}>{l}</span>
-                      <div style={{display:'flex',gap:'4px',background:DS.layer3,borderRadius:'8px',padding:'3px',border:`1px solid ${DS.border}`}}>
-                        {[true,false].map(val=>(
-                          <button key={String(val)} onClick={()=>setF(k,val)}
-                            style={{padding:'4px 12px',borderRadius:'6px',border:'none',background:form[k]===val?(val?'rgba(16,185,129,.2)':'rgba(239,68,68,.2)'):'transparent',color:form[k]===val?(val?DS.success:DS.danger):DS.textMuted,fontSize:'11px',fontWeight:600,cursor:'pointer',transition:'all .15s'}}>
-                            {val?'SIM':'NÃO'}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <div>
-                  <SectionLabel>Frequência de posts</SectionLabel>
-                  {[['nenhuma','Nenhuma'],['raramente','Raramente'],['mensal','Mensal'],['semanal','Semanal'],['diaria','Diária']].map(([v,l])=>(
-                    <div key={v} onClick={()=>setF('frequencia',v)}
-                      style={{display:'flex',alignItems:'center',gap:'10px',padding:'8px 12px',marginBottom:'4px',borderRadius:DS.rMd,border:`1px solid ${form.frequencia===v?DS.borderAccent:DS.border}`,background:form.frequencia===v?DS.accentGlow:'transparent',cursor:'pointer',transition:'all .15s'}}>
-                      <div style={{width:'6px',height:'6px',borderRadius:'50%',background:form.frequencia===v?DS.accent:DS.border,transition:'all .15s'}}/>
-                      <span style={{fontSize:'12px',color:form.frequencia===v?DS.textPrimary:DS.textSecondary,fontWeight:form.frequencia===v?600:400}}>{l}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </Card>
-            {temDadosGoogle&&<Card>
-              <SectionLabel>Score de presença digital</SectionLabel>
-              <div style={{display:'flex',alignItems:'center',gap:'24px',flexWrap:'wrap'}}>
-                <GaugeSVG score={form.score} size={180}/>
-                <div style={{flex:1,minWidth:'200px'}}>
-                  {scoreCrit.map(({l,pts,max})=>(
-                    <div key={l} style={{display:'flex',alignItems:'center',gap:'10px',marginBottom:'8px'}}>
-                      <div style={{fontSize:'11px',color:DS.textMuted,width:'120px',flexShrink:0}}>{l}</div>
-                      <div style={{flex:1,height:'4px',background:DS.layer3,borderRadius:'2px',overflow:'hidden'}}>
-                        <div style={{width:`${(pts/max)*100}%`,height:'100%',background:pts===max?DS.success:pts>0?DS.accent:DS.border,borderRadius:'2px',transition:'.4s'}}/>
-                      </div>
-                      <span style={{fontSize:'11px',fontWeight:600,color:DS.textSecondary,minWidth:'32px',textAlign:'right'}}>{pts}/{max}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div style={{display:'flex',alignItems:'center',gap:'12px',marginTop:'12px',padding:'10px 14px',background:DS.layer3,borderRadius:DS.rMd,border:`1px solid ${DS.border}`}}>
-                <span style={{fontSize:'12px',color:DS.textSecondary}}>Ajuste manual</span>
-                <input type="range" min="0" max="100" value={form.score||0} onChange={e=>setForm(f=>({...f,score:e.target.value}))} style={{flex:1,accentColor:DS.accent}}/>
-                <span style={{fontSize:'16px',fontWeight:700,color:DS.accent,minWidth:'36px'}}>{form.score||0}</span>
-              </div>
-            </Card>}
-            <Card>
-              <SectionLabel>Print da ficha <span style={{fontWeight:400,color:DS.textMuted,fontSize:'11px',textTransform:'none',letterSpacing:'0'}}>(opcional)</span></SectionLabel>
-              <PasteImage value={form.fichaScreenshot||''} onChange={v=>setF('fichaScreenshot',v)} label="Cole o print da ficha aqui (Ctrl+V)" hint=""/>
-            </Card>
-            <div style={{display:'flex',gap:'10px',justifyContent:'space-between'}}>
-              <BtnSecondary onClick={()=>setPg(1)}>Voltar</BtnSecondary>
-              <BtnPrimary onClick={()=>setPg(3)}>Continuar</BtnPrimary>
-            </div>
-          </div>}
-
-          {/* ══ P3 PALAVRAS-CHAVE ══ */}
-          {pg===3&&<div>
-            <PageTitle title="Oportunidades de Busca" subtitle="Monitore os termos que seus clientes usam para encontrar o negócio."/>
-            <Card>
-              <div style={{display:'flex',gap:'8px',marginBottom:'16px'}}>
-                <Input value={kwInput} onChange={e=>setKwInput(e.target.value)} placeholder="ex: ortopedista belo horizonte"
-                  onKeyDown={e=>{if(e.key==='Enter'&&kwInput.trim()){addKw(kwInput.trim());e.preventDefault();}}}/>
-                <BtnPrimary onClick={()=>addKw(kwInput.trim())} style={{flexShrink:0}}>Adicionar</BtnPrimary>
-              </div>
-              {kws.length>0&&<div style={{marginBottom:'16px'}}>
-                {kws.map((kw,i)=>(
-                  <div key={i} style={{display:'flex',alignItems:'center',gap:'12px',padding:'12px 14px',background:DS.layer3,borderRadius:DS.rMd,border:`1px solid ${DS.border}`,marginBottom:'6px'}}>
-                    <div style={{flex:1}}>
-                      <div style={{fontSize:'13px',fontWeight:500,color:DS.textPrimary,marginBottom:'3px'}}>{kw.term}</div>
-                      {kw.volume&&<div style={{fontSize:'11px',color:DS.textMuted}}><span style={{color:DS.accent,fontWeight:600}}>{kw.volume}</span> buscas/mês · {form.cidade||'sua cidade'}</div>}
-                    </div>
-                    <div>
-                      <div style={{fontSize:'10px',color:DS.textMuted,marginBottom:'3px',textAlign:'center'}}>Posição</div>
-                      <input type="number" min="1" max="100" value={kw.pos||''} onChange={e=>{const u=[...kws];u[i]={...u[i],pos:e.target.value};setKws(u);}} placeholder="—"
-                        style={{width:'48px',padding:'4px 6px',background:DS.layer2,border:`1px solid ${DS.border}`,borderRadius:'6px',textAlign:'center',fontSize:'12px',fontWeight:700,color:DS.textPrimary,outline:'none',fontFamily:"'Inter',sans-serif"}}/>
-                    </div>
-                    <button onClick={()=>setKws(p=>p.filter((_,j)=>j!==i))} style={{background:'none',border:'none',color:DS.textMuted,cursor:'pointer',fontSize:'16px',lineHeight:1}}>×</button>
-                  </div>
-                ))}
-              </div>}
-              <SectionLabel>Sugestões</SectionLabel>
-              <div style={{display:'flex',gap:'6px',flexWrap:'wrap'}}>
-                {[...new Set([...(NICHOS[nichoKey]?.kws||[]).map(k=>k+' '+(form.cidade||'cidade')),`${form.categoria||'negócio'} ${form.cidade||'cidade'}`].filter(Boolean))].slice(0,8).map(sg=>(
-                  <button key={sg} onClick={()=>addKw(sg)}
-                    style={{padding:'5px 12px',borderRadius:'20px',border:`1px solid ${kws.find(k=>k.term===sg)?DS.borderAccent:DS.border}`,background:kws.find(k=>k.term===sg)?DS.accentGlow:DS.layer3,fontSize:'11px',fontWeight:500,color:kws.find(k=>k.term===sg)?DS.textPrimary:DS.textSecondary,cursor:'pointer',transition:'all .15s'}}>
-                    {sg}
-                  </button>
-                ))}
-              </div>
-            </Card>
-            <div style={{display:'flex',gap:'10px',justifyContent:'space-between'}}>
-              <BtnSecondary onClick={()=>setPg(2)}>Voltar</BtnSecondary>
-              <BtnPrimary onClick={()=>setPg(4)}>Continuar</BtnPrimary>
-            </div>
-          </div>}
-
-          {/* ══ P4 CONCORRENTES ══ */}
-          {pg===4&&<div>
-            <PageTitle title="Cenário Competitivo" subtitle="Mapeie os principais concorrentes da região."/>
-            <div style={{padding:'10px 14px',background:'rgba(245,158,11,.08)',border:'1px solid rgba(245,158,11,.2)',borderRadius:DS.rMd,fontSize:'12px',color:'#FCD34D',marginBottom:'16px'}}>
-              Seção opcional — sem concorrentes, a página não será gerada no PDF
-            </div>
-            {p2modo==='manual'?<Card>
-              <div style={{fontSize:'13px',color:DS.textSecondary}}>A busca automática de concorrentes está disponível no modo <span style={{color:DS.accent,fontWeight:600}}>Auto IA</span>.</div>
-            </Card>:<>
-              <Card>
-                <BtnPrimary onClick={buscarConcs} disabled={concLoad}>
-                  {concLoad?'Buscando...':'Buscar concorrentes'}
-                </BtnPrimary>
-                <StatusBar/>
-                {concs.length>0&&<div style={{marginTop:'16px'}}>
-                  {concs.map((c,i)=>(
-                    <div key={i} style={{display:'flex',alignItems:'center',gap:'12px',padding:'12px 14px',background:DS.layer3,borderRadius:DS.rMd,border:`1px solid ${DS.border}`,marginBottom:'6px'}}>
-                      <div style={{width:'28px',height:'28px',borderRadius:'50%',background:i===0?'rgba(239,68,68,.2)':i===1?'rgba(245,158,11,.2)':'rgba(100,116,139,.2)',color:i===0?DS.danger:i===1?DS.warning:DS.textMuted,fontWeight:700,fontSize:'11px',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>{c.posicao||i+1}</div>
-                      <div style={{flex:1}}>
-                        <div style={{fontSize:'13px',fontWeight:500,color:DS.textPrimary}}>{c.nome}</div>
-                        <div style={{fontSize:'11px',color:DS.textMuted,marginTop:'2px'}}>{c.nota}★ · {c.avals} avaliações{c.diferencial?' · '+c.diferencial:''}</div>
-                      </div>
-                      <button onClick={()=>setConcs(p=>p.filter((_,j)=>j!==i))} style={{background:'none',border:'none',color:DS.textMuted,cursor:'pointer',fontSize:'16px'}}>×</button>
-                    </div>
-                  ))}
-                </div>}
-              </Card>
-              {temConcs&&<Card>
-                <SectionLabel>Mapa de posicionamento</SectionLabel>
-                <div style={{borderRadius:DS.rMd,overflow:'hidden',border:`1px solid ${DS.border}`}} dangerouslySetInnerHTML={{__html:mapHtml}}/>
-              </Card>}
-            </>}
-            <Card>
-              <SectionLabel>Adicionar manualmente</SectionLabel>
-              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'10px',marginBottom:'10px'}}>
-                <div><FieldLabel>Nome</FieldLabel><input id="cNome" style={{width:'100%',padding:'10px 14px',background:DS.layer3,border:`1px solid ${DS.border}`,borderRadius:DS.rMd,fontSize:'13px',color:DS.textPrimary,outline:'none',boxSizing:'border-box',fontFamily:"'Inter',sans-serif"}} placeholder="Concorrente"/></div>
-                <div><FieldLabel>Nota</FieldLabel><input id="cNota" type="number" style={{width:'100%',padding:'10px 14px',background:DS.layer3,border:`1px solid ${DS.border}`,borderRadius:DS.rMd,fontSize:'13px',color:DS.textPrimary,outline:'none',boxSizing:'border-box',fontFamily:"'Inter',sans-serif"}} placeholder="4.5"/></div>
-              </div>
-              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'10px',marginBottom:'10px'}}>
-                <div><FieldLabel>Avaliações</FieldLabel><input id="cAvals" type="number" style={{width:'100%',padding:'10px 14px',background:DS.layer3,border:`1px solid ${DS.border}`,borderRadius:DS.rMd,fontSize:'13px',color:DS.textPrimary,outline:'none',boxSizing:'border-box',fontFamily:"'Inter',sans-serif"}} placeholder="300"/></div>
-                <div><FieldLabel>Posição</FieldLabel><input id="cPos" type="number" style={{width:'100%',padding:'10px 14px',background:DS.layer3,border:`1px solid ${DS.border}`,borderRadius:DS.rMd,fontSize:'13px',color:DS.textPrimary,outline:'none',boxSizing:'border-box',fontFamily:"'Inter',sans-serif"}} placeholder="1"/></div>
-              </div>
-              <div style={{marginBottom:'10px'}}><FieldLabel>Diferencial</FieldLabel><input id="cDiff" style={{width:'100%',padding:'10px 14px',background:DS.layer3,border:`1px solid ${DS.border}`,borderRadius:DS.rMd,fontSize:'13px',color:DS.textPrimary,outline:'none',boxSizing:'border-box',fontFamily:"'Inter',sans-serif"}} placeholder="Mais fotos, site otimizado..."/></div>
-              <BtnSecondary onClick={addComp}>Adicionar</BtnSecondary>
-            </Card>
-            <div style={{display:'flex',gap:'10px',justifyContent:'space-between'}}>
-              <BtnSecondary onClick={()=>setPg(3)}>Voltar</BtnSecondary>
-              <BtnPrimary onClick={()=>setPg(5)}>Continuar</BtnPrimary>
-            </div>
-          </div>}
-
-          {/* ══ P5 INSTAGRAM ══ */}
-          {pg===5&&<div>
-            <PageTitle title="Autoridade no Instagram" subtitle="Análise de presença e qualidade do perfil."/>
-            <div style={{padding:'10px 14px',background:'rgba(245,158,11,.08)',border:'1px solid rgba(245,158,11,.2)',borderRadius:DS.rMd,fontSize:'12px',color:'#FCD34D',marginBottom:'16px'}}>
-              Seção opcional — sem dados do Instagram, a página não será gerada no PDF
-            </div>
-            {p2modo==='auto'&&<ConnectionCard logo="IG" title="Instagram" subtitle="Análise automática" connected={!!ig.handle} onRefresh={extrairIG} loading={igLoad}>
-              <div style={{display:'flex',gap:'8px'}}>
-                <Input value={ig.url} onChange={e=>setIG('url',e.target.value)} placeholder="https://instagram.com/perfil"/>
-                <BtnPrimary onClick={extrairIG} disabled={igLoad} style={{whiteSpace:'nowrap',flexShrink:0}}>{igLoad?'Analisando...':'Analisar'}</BtnPrimary>
-              </div>
-              <StatusBar/>
-            </ConnectionCard>}
-            <Card>
-              <SectionLabel>Dados do perfil</SectionLabel>
-              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'12px',marginBottom:'14px'}}>
-                <div><FieldLabel>Handle</FieldLabel><Input value={ig.handle} onChange={e=>setIG('handle',e.target.value)} placeholder="perfil" prefix="@"/></div>
-                <div><FieldLabel>Seguidores</FieldLabel><Input value={ig.seguidores} onChange={e=>setIG('seguidores',e.target.value)} placeholder="1.240"/></div>
-              </div>
-              <FieldLabel hint="opcional">Print do perfil</FieldLabel>
-              <PasteImage value={ig.printUrl||''} onChange={v=>setIG('printUrl',v)} label="Cole o print aqui (Ctrl+V)" hint=""/>
-            </Card>
-            <Card>
-              <SectionLabel>Análise de critérios</SectionLabel>
-              <p style={{fontSize:'12px',color:DS.textMuted,marginBottom:'16px',lineHeight:1.5}}>Critérios negativos geram críticas adaptadas ao tom escolhido.</p>
-              {IG_CRITERIOS.map(({k,label,critica,criticaPositiva})=>{
-                const val=ig[k];
-                const tom=form.tom||'original';
-                const mostrar=criticaPositiva?val===true:val===false;
-                return(
-                  <div key={k} style={{marginBottom:'12px',paddingBottom:'12px',borderBottom:`1px solid ${DS.border}`}}>
-                    <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'6px'}}>
-                      <span style={{fontSize:'13px',color:DS.textSecondary}}>{label}</span>
-                      <div style={{display:'flex',gap:'4px',background:DS.layer3,borderRadius:'8px',padding:'3px',border:`1px solid ${DS.border}`}}>
-                        {[true,false].map(v=>(
-                          <button key={String(v)} onClick={()=>setIG(k,v)}
-                            style={{padding:'4px 12px',borderRadius:'6px',border:'none',background:val===v?(v?'rgba(16,185,129,.2)':'rgba(239,68,68,.2)'):'transparent',color:val===v?(v?DS.success:DS.danger):DS.textMuted,fontSize:'11px',fontWeight:600,cursor:'pointer',transition:'all .15s'}}>
-                            {v?'SIM':'NÃO'}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                    {mostrar&&critica[tom]&&<div style={{padding:'8px 12px',background:'rgba(239,68,68,.08)',borderLeft:`2px solid ${DS.danger}`,borderRadius:'0 6px 6px 0',fontSize:'12px',color:'#FCA5A5',lineHeight:1.6}}>{critica[tom]}</div>}
-                  </div>
-                );
-              })}
-            </Card>
-            <div style={{display:'flex',gap:'10px',justifyContent:'space-between'}}>
-              <BtnSecondary onClick={()=>setPg(4)}>Voltar</BtnSecondary>
-              <BtnPrimary onClick={()=>setPg(6)}>Continuar</BtnPrimary>
-            </div>
-          </div>}
-
-          {/* ══ P6 CORES ══ */}
-          {pg===6&&<div>
-            <PageTitle title="Identidade Visual" subtitle="Cores e logo que serão aplicados ao relatório."/>
-            <Card>
-              <SectionLabel>Paleta de cores</SectionLabel>
-              <div style={{display:'flex',gap:'8px',flexWrap:'wrap',marginBottom:'16px'}}>
-                {[['#C9A84C','#0D0D0B'],['#0F4FD1','#0D0D0B'],['#0D9488','#0D0D0B'],['#7C3AED','#0D0D0B'],['#DC2626','#0D0D0B'],['#0891B2','#0D0D0B'],['#8B5CF6','#0D0D0B']].map(([c1,c2],i)=>(
-                  <div key={i} onClick={()=>setForm(f=>({...f,cor1:c1,cor2:c2}))}
-                    style={{width:'28px',height:'28px',borderRadius:'50%',background:c1,cursor:'pointer',border:form.cor1===c1?`2px solid #fff`:`2px solid transparent`,transform:form.cor1===c1?'scale(1.2)':'scale(1)',transition:'.15s',boxShadow:form.cor1===c1?`0 0 10px ${c1}`:''}}/>
-                ))}
-                <input type="color" value={form.cor1} onChange={e=>setForm(f=>({...f,cor1:e.target.value}))} style={{width:'28px',height:'28px',border:'none',borderRadius:'50%',cursor:'pointer',padding:0}}/>
-              </div>
-              <div style={{padding:'16px',background:DS.layer3,borderRadius:DS.rMd,borderLeft:`4px solid ${form.cor1}`,color:form.cor1,fontWeight:600,fontSize:'13px'}}>
-                {form.cslEmpresa||'Sua Empresa'} — prévia da cor principal
-              </div>
-            </Card>
-            <Card>
-              <SectionLabel>Logo do consultor</SectionLabel>
-              <div onClick={()=>logoRef.current?.click()} style={{border:`1px dashed ${DS.border}`,borderRadius:DS.rLg,padding:'24px',textAlign:'center',cursor:'pointer',background:DS.layer3,transition:'all .2s'}}
-                onMouseEnter={e=>e.currentTarget.style.borderColor=DS.borderHover}
-                onMouseLeave={e=>e.currentTarget.style.borderColor=DS.border}>
-                {logoUrl
-                  ?<img src={logoUrl} style={{maxHeight:'64px',objectFit:'contain',display:'block',margin:'0 auto',borderRadius:'8px'}}/>
-                  :<div><div style={{fontSize:'13px',color:DS.textMuted,marginBottom:'4px'}}>Upload da logo</div><div style={{fontSize:'11px',color:DS.textMuted}}>PNG · SVG · fundo transparente recomendado</div></div>
-                }
-              </div>
-              <input ref={logoRef} type="file" accept="image/*" style={{display:'none'}} onChange={loadLogo}/>
-              {logoUrl&&<BtnGhost onClick={()=>setLogoUrl('')}>Remover logo</BtnGhost>}
-            </Card>
-            <Card>
-              <SectionLabel>Presets</SectionLabel>
-              {presets.length>0&&<div style={{display:'flex',flexWrap:'wrap',gap:'6px',marginBottom:'12px'}}>
-                {presets.map(p=>(
-                  <div key={p.id} style={{display:'flex',alignItems:'center',gap:'6px',padding:'5px 10px',background:DS.layer3,border:`1px solid ${DS.border}`,borderRadius:'8px'}}>
-                    <div style={{width:'8px',height:'8px',borderRadius:'50%',background:p.cor1}}/>
-                    <span style={{fontSize:'12px',color:DS.textSecondary}}>{p.name}</span>
-                    <BtnGhost onClick={()=>aplicarPreset(p)}>Aplicar</BtnGhost>
-                    <BtnGhost onClick={()=>{const u=presets.filter(x=>x.id!==p.id);setPresets(u);savePresets(u);}}>×</BtnGhost>
-                  </div>
-                ))}
-              </div>}
-              {!showSave
-                ?<BtnSecondary onClick={()=>setShowSave(true)}>Salvar como preset</BtnSecondary>
-                :<div style={{display:'flex',gap:'8px',alignItems:'center'}}>
-                  <Input value={presetName} onChange={e=>setPresetName(e.target.value)} placeholder="Nome do preset"
-                    onKeyDown={e=>{if(e.key==='Enter')salvarPreset();}} style={{maxWidth:'200px'}}/>
-                  <BtnPrimary onClick={salvarPreset}>Salvar</BtnPrimary>
-                  <BtnSecondary onClick={()=>setShowSave(false)}>Cancelar</BtnSecondary>
-                </div>
+                <input type="color" value={form.cor1} onChange={e=>setForm(f=>({...f,cor1:e.target.value}))} style={{width:"26px",height:"26px",border:"none",borderRadius:"50%",cursor:"pointer",padding:0}}/></div></div><div onClick={()=>logoRef.current?.click()} style={{border:`.5px dashed ${T.n300}`,borderRadius:"10px",padding:"14px",textAlign:"center",cursor:"pointer",background:T.n50}}>
+              {logoUrl
+                ?<img src={logoUrl} style={{height:"60px",width:"60px",objectFit:"cover",borderRadius:"12px",display:"block",margin:"0 auto"}}/>
+                :<div style={{fontSize:"12px",color:T.n400}}>Upload da logo <span style={{color:T.n300}}>(clique)</span></div>
               }
-              <StatusBar/>
-            </Card>
-            <div style={{display:'flex',gap:'10px',justifyContent:'space-between'}}>
-              <BtnSecondary onClick={()=>setPg(5)}>Voltar</BtnSecondary>
-              <BtnPrimary onClick={()=>setPg(7)}>Continuar</BtnPrimary>
-            </div>
-          </div>}
+            </div><input ref={logoRef} type="file" accept="image/*" style={{display:"none"}} onChange={loadLogo}/></div>
 
-          {/* ══ P7 CONSULTOR ══ */}
-          {pg===7&&<div>
-            <PageTitle title="Dados do Consultor" subtitle="Informações que aparecem na página final do relatório."/>
-            <Card>
-              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'12px',marginBottom:'12px'}}>
-                <div><FieldLabel>Nome</FieldLabel><Input value={form.cslNome} onChange={e=>setF('cslNome',e.target.value)} placeholder="Seu nome"/></div>
-                <div><FieldLabel>Empresa</FieldLabel><Input value={form.cslEmpresa} onChange={e=>setF('cslEmpresa',e.target.value)} placeholder="SCentral"/></div>
-              </div>
-              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'12px',marginBottom:'14px'}}>
-                <div><FieldLabel hint="Gera QR Code no PDF">WhatsApp</FieldLabel><Input value={form.cslWhats} onChange={e=>setF('cslWhats',e.target.value)} placeholder="(37) 9 9809-2139"/></div>
-                <div><FieldLabel>Instagram</FieldLabel><Input value={form.cslInsta} onChange={e=>setF('cslInsta',e.target.value)} placeholder="scentral.ia" prefix="@"/></div>
-              </div>
-              {form.cslWhats&&<div style={{padding:'14px',background:DS.layer3,borderRadius:DS.rMd,display:'flex',alignItems:'center',gap:'14px',marginBottom:'14px',border:`1px solid ${DS.border}`}}>
-                <img src={qrUrl(waLink(form.cslWhats))} alt="QR" style={{width:'60px',height:'60px',borderRadius:'8px'}}/>
-                <div><div style={{fontSize:'12px',fontWeight:600,color:DS.textPrimary,marginBottom:'3px'}}>QR Code — prévia</div><div style={{fontSize:'11px',color:DS.textMuted}}>{waLink(form.cslWhats)}</div></div>
-              </div>}
-              <div><FieldLabel hint="opcional">Instrução extra para a IA</FieldLabel>
-                <Textarea value={form.promptExtra} onChange={e=>setF('promptExtra',e.target.value)} placeholder="Ex: mencionar rapidez das melhorias, focar em ROI..."/>
-              </div>
-            </Card>
-            <div style={{display:'flex',gap:'10px',justifyContent:'space-between'}}>
-              <BtnSecondary onClick={()=>setPg(6)}>Voltar</BtnSecondary>
-              <BtnPrimary onClick={()=>setPg(8)}>Ir para o Relatório</BtnPrimary>
-            </div>
-          </div>}
+          {/* CONSULTOR */}
+          <div style={css.card()}><div style={css.sec}>Dados do consultor</div><div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"12px",marginBottom:"10px"}}><div><label style={css.lbl}>Seu nome</label><input style={css.inp} value={form.cslNome} onChange={e=>setF("cslNome",e.target.value)} placeholder="Nathan"/></div><div><label style={css.lbl}>Empresa</label><input style={css.inp} value={form.cslEmpresa} onChange={e=>setF("cslEmpresa",e.target.value)} placeholder="SCentral"/></div></div><div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"12px"}}><div><label style={css.lbl}>WhatsApp</label><input style={css.inp} value={form.cslWhats} onChange={e=>setF("cslWhats",e.target.value)} placeholder="(37) 9 9999-9999"/></div><div><label style={css.lbl}>Instagram</label><input style={css.inp} value={form.cslInsta} onChange={e=>setF("cslInsta",e.target.value)} placeholder="scentral.ia"/></div></div></div>
 
-          {/* ══ P8 RELATÓRIO ══ */}
-          {pg===8&&<div>
-            <PageTitle title="Relatório" subtitle="Configure e gere o PDF do diagnóstico."/>
-            <Card>
-              <SectionLabel>Layout do relatório</SectionLabel>
-              <div style={{display:'grid',gridTemplateColumns:'repeat(5,1fr)',gap:'8px',marginBottom:'20px'}}>
+          {/* BOTÃO GERAR */}
+          <SBar/><button onClick={async()=>{
+            // Busca concorrentes automaticamente se tiver localização
+            if(form.placeLat&&form.placeLng&&concs.length===0){
+              await buscarConcs();
+            }
+            await gerarTextoIA();
+            setPg(8);
+          }} disabled={loading||fichaLoad} style={{...css.btn(form.cor1,"#fff"),width:"100%",padding:"14px",fontSize:"14px",fontWeight:700,borderRadius:"12px",opacity:(loading||fichaLoad)?.7:1}}>
+            {loading?"Gerando diagnóstico...":fichaLoad?"Carregando ficha...":" Gerar diagnóstico completo"}
+          </button></div>}
+
+      {/* P1 — Segmento & Dados (MANUAL) */}
+        {pg===1&&p2modo==="manual"&&<div>
+          {presets.length>0&&(
+            <div style={css.card()}><div style={css.sec}>Configurações salvas</div><div style={{display:"flex",flexWrap:"wrap",gap:"8px"}}>
+                {presets.map(p=>(
+                  <div key={p.id} style={{display:"flex",alignItems:"center",gap:"6px",padding:"6px 12px",background:T.n50,border:`.5px solid ${T.n200}`,borderRadius:"8px"}}><div style={{width:"10px",height:"10px",borderRadius:"50%",background:p.cor1}}/><span style={{fontSize:"12px",fontWeight:600,color:T.n700}}>{p.name}</span><button onClick={()=>aplicarPreset(p)} style={css.btnSm(T.goldL,T.gold,`.5px solid ${T.goldM}`)}>Aplicar</button><button onClick={()=>{const u=presets.filter(x=>x.id!==p.id);setPresets(u);savePresets(u);}} style={{background:"none",border:"none",cursor:"pointer",color:T.n400,fontSize:"15px",lineHeight:1}}>×</button></div>
+                ))}
+              </div></div>
+          )}
+
+          <div style={{padding:"10px 14px",marginBottom:"12px",background:p2modo==="auto"?"#FDF6E3":"#F5F4F8",border:"0.5px solid #E8E6EE",borderRadius:"10px",display:"flex",alignItems:"center",gap:"10px"}}><div style={{width:"8px",height:"8px",borderRadius:"50%",background:p2modo==="auto"?"#C9A84C":form.cor1,flexShrink:0}}/><div style={{fontSize:"12px",color:"#5C5575"}}>
+              {p2modo==="manual"
+                ?<span>Modo <strong style={{color:"#111020"}}>Manual</strong> — preencha todos os dados do negócio nas etapas abaixo.</span>
+                :<span>Modo <strong style={{color:"#C9A84C"}}>Auto IA</strong> — cole o link do Google Maps na etapa 2 para extração automática.</span>
+              }
+            </div></div><div style={css.card()}><div style={css.sec}>Tom de comunicação</div>
+            {Object.entries(TONS).map(([k,v])=>(
+              <div key={k} onClick={()=>setF("tom",k)} style={{display:"flex",alignItems:"center",gap:"12px",padding:"12px 14px",borderRadius:"10px",border:form.tom===k?`1.5px solid ${form.cor1}`:`.5px solid ${T.n200}`,background:form.tom===k?form.cor1+"0d":T.n0,cursor:"pointer",marginBottom:"7px",transition:"all .12s"}}><div style={{flex:1}}><div style={{fontSize:"13px",fontWeight:700,color:form.tom===k?form.cor1:T.n900}}>{v.label}</div><div style={{fontSize:"11px",color:T.n400,marginTop:"2px"}}>{v.desc}</div></div>
+                {form.tom===k&&<div style={{width:"8px",height:"8px",borderRadius:"50%",background:form.cor1,flexShrink:0}}/>}
+              </div>
+            ))}
+          </div><div style={css.card()}><div style={css.sec}>Segmento</div><div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(88px,1fr))",gap:"7px",marginBottom:"14px"}}>
+              {Object.entries(NICHOS).map(([k,v])=>(
+                <div key={k} onClick={()=>setNicho(k)} style={{padding:"10px 6px",borderRadius:"9px",border:nichoKey===k?`1.5px solid ${form.cor1}`:`.5px solid ${T.n200}`,background:nichoKey===k?form.cor1+"12":T.n0,cursor:"pointer",textAlign:"center",transition:"all .12s"}}><div style={{fontSize:"11px",fontWeight:600,color:nichoKey===k?form.cor1:T.n600}}>{v.label}</div></div>
+              ))}
+            </div><div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"12px",marginBottom:"14px"}}><div><label style={css.lbl}>Categoria</label><input style={css.inp} value={form.categoria} onChange={e=>setF("categoria",e.target.value)} placeholder="Ex: Clínica Médica"/></div><div><label style={css.lbl}>Especialização</label><input style={css.inp} value={form.especializacao||""} onChange={e=>setF("especializacao",e.target.value)} placeholder="Ex: Ortopedia, Varizes..."/></div></div><div style={css.sec}>Dados do negócio</div><div style={{marginBottom:"10px"}}><label style={css.lbl}>Nome *</label><input style={css.inp} value={form.nome} onChange={e=>setF("nome",e.target.value)} placeholder="Ex: Clínica Dra. Marina"/></div><div style={{display:"grid",gridTemplateColumns:"1fr 80px",gap:"12px",marginBottom:"10px"}}><div><label style={css.lbl}>Cidade *</label><input style={css.inp} value={form.cidade} onChange={e=>setF("cidade",e.target.value)} placeholder="Belo Horizonte"/></div><div><label style={css.lbl}>UF</label><input style={css.inp} value={form.estado||""} onChange={e=>setF("estado",e.target.value)} placeholder="MG"/></div></div><div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"12px"}}><div><label style={css.lbl}>Site</label><input style={css.inp} value={form.site||""} onChange={e=>setF("site",e.target.value)} placeholder="https://site.com.br"/></div><div><label style={css.lbl}>WhatsApp</label><input style={css.inp} value={form.whatsapp||""} onChange={e=>setF("whatsapp",e.target.value)} placeholder="(31) 9 9999-9999"/></div></div></div>
+          {/* Referência de diagnóstico */}
+          <div style={{marginBottom:"14px"}}><button onClick={()=>setShowRef(s=>!s)} style={{display:"flex",alignItems:"center",gap:"8px",padding:"10px 16px",borderRadius:"10px",border:`.5px solid ${showRef||refPdfName?form.cor1:T.n300}`,background:showRef||refPdfName?form.cor1+"0d":T.n0,cursor:"pointer",fontSize:"12px",fontWeight:600,color:showRef||refPdfName?form.cor1:T.n600,width:"100%",justifyContent:"space-between",transition:"all .15s"}}><div style={{display:"flex",alignItems:"center",gap:"8px"}}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                {refPdfName?"Referência: "+refPdfName:"Usar diagnóstico anterior como referência"}
+              </div><div style={{display:"flex",alignItems:"center",gap:"4px",fontSize:"10px",color:T.n400}}>
+                {refPdfName?<span style={{color:"#16A34A",fontWeight:700}}> Carregado</span>:<span>opcional</span>}
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points={showRef?"18 15 12 9 6 15":"6 9 12 15 18 9"}/></svg></div></button>
+            {showRef&&(
+              <div style={{marginTop:"8px",padding:"16px",background:T.n50,borderRadius:"10px",border:`.5px solid ${T.n200}`}}><div style={{fontSize:"12px",color:T.n600,marginBottom:"12px",lineHeight:1.6}}>
+                  Faça upload de um PDF de diagnóstico anterior. Ele será usado como <strong>referência de contexto</strong> para enriquecer os textos gerados — sem substituir a análise atual.
+                </div><label style={{display:"flex",alignItems:"center",gap:"10px",padding:"12px 14px",border:`.5px dashed ${T.n300}`,borderRadius:"8px",cursor:"pointer",background:T.n0}}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={T.n400} strokeWidth="1.5" strokeLinecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg><div><div style={{fontSize:"12px",fontWeight:600,color:T.n700}}>{refPdfName||"Clique para selecionar o PDF"}</div><div style={{fontSize:"11px",color:T.n400,marginTop:"2px"}}>Apenas arquivos .pdf</div></div><input type="file" accept=".pdf" style={{display:"none"}} onChange={e=>{
+                    const f=e.target.files[0];
+                    if(!f)return;
+                    setRefPdfName(f.name);
+                    const r=new FileReader();
+                    r.onload=ev=>{
+                      const b64=ev.target.result.split(",")[1];
+                      setRefPdfB64(b64);
+                    };
+                    r.readAsDataURL(f);
+                  }}/></label>
+                {refPdfName&&(
+                  <button onClick={()=>{setRefPdfName("");setRefPdfB64("");}} style={{marginTop:"8px",background:"none",border:"none",cursor:"pointer",fontSize:"11px",color:T.n400}}>Remover referência</button>
+                )}
+              </div>
+            )}
+          </div><div style={{display:"flex",justifyContent:"flex-end"}}><button onClick={()=>setPg(2)} style={css.btn(T.dark,"#fff")}>Próximo</button></div></div>}
+
+        {/* P2 — Métricas Google (OPCIONAL) */}
+        {pg===2&&<div>
+          {/* Seletor de modo */}
+          <div style={{display:"flex",flexDirection:"row",gap:"8px",marginBottom:"14px"}}><button onClick={()=>setP2modo("manual")} style={{...css.btn(p2modo==="manual"?form.cor1:T.n0,p2modo==="manual"?"#fff":T.n600),border:`.5px solid ${p2modo==="manual"?form.cor1:T.n300}`,fontSize:"13px",padding:"9px 20px",flex:1}}>
+              Preencher manualmente
+            </button><button onClick={()=>setP2modo("auto")} style={{...css.btn(p2modo==="auto"?form.cor1:T.n0,p2modo==="auto"?"#fff":T.n600),border:`.5px solid ${p2modo==="auto"?form.cor1:T.n300}`,fontSize:"13px",padding:"9px 20px",flex:1,display:"flex",alignItems:"center",justifyContent:"center",gap:"7px"}}><span style={{background:"linear-gradient(90deg,#7C3AED,#4F46E5)",color:"#fff",fontSize:"10px",padding:"2px 7px",borderRadius:"10px",fontWeight:700}}>IA</span>
+              Extrair pelo link
+            </button></div>
+
+          {/* Modo automático */}
+          {p2modo==="auto"&&(
+            <div style={css.card()}><div style={{fontSize:"13px",fontWeight:700,marginBottom:"4px"}}>Link da ficha Google Maps</div><p style={{fontSize:"12px",color:T.n400,marginBottom:"10px"}}>Cole o link do Google Maps. A IA extrai nota, avaliações, fotos e posição automaticamente.</p><div style={{display:"flex",gap:"8px"}}><input style={css.inp} value={form.fichaUrl} onChange={e=>setF("fichaUrl",e.target.value)} placeholder="https://maps.google.com/..."/><button onClick={extrairFicha} disabled={fichaLoad} style={{...css.btn(form.cor1,"#fff"),whiteSpace:"nowrap",opacity:fichaLoad?.7:1,fontSize:"12px",padding:"9px 14px"}}>
+                  {fichaLoad?"Analisando...":"Extrair"}
+                </button></div><SBar/></div>
+          )}
+          <div style={{...css.card(T.goldL),border:`.5px solid ${T.goldM}`,marginBottom:"10px"}}><div style={{fontSize:"12px",color:T.gold,fontWeight:600,display:"flex",alignItems:"center",gap:"6px"}}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              Seção opcional — deixe em branco para não incluir no PDF
+            </div></div><div style={css.card()}><div style={css.sec}>Avaliação no Google</div><div style={{display:"flex",alignItems:"center",gap:"6px",marginBottom:"14px"}}>
+              {[1,2,3,4,5].map(v=>(<span key={v} onClick={()=>setF("nota",String(v))} style={{fontSize:"24px",cursor:"pointer",color:parseFloat(form.nota)>=v?"#fbbc04":T.n200,lineHeight:1}}></span>))}
+              <input type="number" style={{...css.inp,width:"68px",marginLeft:"8px"}} value={form.nota} min="1" max="5" step="0.1" onChange={e=>setF("nota",e.target.value)} placeholder="0.0"/><span style={{fontSize:"12px",color:T.n400}}>/5.0</span></div><div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"12px",marginBottom:"14px"}}><div><label style={css.lbl}>Nº avaliações</label><input style={css.inp} type="number" value={form.numAvals} onChange={e=>setF("numAvals",e.target.value)} placeholder="—"/></div><div><label style={css.lbl}>Fotos Google</label><input style={css.inp} type="number" value={form.numFotos} onChange={e=>setF("numFotos",e.target.value)} placeholder="—"/></div><div><label style={css.lbl}>Posição ranking</label><input style={css.inp} type="number" value={form.posicao} onChange={e=>setF("posicao",e.target.value)} placeholder="—"/></div></div><div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"14px",marginBottom:"10px"}}><div><div style={css.sec}>Presença na ficha</div>
+                {[{k:"temSite",l:"Site ativo?"},{k:"temWhats",l:"WhatsApp na ficha?"},{k:"postsAtivos",l:"Posts ativos?"}].map(({k,l})=>(
+                  <div key={k} style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:"8px"}}><span style={{fontSize:"12px",color:T.n700}}>{l}</span><div style={{display:"flex",borderRadius:"6px",overflow:"hidden",border:`.5px solid ${T.n200}`}}><button onClick={()=>setF(k,true)} style={{padding:"4px 14px",fontSize:"11px",fontWeight:700,cursor:"pointer",border:"none",background:form[k]===true?"#16A34A":"transparent",color:form[k]===true?"#fff":T.n400,transition:"all .15s"}}>SIM</button><button onClick={()=>setF(k,false)} style={{padding:"4px 14px",fontSize:"11px",fontWeight:700,cursor:"pointer",border:"none",background:form[k]===false?"#DC2626":"transparent",color:form[k]===false?"#fff":T.n400,transition:"all .15s"}}>NÃO</button></div></div>
+                ))}
+              </div><div><div style={css.sec}>Frequência de posts</div>
+                {[["nenhuma","Nenhuma"],["raramente","Raramente"],["mensal","Mensal"],["semanal","Semanal"],["diaria","Diária"]].map(([v,l])=>(
+                  <button key={v} onClick={()=>setF("frequencia",v)} style={{display:"block",width:"100%",textAlign:"left",padding:"6px 10px",marginBottom:"4px",borderRadius:"7px",border:`.5px solid ${form.frequencia===v?form.cor1:T.n200}`,background:form.frequencia===v?form.cor1+"12":T.n0,fontSize:"12px",fontWeight:form.frequencia===v?700:400,color:form.frequencia===v?form.cor1:T.n600,cursor:"pointer",transition:"all .12s"}}>
+                    {l}
+                  </button>
+                ))}
+              </div></div></div><div style={css.card()}><label style={css.lbl}>Print da ficha Google <span style={{fontWeight:400,color:"#9991AF",textTransform:"none",letterSpacing:0,fontSize:"11px"}}>(opcional)</span></label><PasteImage value={form.fichaScreenshot||""} onChange={v=>setF("fichaScreenshot",v)} label="Cole o print da ficha aqui (Ctrl+V)" hint="Aparece como referência visual no diagnóstico"/></div>
+          {temDadosGoogle&&(
+            <div style={css.card()}><div style={css.sec}>Score de presença digital</div><div style={{display:"flex",alignItems:"center",gap:"16px",flexWrap:"wrap"}}><GaugeSVG score={form.score} size={180}/><div style={{flex:1,minWidth:"180px"}}>
+                  {scoreCrit.map(({l,pts,max})=>(
+                    <div key={l} style={css.sbar}><div style={{fontSize:"11px",color:T.n600,width:"120px",flexShrink:0}}>{l}</div><div style={{flex:1,height:"5px",background:T.n100,borderRadius:"3px",overflow:"hidden"}}><div style={{width:`${(pts/max)*100}%`,height:"100%",background:pts===max?"#16A34A":pts>0?form.cor1:T.n200,borderRadius:"3px",transition:".4s"}}/></div><div style={{fontSize:"11px",fontWeight:700,color:T.n700,minWidth:"34px",textAlign:"right"}}>{pts}/{max}</div></div>
+                  ))}
+                </div></div><div style={{marginTop:"12px",display:"flex",alignItems:"center",gap:"10px"}}><span style={{fontSize:"12px",color:T.n400}}>Ajuste manual:</span><input type="range" min="0" max="100" value={form.score||0} onChange={e=>setForm(f=>({...f,score:e.target.value}))} style={{flex:1,accentColor:form.cor1}}/><span style={{fontSize:"16px",fontWeight:800,color:form.cor1,minWidth:"36px"}}>{form.score||0}</span></div></div>
+          )}
+          <div style={{display:"flex",gap:"10px",justifyContent:"space-between"}}><Nav label="← Voltar" to={1} back/><Nav label="Próximo →" to={3}/></div></div>}
+
+        {/* P3 — Palavras-chave */}
+        {pg===3&&<div><div style={css.card()}><div style={css.sec}>Palavras-chave</div><p style={{fontSize:"12px",color:T.n400,marginBottom:"12px",lineHeight:1.6}}>Adicione os termos que seus clientes buscam. O sistema estima o volume de buscas na sua cidade e você informa a posição atual do negócio.</p><div style={{display:"flex",gap:"8px",marginBottom:"12px"}}><input style={css.inp} value={kwInput} onChange={e=>setKwInput(e.target.value)}
+                onKeyDown={e=>{if(e.key==="Enter"&&kwInput.trim()){addKw(kwInput.trim());e.preventDefault();}}}
+                placeholder="ex: ortopedista belo horizonte"/><button onClick={()=>addKw(kwInput.trim())} style={{...css.btn(form.cor1,"#fff"),padding:"9px 14px",fontSize:"12px",whiteSpace:"nowrap"}}>+ Add</button></div>
+
+            {kws.length>0&&(
+              <div style={{marginBottom:"14px"}}>
+                {kws.map((kw,i)=>(
+                  <div key={i} style={{display:"flex",alignItems:"center",gap:"10px",padding:"10px 12px",background:T.n50,borderRadius:"9px",border:`.5px solid ${T.n200}`,marginBottom:"6px"}}><div style={{flex:1}}><div style={{fontSize:"13px",fontWeight:600,color:T.n900,marginBottom:"2px"}}>{kw.term}</div><div style={{display:"flex",alignItems:"center",gap:"10px"}}>
+                        {kw.volume&&<span style={{fontSize:"11px",color:T.n400}}><span style={{fontWeight:700,color:form.cor1}}>{kw.volume}</span> buscas/mês est.
+                        </span>}
+                        {kw.volume&&<span style={{fontSize:"10px",color:T.n400}}>em {form.cidade||"sua cidade"}</span>}
+                      </div></div><div style={{display:"flex",alignItems:"center",gap:"8px",flexShrink:0}}><div><div style={{fontSize:"10px",color:T.n400,marginBottom:"3px",textAlign:"center"}}>Posição</div><input
+                          type="number" min="1" max="100"
+                          value={kw.pos||""}
+                          onChange={e=>{
+                            const updated=[...kws];
+                            updated[i]={...updated[i],pos:e.target.value};
+                            setKws(updated);
+                          }}
+                          placeholder="—"
+                          style={{...css.inp,width:"52px",textAlign:"center",padding:"5px 6px",fontSize:"12px",fontWeight:700}}
+                        /></div><span onClick={()=>setKws(p=>p.filter((_,j)=>j!==i))} style={{cursor:"pointer",color:T.n300,fontSize:"18px",lineHeight:1,marginTop:"14px"}}>×</span></div></div>
+                ))}
+              </div>
+            )}
+
+            <div style={css.sec}>Sugestões</div><div style={{display:"flex",gap:"6px",flexWrap:"wrap"}}>
+              {[...new Set([
+                ...(NICHOS[nichoKey]?.kws||[]).map(k=>k+" "+(form.cidade||"cidade")),
+                `${form.categoria||"negócio"} ${form.cidade||"cidade"}`,
+                `${form.especializacao||""} ${form.cidade||""}`.trim(),
+              ].filter(Boolean))].slice(0,8).map(sg=>(
+                <button key={sg} onClick={()=>addKw(sg)}
+                  style={{...css.btnSm(kws.find(k=>k.term===sg)?form.cor1+"18":T.n0, kws.find(k=>k.term===sg)?form.cor1:T.n600, `.5px solid ${kws.find(k=>k.term===sg)?form.cor1:T.n200}`)}}>{sg}</button>
+              ))}
+            </div></div><div style={{display:"flex",gap:"10px",justifyContent:"space-between"}}><Nav label="← Voltar" to={2} back/><Nav label="Próximo →" to={4}/></div></div>}
+
+        {/* P4 — Concorrentes (OPCIONAL) */}
+        {pg===4&&<div>
+          {p2modo==="manual"&&<div style={{...css.card(T.n50),border:`.5px solid ${T.n200}`,marginBottom:"10px",padding:"16px 20px"}}><div style={{fontSize:"13px",fontWeight:700,color:T.n900,marginBottom:"4px"}}>Análise de concorrentes</div><div style={{fontSize:"12px",color:T.n400,lineHeight:1.6}}>Disponível no modo <strong>Auto IA</strong>. Ative o modo Auto IA na sidebar para buscar concorrentes automaticamente pelo Google Maps.</div></div>}
+          {p2modo==="auto"&&<div style={{...css.card(T.goldL),border:`.5px solid ${T.goldM}`,marginBottom:"10px"}}><div style={{fontSize:"12px",color:T.gold,fontWeight:600,display:"flex",alignItems:"center",gap:"6px"}}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              Seção opcional — sem concorrentes, a página não será gerada no PDF
+            </div></div>}
+          {p2modo==="auto"&&<div style={css.card()}><div style={{fontSize:"13px",fontWeight:700,marginBottom:"4px",display:"flex",alignItems:"center",gap:"8px"}}>Concorrentes <span style={{background:"linear-gradient(90deg,#7C3AED,#4F46E5)",color:"#fff",fontSize:"10px",padding:"2px 8px",borderRadius:"20px",fontWeight:700}}>IA + Web</span></div><SBar/><button onClick={buscarConcs} disabled={concLoad} style={{...css.btn(form.cor1,"#fff"),opacity:concLoad?.7:1}}>
+              {concLoad?"Buscando...":"Buscar concorrentes com IA"}
+            </button>
+            {concs.length>0&&<div style={{marginTop:"12px"}}>
+              {concs.map((c,i)=>(<div key={i} style={{border:`.5px solid ${T.n200}`,borderRadius:"9px",padding:"11px 13px",marginBottom:"8px",background:T.n50}}><div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}><span style={{fontWeight:600,fontSize:"13px",color:T.n900}}>#{c.posicao} · {c.nome}</span><div style={{display:"flex",gap:"6px",alignItems:"center"}}>
+                    {!c.manual&&<span style={{background:"linear-gradient(90deg,#7C3AED,#4F46E5)",color:"#fff",fontSize:"9px",padding:"2px 7px",borderRadius:"10px"}}>IA</span>}
+                    <span style={{fontSize:"12px",color:T.n400}}>{c.nota} ({c.avals})</span><span onClick={()=>setConcs(p=>p.filter((_,j)=>j!==i))} style={{cursor:"pointer",color:T.n300,fontSize:"16px",lineHeight:1}}>×</span></div></div>
+                {c.diferencial&&<div style={{fontSize:"11px",color:T.n400,marginTop:"4px"}}>{c.diferencial}</div>}
+              </div>))}
+            </div>}
+          </div>}
+          {p2modo==="auto"&&temConcs&&(
+            <div style={css.card()}><div style={css.sec}>Mapa de posicionamento</div><div style={{borderRadius:"10px",overflow:"hidden",border:`.5px solid ${T.n200}`}} dangerouslySetInnerHTML={{__html:mapHtml}}/></div>
+          )}
+          {p2modo==="manual"&&<div style={{...css.card(T.n50),border:`.5px solid ${T.n200}`}}><div style={{fontSize:"12px",color:T.n400,textAlign:"center",padding:"8px 0"}}>Alterne para <strong style={{color:form.cor1}}>Auto IA</strong> para buscar e mapear concorrentes automaticamente.</div></div>}
+          {p2modo==="auto"&&<div style={css.card()}><div style={css.sec}>Adicionar manualmente</div><div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"10px",marginBottom:"10px"}}><div><label style={css.lbl}>Nome</label><input id="cNome" style={css.inp} placeholder="Concorrente"/></div><div><label style={css.lbl}>Nota</label><input id="cNota" style={css.inp} type="number" placeholder="4.5" min="1" max="5" step="0.1"/></div></div><div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"10px",marginBottom:"10px"}}><div><label style={css.lbl}>Avaliações</label><input id="cAvals" style={css.inp} type="number" placeholder="300"/></div><div><label style={css.lbl}>Posição</label><input id="cPos" style={css.inp} type="number" placeholder="1"/></div></div><div style={{marginBottom:"10px"}}><label style={css.lbl}>Diferencial</label><input id="cDiff" style={css.inp} placeholder="Mais fotos, site otimizado..."/></div><button onClick={addComp} style={css.btnSm(T.n0,T.n700)}>+ Adicionar</button></div>}
+          <div style={{display:"flex",gap:"10px",justifyContent:"space-between"}}><Nav label="← Voltar" to={3} back/><Nav label="Próximo →" to={5}/></div></div>}
+
+        {/* P5 — Instagram (OPCIONAL) */}
+        {pg===5&&<div><div style={{...css.card(T.goldL),border:`.5px solid ${T.goldM}`,marginBottom:"10px"}}><div style={{fontSize:"12px",color:T.gold,fontWeight:600,display:"flex",alignItems:"center",gap:"6px"}}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              Seção opcional — sem dados do Instagram, a página não será gerada no PDF
+            </div></div>
+
+          {/* Auto IA */}
+          {p2modo==="auto"&&<div style={css.card()}><div style={{fontSize:"13px",fontWeight:700,marginBottom:"4px",display:"flex",alignItems:"center",gap:"8px"}}>
+              Analisar Instagram
+              <span style={{background:"linear-gradient(90deg,#7C3AED,#4F46E5)",color:"#fff",fontSize:"10px",padding:"2px 8px",borderRadius:"20px",fontWeight:700}}>IA</span></div><div style={{display:"flex",gap:"8px",marginBottom:"12px"}}><input style={css.inp} value={ig.url} onChange={e=>setIG("url",e.target.value)} placeholder="https://instagram.com/perfil"/><button onClick={extrairIG} disabled={igLoad} style={{...css.btn(form.cor1,"#fff"),whiteSpace:"nowrap",opacity:igLoad?.7:1,fontSize:"12px",padding:"9px 14px"}}>
+                {igLoad?"Analisando...":"Analisar"}
+              </button></div><SBar/></div>}
+
+          {/* Dados do perfil */}
+          <div style={css.card()}><div style={css.sec}>Dados do perfil</div><div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"12px",marginBottom:"14px"}}><div><label style={css.lbl}>Handle (sem @)</label><input style={css.inp} value={ig.handle} onChange={e=>setIG("handle",e.target.value)} placeholder="perfil"/></div><div><label style={css.lbl}>Seguidores</label><input style={css.inp} value={ig.seguidores} onChange={e=>setIG("seguidores",e.target.value)} placeholder="1.240"/></div></div><label style={css.lbl}>Print do perfil <span style={{fontWeight:400,color:T.n400,textTransform:"none",letterSpacing:0,fontSize:"11px"}}>(opcional)</span></label><PasteImage value={ig.printUrl||""} onChange={v=>setIG("printUrl",v)} label="Cole o print do Instagram aqui (Ctrl+V)" hint="Aparecerá na página de Instagram do PDF"/></div>
+
+          {/* Critérios SIM/NÃO */}
+          <div style={css.card()}><div style={css.sec}>Critérios de presença</div><p style={{fontSize:"12px",color:T.n400,marginBottom:"14px"}}>Marque cada critério. Os itens negativos geram críticas automáticas adaptadas ao tom selecionado.</p>
+            {IG_CRITERIOS.map(({k,label,critica,criticaPositiva})=>{
+              const val = ig[k];
+              const mostrarCritica = criticaPositiva ? val===true : val===false;
+              const tom = form.tom||"original";
+              return(
+                <div key={k} style={{marginBottom:"12px",paddingBottom:"12px",borderBottom:`.5px solid ${T.n100}`}}><div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:"6px"}}><span style={{fontSize:"13px",fontWeight:600,color:T.n900}}>{label}</span><div style={{display:"flex",borderRadius:"6px",overflow:"hidden",border:`.5px solid ${T.n200}`}}><button onClick={()=>setIG(k,true)} style={{padding:"5px 16px",fontSize:"11px",fontWeight:700,cursor:"pointer",border:"none",background:val===true?"#16A34A":"transparent",color:val===true?"#fff":T.n400,transition:"all .15s"}}>SIM</button><button onClick={()=>setIG(k,false)} style={{padding:"5px 16px",fontSize:"11px",fontWeight:700,cursor:"pointer",border:"none",background:val===false?"#DC2626":"transparent",color:val===false?"#fff":T.n400,transition:"all .15s"}}>NÃO</button></div></div>
+                  {mostrarCritica&&critica[tom]&&(
+                    <div style={{padding:"10px 13px",background:T.errBg,borderLeft:`3px solid #DC2626`,borderRadius:"0 8px 8px 0",fontSize:"12px",color:"#7F1D1D",lineHeight:1.6}}>
+                      {critica[tom]}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div><div style={{display:"flex",gap:"10px",justifyContent:"space-between"}}><Nav label="← Voltar" to={4} back/><Nav label="Próximo →" to={6}/></div></div>}
+
+        {/* P6 — Cores & Logo */}
+        {pg===6&&<div><div style={css.card()}><div style={css.sec}>Paleta de cores</div><div style={{display:"flex",gap:"7px",flexWrap:"wrap",marginBottom:"14px"}}>
+              {[["#C9A84C","#0D0D0B"],["#0F4FD1","#0D0D0B"],["#0D9488","#0D0D0B"],["#7C3AED","#0D0D0B"],["#DC2626","#0D0D0B"],["#0891B2","#0D0D0B"],["#475569","#0D0D0B"]].map(([c1,c2],i)=>(
+                <div key={i} onClick={()=>setForm(f=>({...f,cor1:c1,cor2:c2}))} style={{width:"28px",height:"28px",borderRadius:"50%",background:c1,cursor:"pointer",border:form.cor1===c1?`3px solid ${T.n900}`:`2px solid transparent`,transform:form.cor1===c1?"scale(1.2)":"scale(1)",transition:".12s"}}/>
+              ))}
+            </div><div style={{display:"flex",gap:"20px",alignItems:"flex-start"}}><div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:"5px"}}><label style={css.lbl}>Cor principal</label><input type="color" value={form.cor1} onChange={e=>setForm(f=>({...f,cor1:e.target.value}))} style={{width:"50px",height:"38px",border:"none",borderRadius:"8px",cursor:"pointer"}}/></div><div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:"5px"}}><label style={css.lbl}>Cor secundária</label><input type="color" value={form.cor2} onChange={e=>setForm(f=>({...f,cor2:e.target.value}))} style={{width:"50px",height:"38px",border:"none",borderRadius:"8px",cursor:"pointer"}}/></div><div style={{flex:1}}><label style={{...css.lbl,marginBottom:"6px"}}>Prévia</label><div style={{background:form.cor2,padding:"13px 16px",borderRadius:"9px",borderLeft:`6px solid ${form.cor1}`,color:form.cor1,fontWeight:700,fontSize:"14px"}}>{form.cslEmpresa||"Sua Empresa"}</div><div style={{marginTop:"8px",background:form.cor1+"12",borderLeft:`3px solid ${form.cor1}`,padding:"9px 12px",borderRadius:"0 7px 7px 0",fontSize:"12px",color:T.n600}}>{form.nome||"Nome do negócio"}</div></div></div></div><div style={css.card()}><div style={css.sec}>Logo da empresa consultora</div><p style={{fontSize:"12px",color:T.n400,marginBottom:"12px"}}>Esta logo aparecerá no topo do PDF. Se não houver upload, usa o ícone padrão.</p><div onClick={()=>logoRef.current?.click()} style={{border:`1.5px dashed ${T.n300}`,borderRadius:"10px",padding:"18px",textAlign:"center",cursor:"pointer",color:T.n400,fontSize:"13px"}}>
+              {logoUrl?<div style={{background:form.cor2,padding:"14px",borderRadius:"8px",display:"inline-block"}}><img src={logoUrl} style={{maxHeight:"60px",maxWidth:"160px",objectFit:"contain",borderRadius:"4px",display:"block"}}/></div>:<div><div style={{color:T.n300,marginBottom:"5px"}}><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" style={{display:"block",margin:"0 auto"}}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div><div style={{fontWeight:600}}>Upload da logo</div><div style={{fontSize:"11px",marginTop:"3px",color:T.n400}}>PNG · SVG · fundo transparente recomendado</div></div>}
+            </div><input ref={logoRef} type="file" accept="image/*" style={{display:"none"}} onChange={loadLogo}/>
+            {logoUrl&&<button onClick={()=>setLogoUrl("")} style={{...css.btnSm(T.n0,T.n400),marginTop:"8px"}}>Remover logo</button>}
+          </div><div style={css.card()}><div style={css.sec}>Salvar configurações</div><p style={{fontSize:"12px",color:T.n400,marginBottom:"12px"}}>Salve cores, logo, consultor e tom para reutilizar em outras análises.</p>
+            {!showSave
+              ?<button onClick={()=>setShowSave(true)} style={css.btnSm(T.goldL,T.gold,`.5px solid ${T.goldM}`)}>Salvar como preset</button>
+              :<div style={{display:"flex",gap:"8px",alignItems:"center"}}><input style={{...css.inp,maxWidth:"220px"}} value={presetName} onChange={e=>setPresetName(e.target.value)} placeholder="Nome (ex: Clínica Dourado)" onKeyDown={e=>{if(e.key==="Enter")salvarPreset();}}/><button onClick={salvarPreset} style={css.btnSm(T.gold,"#fff","none")}>Salvar</button><button onClick={()=>setShowSave(false)} style={css.btnSm(T.n0,T.n400)}>Cancelar</button></div>
+            }
+            <SBar/></div><div style={{display:"flex",gap:"10px",justifyContent:"space-between"}}><Nav label="← Voltar" to={5} back/><Nav label="Próximo →" to={7}/></div></div>}
+
+        {/* P7 — Consultor */}
+        {pg===7&&<div><div style={css.card()}><div style={css.sec}>Dados do consultor</div><div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"12px",marginBottom:"10px"}}><div><label style={css.lbl}>Seu nome *</label><input style={css.inp} value={form.cslNome} onChange={e=>setF("cslNome",e.target.value)} placeholder="Nathan"/></div><div><label style={css.lbl}>Empresa *</label><input style={css.inp} value={form.cslEmpresa} onChange={e=>setF("cslEmpresa",e.target.value)} placeholder="SCentral"/></div></div><div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"12px",marginBottom:"12px"}}><div><label style={css.lbl}>WhatsApp (gera QR no PDF)</label><input style={css.inp} value={form.cslWhats} onChange={e=>setF("cslWhats",e.target.value)} placeholder="(37) 9 9809-2139"/></div><div><label style={css.lbl}>Instagram (sem @)</label><input style={css.inp} value={form.cslInsta} onChange={e=>setF("cslInsta",e.target.value)} placeholder="scentral.ia"/></div></div>
+            {form.cslWhats&&<div style={{padding:"12px",background:T.n50,borderRadius:"9px",display:"flex",alignItems:"center",gap:"12px",marginBottom:"12px",border:`.5px solid ${T.n200}`}}><img src={qrUrl(waLink(form.cslWhats))} alt="QR" style={{width:"64px",height:"64px",borderRadius:"6px"}}/><div><div style={{fontSize:"12px",fontWeight:700,color:T.n900,marginBottom:"3px"}}>QR Code — prévia</div><div style={{fontSize:"11px",color:T.n400}}>{waLink(form.cslWhats)}</div></div></div>}
+            <div><label style={css.lbl}>Instrução extra para a IA</label><textarea style={{...css.inp,minHeight:"60px",resize:"vertical"}} value={form.promptExtra} onChange={e=>setF("promptExtra",e.target.value)} placeholder="Ex: mencionar rapidez das melhorias, focar em ROI, citar mercado local..."/></div></div><div style={{display:"flex",gap:"10px",justifyContent:"space-between"}}><Nav label="← Voltar" to={6} back/><Nav label="Editar & PDF →" to={8}/></div></div>}
+
+        {/* P8 — Editar & PDF */}
+        {pg===8&&<div><div style={css.card()}><div style={{fontSize:"13px",fontWeight:700,marginBottom:"4px"}}>Editar textos</div><div style={{display:"flex",alignItems:"center",gap:"10px",padding:"10px 12px",background:form.cor1+"0d",borderRadius:"9px",marginBottom:"14px",border:`.5px solid ${form.cor1}33`}}><div style={{flex:1}}><div style={{fontSize:"12px",fontWeight:700,color:form.cor1}}>{tonAtual.label}</div><div style={{fontSize:"11px",color:T.n400,marginTop:"2px"}}>{tonAtual.desc}</div></div></div>
+
+            {/* Resumo do que será gerado */}
+            <div style={{padding:"10px 14px",background:T.n50,borderRadius:"8px",border:`.5px solid ${T.n200}`,marginBottom:"14px",fontSize:"12px",color:T.n600}}><div style={{fontWeight:700,color:T.n900,marginBottom:"6px"}}>Páginas que serão geradas:</div><div style={{display:"flex",gap:"8px",flexWrap:"wrap"}}><span style={{...css.badge(T.okBg,T.ok)}}>01 Introdução</span>
+                {temDadosGoogle&&<span style={{...css.badge(T.okBg,T.ok)}}>02 Google</span>}
+                {temConcs&&<span style={{...css.badge(T.okBg,T.ok)}}>03 Concorrentes</span>}
+                {temIG&&<span style={{...css.badge(T.okBg,T.ok)}}>0{temDadosGoogle&&temConcs?4:temDadosGoogle||temConcs?3:2} Instagram</span>}
+                <span style={{...css.badge(T.okBg,T.ok)}}>Próximos Passos</span>
+                {!temDadosGoogle&&<span style={{...css.badge(T.warnBg,T.warn)}}>Sem métricas Google</span>}
+                {!temConcs&&<span style={{...css.badge(T.warnBg,T.warn)}}>Sem concorrentes</span>}
+                {!temIG&&<span style={{...css.badge(T.warnBg,T.warn)}}>Sem Instagram</span>}
+              </div></div><SBar/>
+            {/* Seletor de layout */}
+            <div style={{marginBottom:"16px"}}><div style={css.sec}>Layout do relatório</div><div style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:"8px"}}>
                 {[
-                  {id:'basico',label:'Básico',desc:'Notion + Stripe',cor:'#2563EB'},
-                  {id:'premium',label:'Premium',desc:'McKinsey + Apple',cor:'#C9A227'},
-                  {id:'luxo',label:'Luxo',desc:'LV + Rolex',cor:'#D4AF37'},
-                  {id:'relatorio',label:'Relatório',desc:'PwC + KPMG',cor:'#0B1F3A'},
-                  {id:'custom',label:'Custom',desc:'Sua marca',cor:form.cor1},
+                  {id:"basico",label:"Básico",desc:"Notion + Stripe",cor:"#2563EB"},
+                  {id:"premium",label:"Premium",desc:"McKinsey + Apple",cor:"#C9A227"},
+                  {id:"luxo",label:"Luxo",desc:"Louis Vuitton + Rolex",cor:"#D4AF37"},
+                  {id:"relatorio",label:"Relatório",desc:"PwC + KPMG",cor:"#0B1F3A"},
+                  {id:"custom",label:"Custom",desc:"Cor da marca",cor:form.cor1},
                 ].map(({id,label,desc,cor})=>(
                   <div key={id} onClick={()=>setLayoutPDF(id)}
-                    style={{padding:'12px 8px',borderRadius:DS.rLg,border:`1px solid ${layoutPDF===id?cor+'66':DS.border}`,background:layoutPDF===id?cor+'12':DS.layer3,cursor:'pointer',textAlign:'center',transition:'all .2s',boxShadow:layoutPDF===id?`0 0 12px ${cor}22`:''}}>
-                    <div style={{width:'10px',height:'10px',borderRadius:'50%',background:cor,margin:'0 auto 8px',boxShadow:layoutPDF===id?`0 0 8px ${cor}`:'',transition:'all .2s'}}/>
-                    <div style={{fontSize:'11px',fontWeight:700,color:layoutPDF===id?DS.textPrimary:DS.textSecondary}}>{label}</div>
-                    <div style={{fontSize:'9px',color:DS.textMuted,marginTop:'2px'}}>{desc}</div>
-                  </div>
+                    style={{padding:"10px 8px",borderRadius:"10px",border:layoutPDF===id?`2px solid ${cor}`:`.5px solid ${T.n200}`,background:layoutPDF===id?cor+"10":T.n0,cursor:"pointer",textAlign:"center",transition:"all .12s"}}><div style={{width:"20px",height:"20px",borderRadius:"50%",background:cor,margin:"0 auto 6px"}}/><div style={{fontSize:"11px",fontWeight:700,color:layoutPDF===id?cor:T.n900}}>{label}</div><div style={{fontSize:"9px",color:T.n400,marginTop:"2px",lineHeight:1.3}}>{desc}</div></div>
                 ))}
-              </div>
-              <div style={{padding:'12px 16px',background:DS.layer3,borderRadius:DS.rMd,border:`1px solid ${DS.border}`,marginBottom:'16px'}}>
-                <div style={{fontSize:'12px',fontWeight:500,color:DS.textSecondary,marginBottom:'8px'}}>Páginas que serão geradas</div>
-                <div style={{display:'flex',gap:'6px',flexWrap:'wrap'}}>
-                  {[{l:'Introdução',a:true},{l:'Google',a:temDadosGoogle},{l:'Oportunidades',a:(kws||[]).length>0},{l:'Concorrentes',a:temConcs},{l:'Instagram',a:temIG},{l:'Plano de Ação',a:true}].map(({l,a})=>(
-                    <span key={l} style={{padding:'3px 10px',borderRadius:'20px',fontSize:'11px',fontWeight:500,background:a?'rgba(16,185,129,.1)':'rgba(255,255,255,.04)',color:a?DS.success:DS.textMuted,border:`1px solid ${a?'rgba(16,185,129,.2)':DS.border}`}}>{l}</span>
-                  ))}
-                </div>
-              </div>
-              <StatusBar/>
-              <div style={{display:'flex',gap:'8px',flexWrap:'wrap',marginTop:'4px'}}>
-                <BtnPrimary onClick={gerarTextoIA} disabled={loading} style={{opacity:loading?.5:1}}>
-                  {loading?'Gerando textos...':'Gerar textos com IA'}
-                </BtnPrimary>
-                <BtnSecondary onClick={()=>setTextos(null)}>Restaurar padrão</BtnSecondary>
-                <BtnSecondary onClick={abrirPDF} style={{background:DS.accent,color:'#fff',border:'none',boxShadow:DS.shadowAccent}}>Gerar PDF</BtnSecondary>
-              </div>
-            </Card>
-            <Card>
-              <SectionLabel>Editar textos</SectionLabel>
-              {[
-                {titulo:'Introdução',campos:[{k:'tituloIntro',l:'Título'},{k:'intro',l:'Abertura'},{k:'problema',l:'Contexto'}]},
-                ...(temDadosGoogle?[{titulo:'Google',campos:[{k:'tituloAnalise',l:'Título'},{k:'dados',l:'Análise'}]}]:[]),
-                ...(temConcs?[{titulo:'Concorrentes',campos:[{k:'tituloConc',l:'Título'},{k:'diferenciais',l:'Análise'}]}]:[]),
-                ...(temIG?[{titulo:'Instagram',campos:[{k:'tituloIg',l:'Título'},{k:'igAnalise',l:'Análise'}]}]:[]),
-                {titulo:'Plano de Ação',campos:[{k:'tituloProx',l:'Título'},{k:'proximos',l:'CTA'}]},
-              ].map(({titulo,campos})=>(
-                <div key={titulo} style={{background:DS.layer3,borderRadius:DS.rMd,padding:'16px',marginBottom:'10px',borderLeft:`2px solid ${DS.accent}`}}>
-                  <div style={{fontSize:'10px',fontWeight:700,color:DS.accent,textTransform:'uppercase',letterSpacing:'.08em',marginBottom:'12px'}}>{titulo}</div>
-                  {campos.map(({k,l})=>(
-                    <div key={k} style={{marginBottom:'12px'}}>
-                      <FieldLabel>{l}</FieldLabel>
-                      <Textarea value={txAtual()[k]||''} onChange={e=>setTx(k,e.target.value)} rows={2}/>
-                    </div>
-                  ))}
-                </div>
-              ))}
-            </Card>
-            <div style={{display:'flex',gap:'10px',justifyContent:'space-between'}}>
-              <BtnSecondary onClick={()=>setPg(7)}>Voltar</BtnSecondary>
-              <BtnPrimary onClick={abrirPDF} style={{padding:'12px 28px',fontSize:'14px'}}>Gerar PDF</BtnPrimary>
-            </div>
-          </div>}
+              </div></div>
 
-        </main>
-      </div>
-    </div>
+            {/* Preview do layout selecionado */}
+            <div style={{marginBottom:"16px",borderRadius:"12px",overflow:"hidden",border:`.5px solid ${T.n200}`,background:T.n50}}>
+              {layoutPDF==="basico"&&(
+                <div style={{padding:"0",fontFamily:"'Inter',sans-serif"}}><div style={{background:"#2563EB",padding:"10px 16px",display:"flex",alignItems:"center",justifyContent:"space-between"}}><div style={{width:"24px",height:"24px",borderRadius:"6px",background:"rgba(255,255,255,.2)"}}/><div style={{fontSize:"9px",color:"rgba(255,255,255,.8)",letterSpacing:".1em",textTransform:"uppercase"}}>Diagnóstico Digital</div></div><div style={{padding:"16px",background:"#F8FAFC"}}><div style={{fontSize:"9px",fontWeight:600,color:"#2563EB",letterSpacing:".1em",textTransform:"uppercase",marginBottom:"4px"}}>Análise de Presença</div><div style={{fontSize:"14px",fontWeight:800,color:"#0F172A",marginBottom:"2px",fontFamily:"'Montserrat',sans-serif"}}>{form.nome||"Nome do Negócio"}</div><div style={{fontSize:"10px",color:"#64748B",marginBottom:"12px"}}>{form.categoria||"Categoria"} · {form.cidade||"Cidade"}</div><div style={{background:"#fff",border:"1px solid #E2E8F0",borderRadius:"8px",padding:"10px",marginBottom:"8px"}}><div style={{height:"6px",background:"#E2E8F0",borderRadius:"3px",marginBottom:"4px"}}/><div style={{height:"6px",background:"#E2E8F0",borderRadius:"3px",width:"80%",marginBottom:"4px"}}/><div style={{height:"6px",background:"#E2E8F0",borderRadius:"3px",width:"60%"}}/></div><div style={{display:"flex",gap:"6px"}}>
+                      {["#2563EB","#E2E8F0","#E2E8F0"].map((c,i)=><div key={i} style={{height:"4px",flex:1,background:c,borderRadius:"2px"}}/>)}
+                    </div></div><div style={{padding:"8px 16px",background:"#fff",borderTop:"1px solid #E2E8F0",display:"flex",justifyContent:"space-between",alignItems:"center"}}><div style={{fontSize:"9px",color:"#64748B"}}>Notion + Stripe Docs</div><div style={{fontSize:"9px",fontWeight:700,color:"#2563EB"}}>BÁSICO</div></div></div>
+              )}
+              {layoutPDF==="premium"&&(
+                <div style={{fontFamily:"'Inter',sans-serif"}}><div style={{background:"#111111",padding:"16px",display:"flex",alignItems:"center",justifyContent:"space-between"}}><div style={{width:"24px",height:"24px",borderRadius:"6px",background:"rgba(201,162,39,.2)"}}/><div style={{fontSize:"9px",color:"rgba(201,162,39,.8)",letterSpacing:".12em",textTransform:"uppercase"}}>Análise Premium · Confidencial</div></div><div style={{padding:"16px",background:"#F9F7F3"}}><div style={{fontSize:"9px",fontWeight:600,color:"#C9A227",letterSpacing:".12em",textTransform:"uppercase",marginBottom:"6px"}}>Resumo Executivo</div><div style={{fontSize:"14px",fontWeight:600,color:"#111",marginBottom:"2px",fontFamily:"Georgia,serif",fontStyle:"italic"}}>{form.nome||"Nome do Negócio"}</div><div style={{height:"1px",background:"linear-gradient(90deg,#C9A227,transparent)",margin:"8px 0"}}/><div style={{background:"#fff",border:"1px solid #E5E1D8",borderRadius:"10px",padding:"10px",marginBottom:"8px",boxShadow:"0 1px 3px rgba(0,0,0,.04)"}}><div style={{height:"5px",background:"#E5E1D8",borderRadius:"3px",marginBottom:"4px"}}/><div style={{height:"5px",background:"#E5E1D8",borderRadius:"3px",width:"75%"}}/></div><div style={{borderLeft:"2px solid #C9A227",paddingLeft:"10px"}}><div style={{height:"5px",background:"#E5E1D8",borderRadius:"3px",marginBottom:"3px",width:"90%"}}/><div style={{height:"5px",background:"#E5E1D8",borderRadius:"3px",width:"70%"}}/></div></div><div style={{padding:"8px 16px",background:"#111",display:"flex",justifyContent:"space-between",alignItems:"center"}}><div style={{fontSize:"9px",color:"#555"}}>McKinsey · Apple · Deloitte</div><div style={{fontSize:"9px",fontWeight:700,color:"#C9A227"}}>PREMIUM</div></div></div>
+              )}
+              {layoutPDF==="luxo"&&(
+                <div style={{fontFamily:"'Inter',sans-serif"}}><div style={{background:"#0A0A0A",padding:"16px",display:"flex",alignItems:"center",justifyContent:"space-between"}}><div style={{width:"24px",height:"24px",borderRadius:"6px",background:"rgba(212,175,55,.15)",border:"1px solid rgba(212,175,55,.3)"}}/><div style={{fontSize:"9px",color:"rgba(212,175,55,.7)",letterSpacing:".2em",textTransform:"uppercase"}}>Exclusivo</div></div><div style={{padding:"16px",background:"#0A0A0A",textAlign:"center"}}><div style={{width:"30px",height:"1px",background:"#D4AF37",margin:"0 auto 10px"}}/><div style={{fontSize:"15px",fontWeight:300,color:"#FAFAFA",fontFamily:"Georgia,serif",fontStyle:"italic",letterSpacing:".04em",marginBottom:"4px"}}>{form.nome||"Nome do Negócio"}</div><div style={{fontSize:"9px",color:"#D4AF37",letterSpacing:".15em",textTransform:"uppercase",marginBottom:"10px"}}>{form.categoria||"Categoria"}</div><div style={{width:"30px",height:"1px",background:"rgba(212,175,55,.3)",margin:"0 auto"}}/></div><div style={{padding:"12px 16px",background:"#111",border:"1px solid rgba(212,175,55,.15)",margin:"0 12px 12px",borderRadius:"6px"}}><div style={{height:"4px",background:"rgba(212,175,55,.15)",borderRadius:"2px",marginBottom:"4px"}}/><div style={{height:"4px",background:"rgba(212,175,55,.15)",borderRadius:"2px",width:"70%"}}/></div><div style={{padding:"8px 16px",background:"#0A0A0A",borderTop:"1px solid rgba(212,175,55,.2)",display:"flex",justifyContent:"space-between",alignItems:"center"}}><div style={{fontSize:"9px",color:"#555"}}>Louis Vuitton · Rolex · Bentley</div><div style={{fontSize:"9px",fontWeight:600,color:"#D4AF37",letterSpacing:".08em"}}>LUXO</div></div></div>
+              )}
+              {layoutPDF==="relatorio"&&(
+                <div style={{fontFamily:"'Inter',sans-serif"}}><div style={{background:"#0B1F3A",padding:"10px 16px",display:"flex",alignItems:"center",justifyContent:"space-between"}}><div style={{width:"24px",height:"24px",borderRadius:"4px",background:"rgba(255,255,255,.1)"}}/><div style={{fontSize:"9px",color:"rgba(255,255,255,.5)",letterSpacing:".08em",textTransform:"uppercase",fontFamily:"'IBM Plex Sans',sans-serif"}}>Relatório Técnico</div></div><div style={{padding:"14px 16px",background:"#fff"}}><div style={{borderLeft:"4px solid #0B1F3A",paddingLeft:"10px",marginBottom:"10px"}}><div style={{fontSize:"9px",fontWeight:600,color:"#0B1F3A",opacity:.5,textTransform:"uppercase",letterSpacing:".08em",marginBottom:"2px"}}>Diagnóstico</div><div style={{fontSize:"13px",fontWeight:700,color:"#0B1F3A"}}>{form.nome||"Nome do Negócio"}</div></div><div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:"4px",marginBottom:"8px"}}>
+                      {["Nota","Avals","Fotos","Pos."].map((l,i)=>(
+                        <div key={i} style={{background:"#E5E7EB",borderRadius:"4px",padding:"5px",textAlign:"center"}}><div style={{fontSize:"12px",fontWeight:700,color:"#0B1F3A"}}>—</div><div style={{fontSize:"8px",color:"#6B7280",textTransform:"uppercase"}}>{l}</div></div>
+                      ))}
+                    </div><div style={{border:"1px solid #E5E7EB",borderRadius:"4px",overflow:"hidden"}}><div style={{background:"#0B1F3A",padding:"4px 8px",display:"flex",gap:"16px"}}>
+                        {["Critério","Pts","Max","%"].map((h,i)=><div key={i} style={{fontSize:"8px",color:"rgba(255,255,255,.6)",fontWeight:600,flex:i===0?2:1}}>{h}</div>)}
+                      </div>
+                      {["Nota Google","Avaliações","Site"].map((r,i)=>(
+                        <div key={i} style={{padding:"4px 8px",display:"flex",gap:"16px",borderBottom:"1px solid #E5E7EB"}}><div style={{fontSize:"8px",color:"#374151",flex:2}}>{r}</div><div style={{fontSize:"8px",color:"#0B1F3A",fontWeight:700,flex:1}}>—</div><div style={{fontSize:"8px",color:"#9CA3AF",flex:1}}>—</div><div style={{fontSize:"8px",color:"#9CA3AF",flex:1}}>—%</div></div>
+                      ))}
+                    </div></div><div style={{padding:"8px 16px",background:"#0B1F3A",display:"flex",justifyContent:"space-between",alignItems:"center"}}><div style={{fontSize:"9px",color:"rgba(255,255,255,.3)"}}>PwC · KPMG · EY · Nubank</div><div style={{fontSize:"9px",fontWeight:700,color:"rgba(255,255,255,.6)",letterSpacing:".06em"}}>RELATÓRIO</div></div></div>
+              )}
+              {layoutPDF==="custom"&&(
+                <div style={{fontFamily:"'Inter',sans-serif"}}><div style={{background:"#0a0a0a",padding:"16px",display:"flex",alignItems:"center",justifyContent:"space-between",position:"relative",overflow:"hidden"}}><div style={{position:"absolute",top:0,right:0,width:"40%",height:"100%",background:`linear-gradient(135deg,${form.cor1}22,transparent)`}}/><div style={{width:"24px",height:"24px",borderRadius:"6px",background:form.cor1+"33",border:`1px solid ${form.cor1}44`}}/><div style={{fontSize:"9px",color:form.cor1,letterSpacing:".1em",textTransform:"uppercase",opacity:.8}}>Diagnóstico Digital</div></div><div style={{padding:"16px",background:"#fff"}}><div style={{fontSize:"9px",fontWeight:600,color:form.cor1,letterSpacing:".1em",textTransform:"uppercase",marginBottom:"4px"}}>Análise de Presença</div><div style={{fontSize:"14px",fontWeight:800,color:"#0a0a0a",marginBottom:"2px",fontFamily:"'Space Grotesk',sans-serif"}}>{form.nome||"Nome do Negócio"}</div><div style={{fontSize:"10px",color:"#777",marginBottom:"10px"}}>{form.categoria||"Categoria"} · {form.cidade||"Cidade"}</div><div style={{background:`${form.cor1}08`,border:`1px solid ${form.cor1}20`,borderLeft:`3px solid ${form.cor1}`,borderRadius:"0 8px 8px 0",padding:"8px 10px",marginBottom:"8px"}}><div style={{height:"5px",background:form.cor1+"22",borderRadius:"3px",marginBottom:"3px"}}/><div style={{height:"5px",background:form.cor1+"15",borderRadius:"3px",width:"70%"}}/></div><div style={{background:"#0a0a0a",borderRadius:"8px",padding:"8px 10px"}}><div style={{height:"4px",background:"rgba(255,255,255,.1)",borderRadius:"2px",marginBottom:"3px"}}/><div style={{height:"4px",background:"rgba(255,255,255,.07)",borderRadius:"2px",width:"60%"}}/></div></div><div style={{padding:"8px 16px",background:"#0a0a0a",display:"flex",justifyContent:"space-between",alignItems:"center"}}><div style={{fontSize:"9px",color:"#444"}}>Cor da sua marca</div><div style={{fontSize:"9px",fontWeight:700,color:form.cor1}}>CUSTOM</div></div></div>
+              )}
+            </div><div style={{display:"flex",gap:"8px",flexWrap:"wrap",marginBottom:"16px"}}><button onClick={gerarTextoIA} disabled={loading} style={{...css.btn(form.cor1,"#fff"),opacity:loading?.7:1,fontSize:"12px",padding:"8px 14px"}}>
+                {loading?"Gerando...":"Gerar textos com IA"}
+              </button><button onClick={()=>setTextos(null)} style={css.btnSm(T.n0,T.n600)}>Restaurar padrão</button><button onClick={abrirPDF} style={css.btnSm(T.dark,"#fff","none")}>Gerar PDF</button></div>
+
+            {[
+              {idx:1,titulo:"Introdução",campos:[{k:"tituloIntro",l:"Título",multi:false},{k:"intro",l:"Texto de abertura"}]},
+              ...(temDadosGoogle?[{idx:2,titulo:"Presença Google",campos:[{k:"tituloAnalise",l:"Título",multi:false},{k:"problema",l:"Contexto"},{k:"dados",l:"Números"}]}]:[]),
+              ...(temConcs?[{idx:3,titulo:"Concorrentes",campos:[{k:"tituloConc",l:"Título",multi:false},{k:"diferenciais",l:"Análise comparativa"}]}]:[]),
+              ...(temIG?[{idx:4,titulo:"Instagram",campos:[{k:"tituloIg",l:"Título",multi:false},{k:"igAnalise",l:"Análise do perfil"}]}]:[]),
+              {idx:5,titulo:"Próximos Passos",campos:[{k:"tituloProx",l:"Título",multi:false},{k:"proximos",l:"CTA"}]},
+            ].map(({idx,titulo,campos})=>(
+              <div key={idx} style={{background:T.n50,borderRadius:"10px",padding:"14px",marginBottom:"12px",borderLeft:`3px solid ${form.cor1}`}}><div style={{fontSize:"10px",fontWeight:700,color:form.cor1,textTransform:"uppercase",letterSpacing:".08em",marginBottom:"12px"}}>Página {idx} — {titulo}</div>
+                {campos.map(({k,l,multi=true})=>(<TxField key={k} label={l} campo={k} multi={multi}/>))}
+              </div>
+            ))}
+
+            <div style={{marginTop:"16px",borderTop:`.5px solid ${T.n200}`,paddingTop:"16px"}}><div style={{fontSize:"10px",fontWeight:700,color:T.n400,textTransform:"uppercase",letterSpacing:".1em",marginBottom:"10px"}}>Prévia</div><div style={{borderRadius:"10px",overflow:"hidden",border:`.5px solid ${form.cor1}33`}}><div style={{background:form.cor2,padding:"16px",textAlign:"center"}}><img src={logoUrl||LOGO_B64} style={{maxHeight:"40px",maxWidth:"130px",objectFit:"contain",display:"block",margin:"0 auto 8px"}}/><div style={{fontSize:"16px",fontWeight:800,color:form.cor1}}>{form.cslEmpresa||"Sua Empresa"}</div></div><div style={{background:"#fff",padding:"14px"}}><div style={{background:form.cor1+"12",borderLeft:`3px solid ${form.cor1}`,padding:"10px 14px",borderRadius:"0 6px 6px 0",marginBottom:"10px"}}><div style={{fontSize:"13px",fontWeight:700,color:T.n900}}>{form.nome||"Nome do negócio"}</div><div style={{fontSize:"11px",color:T.n400,marginTop:"2px"}}>{form.categoria} · {form.cidade}</div></div><div style={{fontSize:"12px",color:T.n600,lineHeight:1.6}} dangerouslySetInnerHTML={{__html:tx.intro||""}}/></div></div></div><div style={{display:"flex",gap:"10px",marginTop:"16px",justifyContent:"space-between"}}><Nav label="← Voltar" to={7} back/><button onClick={abrirPDF} style={{...css.btn(T.dark,"#fff"),padding:"11px 22px",fontSize:"14px"}}>Gerar PDF</button></div></div></div>}
+
+      </div></div>
   );
 }
-
-
 
 /* ─── BUILD PDF ──────────────────────────────────────────── */
 function buildPDF({form,ig,kws,concs,logoUrl,textos,temDadosGoogle,temConcs,temIG,layout="custom"}) {
