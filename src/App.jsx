@@ -229,8 +229,8 @@ function PasteImage({value, onChange, label="Cole um print (Ctrl+V)", hint=""}) 
 }
 
 
-const LogoIcon = ({size=40}) => (
-  <img src={LOGO_B64} alt="SCentral" style={{width:`${size}px`,height:"auto",maxWidth:"100%",objectFit:"contain",display:"block",margin:"0 auto",mixBlendMode:"lighten"}}/>
+const LogoIcon = ({size=40,fill=false}) => (
+  <img src={LOGO_B64} alt="SCentral" style={{width:fill?"100%":`${size}px`,height:"auto",objectFit:"contain",display:"block",margin:"0 auto",mixBlendMode:"lighten"}}/>
 );
 
 /* ─── APP ────────────────────────────────────────────────── */
@@ -757,10 +757,10 @@ Retorne SOMENTE JSON sem markdown:
       <aside style={{width:"200px",height:"100vh",background:V.sidebar,display:"flex",flexDirection:"column",position:"fixed",top:0,left:0,zIndex:100,flexShrink:0}}>
 
         {/* Logo */}
-        <div style={{padding:"20px 16px 16px",borderBottom:`1px solid ${V.sidebarBdr}`,display:"flex",justifyContent:"center",alignItems:"center"}}>
+        <div style={{padding:"12px 16px 10px",borderBottom:`1px solid ${V.sidebarBdr}`}}>
           {logoUrl
-            ?<img src={logoUrl} style={{width:"100%",maxWidth:"160px",height:"auto",objectFit:"contain",display:"block",margin:"0 auto"}}/>
-            :<LogoIcon size={160}/>
+            ?<img src={logoUrl} style={{width:"100%",height:"auto",objectFit:"contain",display:"block",mixBlendMode:"lighten"}}/>
+            :<LogoIcon size={168} fill={true}/>
           }
         </div>
 
@@ -791,13 +791,13 @@ Retorne SOMENTE JSON sem markdown:
         <nav style={{flex:1,padding:"4px 8px",overflow:"visible"}}>
           {groups.map(g=>(
             <div key={g} style={{marginBottom:"2px"}}>
-              <div style={{fontSize:"11px",fontWeight:700,color:"rgba(139,92,246,.75)",letterSpacing:".18em",padding:"10px 8px 3px",textTransform:"uppercase",fontFamily:"'Plus Jakarta Sans',sans-serif"}}>{g}</div>
+              <div style={{fontSize:"10px",fontWeight:700,color:"rgba(139,92,246,.8)",letterSpacing:".18em",padding:"10px 8px 3px",textTransform:"uppercase",fontFamily:"'Plus Jakarta Sans',sans-serif"}}>{g}</div>
               {navItems.filter(n=>n.group===g).map(n=>(
                 <div key={n.id} onClick={()=>setPg(n.id)}
-                  style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"7px 10px",borderRadius:"6px",cursor:"pointer",background:pg===n.id?"rgba(139,92,246,.18)":"transparent",marginBottom:"2px",transition:"all .15s",position:"relative"}}>
+                  style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"5px 8px",borderRadius:"6px",cursor:"pointer",background:pg===n.id?V.accent:"transparent",marginBottom:"1px",transition:"all .15s",position:"relative"}}>
                   {pg===n.id&&<div style={{position:"absolute",left:0,top:"50%",transform:"translateY(-50%)",width:"3px",height:"18px",borderRadius:"0 2px 2px 0",background:"rgba(255,255,255,.5)"}}/>}
-                  <span style={{fontSize:"13px",fontWeight:pg===n.id?700:500,color:pg===n.id?"#FFFFFF":"#D4D4D8",paddingLeft:pg===n.id?"6px":"0",transition:"all .15s",fontFamily:"'Plus Jakarta Sans',sans-serif",lineHeight:1.4}}>{n.label}</span>
-
+                  <span style={{fontSize:"12px",fontWeight:pg===n.id?600:400,color:pg===n.id?"#fff":V.sidebarSub,paddingLeft:pg===n.id?"6px":"0",transition:"all .15s"}}>{n.label}</span>
+                  
                 </div>
               ))}
             </div>
@@ -812,7 +812,7 @@ Retorne SOMENTE JSON sem markdown:
           {form.cslNome&&<div style={{display:"flex",alignItems:"center",gap:"8px",padding:"6px 4px"}}>
             <div style={{width:"24px",height:"24px",borderRadius:"50%",background:V.accent+"33",border:`1px solid ${V.accent}55`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"11px",fontWeight:700,color:V.accent,flexShrink:0}}>{form.cslNome[0]}</div>
             <div style={{overflow:"hidden",flex:1}}>
-              <div style={{fontSize:"12px",fontWeight:600,color:V.sidebarTxt,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",fontFamily:"'Plus Jakarta Sans',sans-serif"}}>{form.cslNome}</div>
+              <div style={{fontSize:"12px",fontWeight:500,color:V.sidebarTxt,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{form.cslNome}</div>
               <div style={{fontSize:"10px",color:V.sidebarMut}}>Admin</div>
             </div>
           </div>}
