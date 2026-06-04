@@ -11,6 +11,21 @@ export default async function handler(req, res) {
 
   try {
     if (action === 'search') {
+      const body = {
+        textQuery: query,
+        languageCode: 'pt-BR',
+        regionCode: 'BR',
+        maxResultCount: 6,
+      };
+      // Se tem coordenadas, usa location bias para resultado mais preciso
+      if (lat && lng) {
+        body.locationBias = {
+          circle: {
+            center: { latitude: parseFloat(lat), longitude: parseFloat(lng) },
+            radius: 2000,
+          },
+        };
+      }
       const resp = await fetch('https://places.googleapis.com/v1/places:searchText', {
         method: 'POST',
         headers: {
@@ -18,12 +33,7 @@ export default async function handler(req, res) {
           'X-Goog-Api-Key': KEY,
           'X-Goog-FieldMask': 'places.id,places.displayName,places.formattedAddress,places.rating,places.userRatingCount,places.websiteUri,places.nationalPhoneNumber,places.photos,places.location,places.types,places.googleMapsUri',
         },
-        body: JSON.stringify({
-          textQuery: query,
-          languageCode: 'pt-BR',
-          regionCode: 'BR',
-          maxResultCount: 6,
-        }),
+        body: JSON.stringify(body),
       });
       const data = await resp.json();
       if (!resp.ok) return res.status(resp.status).json(data);
@@ -43,13 +53,13 @@ export default async function handler(req, res) {
     }
 
     if (action === 'nearby') {
-      const placeTypes = types && types.length ? types : ['establishment'];
+      const placeTypes = (types && types.length) ? types.filter(t => t) : ['establishment'];
       const resp = await fetch('https://places.googleapis.com/v1/places:searchNearby', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'X-Goog-Api-Key': KEY,
-          'X-Goog-FieldMask': 'places.id,places.displayName,places.rating,places.userRatingCount,places.formattedAddress,places.websiteUri,places.googleMapsUri,places.photos,places.location',
+          'X-Goog-FieldMask': 'places.id,places.displayName,places.rating,places.userRatingCount,places.formattedAddress,places.websiteUri,places.photos,places.location',
         },
         body: JSON.stringify({
           includedTypes: placeTypes,
