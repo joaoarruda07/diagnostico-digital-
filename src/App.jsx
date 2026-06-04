@@ -1361,6 +1361,148 @@ Retorne SOMENTE JSON sem markdown:
                 ))}
               </div>
             </div>
+
+            {/* Preview do layout selecionado */}
+            <div style={{marginBottom:"16px",borderRadius:"12px",overflow:"hidden",border:`.5px solid ${T.n200}`,background:T.n50}}>
+              {layoutPDF==="basico"&&(
+                <div style={{padding:"0",fontFamily:"'Inter',sans-serif"}}>
+                  <div style={{background:"#2563EB",padding:"10px 16px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+                    <div style={{width:"24px",height:"24px",borderRadius:"6px",background:"rgba(255,255,255,.2)"}}/>
+                    <div style={{fontSize:"9px",color:"rgba(255,255,255,.8)",letterSpacing:".1em",textTransform:"uppercase"}}>Diagnóstico Digital</div>
+                  </div>
+                  <div style={{padding:"16px",background:"#F8FAFC"}}>
+                    <div style={{fontSize:"9px",fontWeight:600,color:"#2563EB",letterSpacing:".1em",textTransform:"uppercase",marginBottom:"4px"}}>Análise de Presença</div>
+                    <div style={{fontSize:"14px",fontWeight:800,color:"#0F172A",marginBottom:"2px",fontFamily:"'Montserrat',sans-serif"}}>{form.nome||"Nome do Negócio"}</div>
+                    <div style={{fontSize:"10px",color:"#64748B",marginBottom:"12px"}}>{form.categoria||"Categoria"} · {form.cidade||"Cidade"}</div>
+                    <div style={{background:"#fff",border:"1px solid #E2E8F0",borderRadius:"8px",padding:"10px",marginBottom:"8px"}}>
+                      <div style={{height:"6px",background:"#E2E8F0",borderRadius:"3px",marginBottom:"4px"}}/>
+                      <div style={{height:"6px",background:"#E2E8F0",borderRadius:"3px",width:"80%",marginBottom:"4px"}}/>
+                      <div style={{height:"6px",background:"#E2E8F0",borderRadius:"3px",width:"60%"}}/>
+                    </div>
+                    <div style={{display:"flex",gap:"6px"}}>
+                      {["#2563EB","#E2E8F0","#E2E8F0"].map((c,i)=><div key={i} style={{height:"4px",flex:1,background:c,borderRadius:"2px"}}/>)}
+                    </div>
+                  </div>
+                  <div style={{padding:"8px 16px",background:"#fff",borderTop:"1px solid #E2E8F0",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                    <div style={{fontSize:"9px",color:"#64748B"}}>Notion + Stripe Docs</div>
+                    <div style={{fontSize:"9px",fontWeight:700,color:"#2563EB"}}>BÁSICO</div>
+                  </div>
+                </div>
+              )}
+              {layoutPDF==="premium"&&(
+                <div style={{fontFamily:"'Inter',sans-serif"}}>
+                  <div style={{background:"#111111",padding:"16px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+                    <div style={{width:"24px",height:"24px",borderRadius:"6px",background:"rgba(201,162,39,.2)"}}/>
+                    <div style={{fontSize:"9px",color:"rgba(201,162,39,.8)",letterSpacing:".12em",textTransform:"uppercase"}}>Análise Premium · Confidencial</div>
+                  </div>
+                  <div style={{padding:"16px",background:"#F9F7F3"}}>
+                    <div style={{fontSize:"9px",fontWeight:600,color:"#C9A227",letterSpacing:".12em",textTransform:"uppercase",marginBottom:"6px"}}>Resumo Executivo</div>
+                    <div style={{fontSize:"14px",fontWeight:600,color:"#111",marginBottom:"2px",fontFamily:"Georgia,serif",fontStyle:"italic"}}>{form.nome||"Nome do Negócio"}</div>
+                    <div style={{height:"1px",background:"linear-gradient(90deg,#C9A227,transparent)",margin:"8px 0"}}/>
+                    <div style={{background:"#fff",border:"1px solid #E5E1D8",borderRadius:"10px",padding:"10px",marginBottom:"8px",boxShadow:"0 1px 3px rgba(0,0,0,.04)"}}>
+                      <div style={{height:"5px",background:"#E5E1D8",borderRadius:"3px",marginBottom:"4px"}}/>
+                      <div style={{height:"5px",background:"#E5E1D8",borderRadius:"3px",width:"75%"}}/>
+                    </div>
+                    <div style={{borderLeft:"2px solid #C9A227",paddingLeft:"10px"}}>
+                      <div style={{height:"5px",background:"#E5E1D8",borderRadius:"3px",marginBottom:"3px",width:"90%"}}/>
+                      <div style={{height:"5px",background:"#E5E1D8",borderRadius:"3px",width:"70%"}}/>
+                    </div>
+                  </div>
+                  <div style={{padding:"8px 16px",background:"#111",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                    <div style={{fontSize:"9px",color:"#555"}}>McKinsey · Apple · Deloitte</div>
+                    <div style={{fontSize:"9px",fontWeight:700,color:"#C9A227"}}>PREMIUM</div>
+                  </div>
+                </div>
+              )}
+              {layoutPDF==="luxo"&&(
+                <div style={{fontFamily:"'Inter',sans-serif"}}>
+                  <div style={{background:"#0A0A0A",padding:"16px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+                    <div style={{width:"24px",height:"24px",borderRadius:"6px",background:"rgba(212,175,55,.15)",border:"1px solid rgba(212,175,55,.3)"}}/>
+                    <div style={{fontSize:"9px",color:"rgba(212,175,55,.7)",letterSpacing:".2em",textTransform:"uppercase"}}>Exclusivo</div>
+                  </div>
+                  <div style={{padding:"16px",background:"#0A0A0A",textAlign:"center"}}>
+                    <div style={{width:"30px",height:"1px",background:"#D4AF37",margin:"0 auto 10px"}}/>
+                    <div style={{fontSize:"15px",fontWeight:300,color:"#FAFAFA",fontFamily:"Georgia,serif",fontStyle:"italic",letterSpacing:".04em",marginBottom:"4px"}}>{form.nome||"Nome do Negócio"}</div>
+                    <div style={{fontSize:"9px",color:"#D4AF37",letterSpacing:".15em",textTransform:"uppercase",marginBottom:"10px"}}>{form.categoria||"Categoria"}</div>
+                    <div style={{width:"30px",height:"1px",background:"rgba(212,175,55,.3)",margin:"0 auto"}}/>
+                  </div>
+                  <div style={{padding:"12px 16px",background:"#111",border:"1px solid rgba(212,175,55,.15)",margin:"0 12px 12px",borderRadius:"6px"}}>
+                    <div style={{height:"4px",background:"rgba(212,175,55,.15)",borderRadius:"2px",marginBottom:"4px"}}/>
+                    <div style={{height:"4px",background:"rgba(212,175,55,.15)",borderRadius:"2px",width:"70%"}}/>
+                  </div>
+                  <div style={{padding:"8px 16px",background:"#0A0A0A",borderTop:"1px solid rgba(212,175,55,.2)",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                    <div style={{fontSize:"9px",color:"#555"}}>Louis Vuitton · Rolex · Bentley</div>
+                    <div style={{fontSize:"9px",fontWeight:600,color:"#D4AF37",letterSpacing:".08em"}}>LUXO</div>
+                  </div>
+                </div>
+              )}
+              {layoutPDF==="relatorio"&&(
+                <div style={{fontFamily:"'Inter',sans-serif"}}>
+                  <div style={{background:"#0B1F3A",padding:"10px 16px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+                    <div style={{width:"24px",height:"24px",borderRadius:"4px",background:"rgba(255,255,255,.1)"}}/>
+                    <div style={{fontSize:"9px",color:"rgba(255,255,255,.5)",letterSpacing:".08em",textTransform:"uppercase",fontFamily:"'IBM Plex Sans',sans-serif"}}>Relatório Técnico</div>
+                  </div>
+                  <div style={{padding:"14px 16px",background:"#fff"}}>
+                    <div style={{borderLeft:"4px solid #0B1F3A",paddingLeft:"10px",marginBottom:"10px"}}>
+                      <div style={{fontSize:"9px",fontWeight:600,color:"#0B1F3A",opacity:.5,textTransform:"uppercase",letterSpacing:".08em",marginBottom:"2px"}}>Diagnóstico</div>
+                      <div style={{fontSize:"13px",fontWeight:700,color:"#0B1F3A"}}>{form.nome||"Nome do Negócio"}</div>
+                    </div>
+                    <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:"4px",marginBottom:"8px"}}>
+                      {["Nota","Avals","Fotos","Pos."].map((l,i)=>(
+                        <div key={i} style={{background:"#E5E7EB",borderRadius:"4px",padding:"5px",textAlign:"center"}}>
+                          <div style={{fontSize:"12px",fontWeight:700,color:"#0B1F3A"}}>—</div>
+                          <div style={{fontSize:"8px",color:"#6B7280",textTransform:"uppercase"}}>{l}</div>
+                        </div>
+                      ))}
+                    </div>
+                    <div style={{border:"1px solid #E5E7EB",borderRadius:"4px",overflow:"hidden"}}>
+                      <div style={{background:"#0B1F3A",padding:"4px 8px",display:"flex",gap:"16px"}}>
+                        {["Critério","Pts","Max","%"].map((h,i)=><div key={i} style={{fontSize:"8px",color:"rgba(255,255,255,.6)",fontWeight:600,flex:i===0?2:1}}>{h}</div>)}
+                      </div>
+                      {["Nota Google","Avaliações","Site"].map((r,i)=>(
+                        <div key={i} style={{padding:"4px 8px",display:"flex",gap:"16px",borderBottom:"1px solid #E5E7EB"}}>
+                          <div style={{fontSize:"8px",color:"#374151",flex:2}}>{r}</div>
+                          <div style={{fontSize:"8px",color:"#0B1F3A",fontWeight:700,flex:1}}>—</div>
+                          <div style={{fontSize:"8px",color:"#9CA3AF",flex:1}}>—</div>
+                          <div style={{fontSize:"8px",color:"#9CA3AF",flex:1}}>—%</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div style={{padding:"8px 16px",background:"#0B1F3A",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                    <div style={{fontSize:"9px",color:"rgba(255,255,255,.3)"}}>PwC · KPMG · EY · Nubank</div>
+                    <div style={{fontSize:"9px",fontWeight:700,color:"rgba(255,255,255,.6)",letterSpacing:".06em"}}>RELATÓRIO</div>
+                  </div>
+                </div>
+              )}
+              {layoutPDF==="custom"&&(
+                <div style={{fontFamily:"'Inter',sans-serif"}}>
+                  <div style={{background:"#0a0a0a",padding:"16px",display:"flex",alignItems:"center",justifyContent:"space-between",position:"relative",overflow:"hidden"}}>
+                    <div style={{position:"absolute",top:0,right:0,width:"40%",height:"100%",background:`linear-gradient(135deg,${form.cor1}22,transparent)`}}/>
+                    <div style={{width:"24px",height:"24px",borderRadius:"6px",background:form.cor1+"33",border:`1px solid ${form.cor1}44`}}/>
+                    <div style={{fontSize:"9px",color:form.cor1,letterSpacing:".1em",textTransform:"uppercase",opacity:.8}}>Diagnóstico Digital</div>
+                  </div>
+                  <div style={{padding:"16px",background:"#fff"}}>
+                    <div style={{fontSize:"9px",fontWeight:600,color:form.cor1,letterSpacing:".1em",textTransform:"uppercase",marginBottom:"4px"}}>Análise de Presença</div>
+                    <div style={{fontSize:"14px",fontWeight:800,color:"#0a0a0a",marginBottom:"2px",fontFamily:"'Space Grotesk',sans-serif"}}>{form.nome||"Nome do Negócio"}</div>
+                    <div style={{fontSize:"10px",color:"#777",marginBottom:"10px"}}>{form.categoria||"Categoria"} · {form.cidade||"Cidade"}</div>
+                    <div style={{background:`${form.cor1}08`,border:`1px solid ${form.cor1}20`,borderLeft:`3px solid ${form.cor1}`,borderRadius:"0 8px 8px 0",padding:"8px 10px",marginBottom:"8px"}}>
+                      <div style={{height:"5px",background:form.cor1+"22",borderRadius:"3px",marginBottom:"3px"}}/>
+                      <div style={{height:"5px",background:form.cor1+"15",borderRadius:"3px",width:"70%"}}/>
+                    </div>
+                    <div style={{background:"#0a0a0a",borderRadius:"8px",padding:"8px 10px"}}>
+                      <div style={{height:"4px",background:"rgba(255,255,255,.1)",borderRadius:"2px",marginBottom:"3px"}}/>
+                      <div style={{height:"4px",background:"rgba(255,255,255,.07)",borderRadius:"2px",width:"60%"}}/>
+                    </div>
+                  </div>
+                  <div style={{padding:"8px 16px",background:"#0a0a0a",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                    <div style={{fontSize:"9px",color:"#444"}}>Cor da sua marca</div>
+                    <div style={{fontSize:"9px",fontWeight:700,color:form.cor1}}>CUSTOM</div>
+                  </div>
+                </div>
+              )}
+            </div>
+
             <div style={{display:"flex",gap:"8px",flexWrap:"wrap",marginBottom:"16px"}}>
               <button onClick={gerarTextoIA} disabled={loading} style={{...css.btn(form.cor1,"#fff"),opacity:loading?.7:1,fontSize:"12px",padding:"8px 14px"}}>
                 {loading?"Gerando...":"Gerar textos com IA"}
