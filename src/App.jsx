@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 
-import LOGO_B64 from "./logo.png";
+// logo via public folder
 
 
 /* ─── TOKENS ─────────────────────────────────────────────── */
@@ -145,9 +145,9 @@ function GaugeSVG({score,size=200}) {
   const sc=Math.max(0,Math.min(100,parseInt(score)||0));
   const rad=(-180+(sc/100)*180)*Math.PI/180;
   const nx=(110+80*Math.cos(rad)).toFixed(1), ny=(105+80*Math.sin(rad)).toFixed(1);
-  const col=sc<40?"#DC2626":sc<70?"#F59E0B":T.gold;
+  const col=sc<30?"#DC2626":sc<60?"#F59E0B":sc<80?"#4ADE80":"#16A34A";
   return(
-    <svg width={size} viewBox="0 0 220 135" style={{display:"block",margin:"0 auto"}}><defs><linearGradient id="gg" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stopColor="#DC2626"/><stop offset="40%" stopColor="#F59E0B"/><stop offset="70%" stopColor={T.goldM}/><stop offset="100%" stopColor={T.gold}/></linearGradient></defs><path d="M30 105 A80 80 0 0 1 190 105" fill="none" stroke={T.n200} strokeWidth="18" strokeLinecap="round"/><path d="M30 105 A80 80 0 0 1 190 105" fill="none" stroke="url(#gg)" strokeWidth="18" strokeLinecap="round"/><text x="22" y="122" fontSize="10" fill={T.n400} textAnchor="middle" fontFamily="Manrope,sans-serif">0</text><text x="110" y="20" fontSize="10" fill={T.n400} textAnchor="middle" fontFamily="Manrope,sans-serif">50</text><text x="198" y="122" fontSize="10" fill={T.n400} textAnchor="middle" fontFamily="Manrope,sans-serif">100</text><line x1="110" y1="105" x2={nx} y2={ny} stroke={T.dark} strokeWidth="3.5" strokeLinecap="round"/><circle cx="110" cy="105" r="6" fill={T.dark}/><text x="110" y="133" fontSize="22" fontWeight="800" fill={col} textAnchor="middle" fontFamily="Manrope,sans-serif">{sc}</text></svg>
+    <svg width={size} viewBox="0 0 220 135" style={{display:"block",margin:"0 auto"}}><defs><linearGradient id="gg" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stopColor="#EF4444"/><stop offset="35%" stopColor="#F59E0B"/><stop offset="70%" stopColor="#4ADE80"/><stop offset="100%" stopColor="#16A34A"/></linearGradient></defs><path d="M30 105 A80 80 0 0 1 190 105" fill="none" stroke={T.n200} strokeWidth="18" strokeLinecap="round"/><path d="M30 105 A80 80 0 0 1 190 105" fill="none" stroke="url(#gg)" strokeWidth="18" strokeLinecap="round"/><text x="22" y="122" fontSize="10" fill={T.n400} textAnchor="middle" fontFamily="Manrope,sans-serif">0</text><text x="110" y="20" fontSize="10" fill={T.n400} textAnchor="middle" fontFamily="Manrope,sans-serif">50</text><text x="198" y="122" fontSize="10" fill={T.n400} textAnchor="middle" fontFamily="Manrope,sans-serif">100</text><line x1="110" y1="105" x2={nx} y2={ny} stroke={T.dark} strokeWidth="3.5" strokeLinecap="round"/><circle cx="110" cy="105" r="6" fill={T.dark}/><text x="110" y="133" fontSize="22" fontWeight="800" fill={col} textAnchor="middle" fontFamily="Manrope,sans-serif">{sc}</text></svg>
   );
 }
 function gaugeStatic(sc) {
@@ -230,7 +230,7 @@ function PasteImage({value, onChange, label="Cole um print (Ctrl+V)", hint=""}) 
 
 
 const LogoIcon = ({size=40,fill=false}) => (
-  <img src={LOGO_B64} alt="SCentral" style={{width:fill?"100%":`${size}px`,height:"auto",objectFit:"contain",display:"block",margin:"0 auto",mixBlendMode:"lighten"}}/>
+  <img src="/logo.png" alt="SCentral" style={{width:fill?"100%":`${size}px`,height:"auto",objectFit:"contain",display:"block",margin:"0 auto",mixBlendMode:"lighten"}}/>
 );
 
 /* ─── APP ────────────────────────────────────────────────── */
@@ -608,6 +608,7 @@ Retorne SOMENTE JSON sem markdown:
   };
 
   // ─── DESIGN TOKENS ────────────────────────────────────
+  const _accent = form?.cor1||"#7C3AED";
   const V = {
     // Sidebar escura
     sidebar:    "#0F0E1A",
@@ -616,16 +617,16 @@ Retorne SOMENTE JSON sem markdown:
     sidebarTxt: "#fff",
     sidebarMut: "#6B6880",
     sidebarSub: "#9E9BB0",
-    // Conteúdo claro (como na referência)
+    // Conteúdo claro
     bg:         "#F4F6FA",
     surface:    "#FFFFFF",
     surfaceHov: "#F8FAFC",
     border:     "#E5E7EB",
     borderFoc:  "#D1D5DB",
     // Accent — roxo apenas onde necessário
-    accent:     form.cor1||"#7C3AED",
-    accentL:    (form.cor1||"#7C3AED")+"14",
-    accentBdr:  (form.cor1||"#7C3AED")+"40",
+    accent:     _accent,
+    accentL:    _accent+"14",
+    accentBdr:  _accent+"40",
     // Texto
     txt:        "#111827",
     txtSec:     "#6B7280",
@@ -768,7 +769,7 @@ Retorne SOMENTE JSON sem markdown:
         <div style={{padding:"6px 10px",borderBottom:`1px solid ${V.sidebarBdr}`}}>
           <div style={{display:"flex",background:"rgba(255,255,255,.06)",borderRadius:"8px",padding:"2px"}}>
             {["manual","auto"].map(m=>(
-              <button key={m} onClick={()=>setP2modo(m)}
+              <button key={m} onClick={()=>{setP2modo(m);if(m==="auto")setPg(1);}}
                 style={{flex:1,padding:"5px",fontSize:"10px",fontWeight:600,cursor:"pointer",border:"none",borderRadius:"8px",background:p2modo===m?V.accent:"transparent",color:p2modo===m?"#fff":V.sidebarMut,transition:"all .2s",letterSpacing:".03em",textTransform:"uppercase"}}>
                 {m==="auto"?"Auto IA":"Manual"}
               </button>
@@ -823,7 +824,7 @@ Retorne SOMENTE JSON sem markdown:
       <div style={{marginLeft:"230px",flex:1,display:"flex",flexDirection:"column"}}>
 
         {/* Header */}
-        <header style={{background:V.surface,borderBottom:`1px solid ${V.border}`,padding:"0 28px",height:"48px",display:"flex",alignItems:"center",justifyContent:"space-between",position:"sticky",top:0,zIndex:99,boxShadow:V.shadow}}>
+        <header style={{background:V.surface,borderBottom:`1px solid ${V.border}`,padding:"0 24px 0 16px",height:"48px",display:"flex",alignItems:"center",justifyContent:"space-between",position:"sticky",top:0,zIndex:99,boxShadow:V.shadow}}>
           <div>
             <div style={{fontSize:"16px",fontWeight:600,color:V.txt,fontFamily:"'Sora',sans-serif"}}>
               {p2modo==="auto"?"Diagnóstico Automático":navItems.find(n=>n.id===pg)?.label||"Diagnóstico"}
@@ -844,7 +845,7 @@ Retorne SOMENTE JSON sem markdown:
         </header>
 
         {/* Content */}
-        <div style={{flex:1,padding:"20px 24px 20px 20px",display:"flex",gap:"20px",alignItems:"flex-start",minWidth:0}}>
+        <div style={{flex:1,padding:"20px 24px 20px 16px",display:"flex",gap:"20px",alignItems:"flex-start",minWidth:0}}>
 
           {/* Main col */}
           <div style={{flex:1,minWidth:0,maxWidth:"100%"}}>
@@ -1434,7 +1435,7 @@ function buildPDF({form,ig,kws,concs,logoUrl,textos,temDadosGoogle,temConcs,temI
   // Shared helpers
   const logoHtml=logoUrl
     ?`<img src="${logoUrl}" style="height:48px;width:48px;object-fit:cover;border-radius:12px;display:block"/>`
-    :`<img src="${LOGO_B64}" style="height:48px;width:auto;object-fit:contain;display:block;filter:brightness(10)"/>`;
+    :`<img src="/logo.png" style="height:48px;width:auto;object-fit:contain;display:block;filter:brightness(10)"/>`;
   const qrHtml=wUrl?`<img src="${qrUrl(wUrl)}" width="100" height="100" style="border-radius:10px;display:block"/>`:""
 
   const scoreCritsData=[
@@ -1715,7 +1716,7 @@ ${temIG?`
   if(layout==="luxo") {
     const L={dark:"#0A0A0A",gold:"#D4AF37",champagne:"#E8D9B5",white:"#FAFAFA",muted:"#888",border:"rgba(212,175,55,.25)"};
     const scoreBars=scoreCritsData.map(({l,pts,max})=>`<div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;margin-bottom:5px"><span style="font-size:10px;color:${L.muted};letter-spacing:.06em;text-transform:uppercase">${l}</span><span style="font-size:10px;font-weight:600;color:${pts===max?L.gold:L.muted}">${pts}/${max}</span></div><div style="height:1px;background:rgba(255,255,255,.08)"><div style="height:100%;width:${(pts/max)*100}%;background:${pts===max?L.gold:"rgba(212,175,55,.4)"};"></div></div></div>`).join("");
-    const logoHtmlL=logoUrl?`<img src="${logoUrl}" style="height:44px;width:44px;object-fit:cover;border-radius:10px;display:block"/>`:`<img src="${LOGO_B64}" style="height:44px;width:auto;object-fit:contain;display:block;filter:brightness(10)"/>`;
+    const logoHtmlL=logoUrl?`<img src="${logoUrl}" style="height:44px;width:44px;object-fit:cover;border-radius:10px;display:block"/>`:`<img src="/logo.png" style="height:44px;width:auto;object-fit:contain;display:block;filter:brightness(10)"/>`;
     return`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"/><title>Diagnóstico — ${form.nome}</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet"/>
 <style>
@@ -1962,7 +1963,7 @@ ${temIG?`
   // MODELO 5 — CUSTOM (cor da marca — design atual)
   // ═══════════════════════════════════════════════════════
   {
-    const logoHtmlC=logoUrl?`<img src="${logoUrl}" style="height:44px;width:44px;object-fit:cover;border-radius:12px;display:block"/>`:`<img src="${LOGO_B64}" style="height:44px;width:auto;object-fit:contain;display:block;filter:brightness(10)"/>`;
+    const logoHtmlC=logoUrl?`<img src="${logoUrl}" style="height:44px;width:44px;object-fit:cover;border-radius:12px;display:block"/>`:`<img src="/logo.png" style="height:44px;width:auto;object-fit:contain;display:block;filter:brightness(10)"/>`;
     const scoreBars=scoreCritsData.map(({l,pts,max})=>`<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:11px;color:#777;font-weight:500">${l}</span><span style="font-size:11px;font-weight:700;color:${pts===max?"#16A34A":pts>0?c1:"#ccc"}">${pts}<span style="color:#ccc;font-weight:400">/${max}</span></span></div><div style="height:4px;background:#f0f0f0;border-radius:2px"><div style="height:100%;width:${(pts/max)*100}%;background:${pts===max?"#16A34A":pts>0?c1:"transparent"};border-radius:2px"></div></div></div>`).join("");
     return`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"/><title>Diagnóstico — ${form.nome}</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Sora:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
