@@ -397,8 +397,17 @@ export default function App() {
     setStatus({t:"load",m:"Buscando ficha no Google Maps..."});
     try {
       let query=url;
-      const m=url.match(/place\/([^/@?]+)/);
-      if(m) query=decodeURIComponent(m[1].replace(/\+/g," ").replace(/%20/g," "));
+      // Tenta extrair da URL de place
+      const mPlace=url.match(/place\/([^/@?&]+)/);
+      // Tenta extrair do parâmetro q=
+      const mQ=url.match(/[?&]q=([^&]+)/);
+      // Tenta extrair do parâmetro query=
+      const mQuery=url.match(/[?&]query=([^&]+)/);
+      if(mPlace) query=decodeURIComponent(mPlace[1].replace(/\+/g," "));
+      else if(mQ) query=decodeURIComponent(mQ[1].replace(/\+/g," "));
+      else if(mQuery) query=decodeURIComponent(mQuery[1].replace(/\+/g," "));
+      // Remove sufixos desnecessários como " maps"
+      query=query.replace(/\s*maps\s*$/i,"").replace(/\+/g," ").trim();
       const r1=await fetch("/api/places",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"search",query})});
       const d1=await r1.json();
       const place=d1.places?.[0];
@@ -508,11 +517,18 @@ Retorne SOMENTE JSON sem markdown:
         results=d.places||[];
       } else {
         // Fallback: busca textual
-        const query=`${form.categoria}${form.especializacao?" "+form.especializacao:""} ${form.cidade}`;
+        const q=`${form.especializacao||form.categoria} em ${form.cidade}`;
         const r=await fetch("/api/places",{method:"POST",headers:{"Content-Type":"application/json"},
-          body:JSON.stringify({action:"search",query})});
+          body:JSON.stringify({action:"search",query:q})});
         const d=await r.json();
         results=d.places||[];
+        // Se não achou, tenta só categoria
+        if(!results.length){
+          const r2=await fetch("/api/places",{method:"POST",headers:{"Content-Type":"application/json"},
+            body:JSON.stringify({action:"search",query:`${form.categoria} ${form.cidade}`})});
+          const d2=await r2.json();
+          results=d2.places||[];
+        }
       }
       // Filtra o próprio negócio e mapeia
       const concsFormatted=results
