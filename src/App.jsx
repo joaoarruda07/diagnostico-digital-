@@ -396,54 +396,85 @@ export default function App() {
     setFichaLoad(true);
     setStatus({t:"load",m:"Buscando ficha no Google Maps..."});
     try {
-      let query=url;
-      // Tenta extrair da URL de place
-      const mPlace=url.match(/place\/([^/@?&]+)/);
-      // Tenta extrair do parâmetro q=
-      const mQ=url.match(/[?&]q=([^&]+)/);
-      // Tenta extrair do parâmetro query=
-      const mQuery=url.match(/[?&]query=([^&]+)/);
-      if(mPlace) query=decodeURIComponent(mPlace[1].replace(/\+/g," "));
-      else if(mQ) query=decodeURIComponent(mQ[1].replace(/\+/g," "));
-      else if(mQuery) query=decodeURIComponent(mQuery[1].replace(/\+/g," "));
-      // Remove sufixos desnecessários como " maps"
-      query=query.replace(/\s*maps\s*$/i,"").replace(/\+/g," ").trim();
-      const r1=await fetch("/api/places",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"search",query})});
+      // 1. Extrai nome do lugar da URL
+      let query="";
+      const mName=url.match(/maps\/place\/([^/@?&]+)/);
+      if(mName) query=decodeURIComponent(mName[1].replace(/\+/g," "));
+      
+      // 2. Extrai coordenadas se disponível
+      const mCoord=url.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+      const lat=mCoord?mCoord[1]:null;
+      const lng=mCoord?mCoord[2]:null;
+      
+      // 3. Se tem coordenadas, busca pelo nome + localização (mais preciso)
+      if(!query){
+        const mQ=url.match(/[?&]q=([^&]+)/);
+        if(mQ) query=decodeURIComponent(mQ[1].replace(/\+/g," ")).replace(/\s*maps\s*$/i,"").trim();
+      }
+      if(!query) throw new Error("Não foi possível extrair o nome da URL");
+
+      // 4. Busca na Places API
+      const searchQuery = lat&&lng ? `${query}` : query;
+      const r1=await fetch("/api/places",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({
+          action:"search",
+          query:searchQuery,
+          lat:lat?parseFloat(lat):null,
+          lng:lng?parseFloat(lng):null,
+        })
+      });
       const d1=await r1.json();
       const place=d1.places?.[0];
-      if(!place) throw new Error("Não encontrado");
-      const r2=await fetch("/api/places",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"details",placeId:place.id})});
+      if(!place) throw new Error("Negócio não encontrado na Places API");
+
+      // 5. Busca detalhes completos
+      const r2=await fetch("/api/places",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({action:"details",placeId:place.id})
+      });
       const det=await r2.json();
+
+      // 6. Preenche o form
       const next={...form,nichoKey};
-      next.nome=det.displayName?.text||"";
-      next.nota=String(det.rating||"");
-      next.numAvals=String(det.userRatingCount||"");
-      next.numFotos=String(det.photos?.length||"");
+      next.nome=det.displayName?.text||place.displayName?.text||query;
+      next.nota=String(det.rating||place.rating||"");
+      next.numAvals=String(det.userRatingCount||place.userRatingCount||"");
+      next.numFotos=String(det.photos?.length||place.photos?.length||"");
       next.site=det.websiteUri||"";
       next.whatsapp=det.nationalPhoneNumber||"";
       next.temSite=!!(det.websiteUri);
       next.temWhats=!!(det.nationalPhoneNumber);
-      next.placeLat=det.location?.latitude||"";
-      next.placeLng=det.location?.longitude||"";
+      next.placeLat=lat||String(det.location?.latitude||"");
+      next.placeLng=lng||String(det.location?.longitude||"");
       next.placeId=place.id||"";
-      const addr=det.formattedAddress||"";
-      const parts=addr.split(",");
-      if(parts.length>=3){
-        next.endereco=parts.slice(0,-2).join(",").trim();
-        const cf=parts[parts.length-2]?.trim()||"";
-        const cp=cf.split("-");
-        next.cidade=cp[0]?.trim()||"";
-        next.estado=cp[1]?.trim()||"";
+
+      // Extrai cidade do endereço
+      const addr=det.formattedAddress||place.formattedAddress||"";
+      if(addr){
+        const parts=addr.split(",");
+        if(parts.length>=3){
+          const cf=(parts[parts.length-2]||"").trim();
+          const cp=cf.split("-");
+          next.cidade=(cp[0]||"").trim();
+          next.estado=(cp[1]||"").trim();
+        }
       }
+      
       if(next.nota||next.numAvals) next.score=String(calcScore(next));
       setForm(next);
-      const types=det.types||[];
+
+      // Auto-detecta nicho
+      const types=det.types||place.types||[];
       for(const [k,vals] of Object.entries(NICHO_PLACE_TYPES)){
         if(vals.some(t=>types.includes(t))){setNichoKey(k);break;}
       }
-      setStatus({t:"ok",m:`✓ Ficha de "${next.nome}" carregada!`});
+      setStatus({t:"ok",m:`✓ "${next.nome}" carregado! Nota: ${next.nota}★ · ${next.numAvals} avaliações`});
     } catch(e){
-      setStatus({t:"err",m:"Não foi possível extrair. Preencha manualmente."});
+      setStatus({t:"err",m:"Não foi possível extrair. Verifique se a chave Google está configurada."});
+      console.error(e);
     }
     setFichaLoad(false);
   };
