@@ -341,6 +341,7 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [concLoad, setConcLoad] = useState(false);
   const [fichaLoad, setFichaLoad] = useState(false);
+  const [layoutPDF, setLayoutPDF] = useState("premium"); // basico|premium|luxo|relatorio|custom
   const [showRef, setShowRef] = useState(false);
   const [refPdfName, setRefPdfName] = useState("");
   const [refPdfB64, setRefPdfB64] = useState("");
@@ -673,7 +674,7 @@ Retorne SOMENTE JSON sem markdown:
 
   const abrirPDF = () => {
     if(!form.nome||!form.categoria){setStatus({t:"err",m:"Preencha nome e categoria."});return;}
-    const html=buildPDF({form,ig,kws,concs,logoUrl,textos:txAtual(),temDadosGoogle,temConcs,temIG});
+    const html=buildPDF({form,ig,kws,concs,logoUrl,textos:txAtual(),temDadosGoogle,temConcs,temIG,layout:layoutPDF});
     const win=window.open("","_blank");
     if(!win){setStatus({t:"err",m:"Popup bloqueado!"});return;}
     win.document.write(html); win.document.close();
@@ -1340,6 +1341,26 @@ Retorne SOMENTE JSON sem markdown:
             </div>
 
             <SBar/>
+            {/* Seletor de layout */}
+            <div style={{marginBottom:"16px"}}>
+              <div style={css.sec}>Layout do relatório</div>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:"8px"}}>
+                {[
+                  {id:"basico",label:"Básico",desc:"Notion + Stripe",cor:"#2563EB"},
+                  {id:"premium",label:"Premium",desc:"McKinsey + Apple",cor:"#C9A227"},
+                  {id:"luxo",label:"Luxo",desc:"Louis Vuitton + Rolex",cor:"#D4AF37"},
+                  {id:"relatorio",label:"Relatório",desc:"PwC + KPMG",cor:"#0B1F3A"},
+                  {id:"custom",label:"Custom",desc:"Cor da marca",cor:form.cor1},
+                ].map(({id,label,desc,cor})=>(
+                  <div key={id} onClick={()=>setLayoutPDF(id)}
+                    style={{padding:"10px 8px",borderRadius:"10px",border:layoutPDF===id?`2px solid ${cor}`:`.5px solid ${T.n200}`,background:layoutPDF===id?cor+"10":T.n0,cursor:"pointer",textAlign:"center",transition:"all .12s"}}>
+                    <div style={{width:"20px",height:"20px",borderRadius:"50%",background:cor,margin:"0 auto 6px"}}/>
+                    <div style={{fontSize:"11px",fontWeight:700,color:layoutPDF===id?cor:T.n900}}>{label}</div>
+                    <div style={{fontSize:"9px",color:T.n400,marginTop:"2px",lineHeight:1.3}}>{desc}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
             <div style={{display:"flex",gap:"8px",flexWrap:"wrap",marginBottom:"16px"}}>
               <button onClick={gerarTextoIA} disabled={loading} style={{...css.btn(form.cor1,"#fff"),opacity:loading?.7:1,fontSize:"12px",padding:"8px 14px"}}>
                 {loading?"Gerando...":"Gerar textos com IA"}
@@ -1391,35 +1412,19 @@ Retorne SOMENTE JSON sem markdown:
 }
 
 /* ─── BUILD PDF ──────────────────────────────────────────── */
-function buildPDF({form,ig,kws,concs,logoUrl,textos,temDadosGoogle,temConcs,temIG}) {
+function buildPDF({form,ig,kws,concs,logoUrl,textos,temDadosGoogle,temConcs,temIG,layout="custom"}) {
   const c1=form.cor1||T.gold, c2=form.cor2||T.dark;
   const empresa=form.cslEmpresa||"SCentral";
   const t=textos;
-  const wUrl=waLink(form.cslWhats);
   const n=NICHOS[form.nichoKey]||NICHOS.outro;
+  const wUrl=waLink(form.cslWhats);
 
+  // Shared helpers
   const logoHtml=logoUrl
-    ?`<img src="${logoUrl}" style="height:44px;width:auto;object-fit:contain;display:block"/>`
-    :`<img src="${LOGO_B64}" style="height:44px;width:auto;object-fit:contain;display:block;filter:brightness(10)"/>`;
+    ?`<img src="${logoUrl}" style="height:48px;width:48px;object-fit:cover;border-radius:12px;display:block"/>`
+    :`<img src="${LOGO_B64}" style="height:48px;width:auto;object-fit:contain;display:block;filter:brightness(10)"/>`;
+  const qrHtml=wUrl?`<img src="${qrUrl(wUrl)}" width="100" height="100" style="border-radius:10px;display:block"/>`:""
 
-  const wUrl2=waLink(form.cslWhats);
-  const qrHtml=wUrl2?`<img src="${qrUrl(wUrl2)}" width="110" height="110" style="border-radius:12px;border:1.5px solid ${c1}22;display:block;margin:0 auto"/>`:""
-
-  // Página counter
-  let pgCur=0;
-  let pgTotal=1+((kws||[]).length>0?1:0)+(temDadosGoogle?1:0)+(temConcs?1:0)+(temIG?1:0)+1;
-  const pgNum=()=>{pgCur++;return`<div style="display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:24px;border-top:1px solid ${c1}18"><span style="font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:${c1};opacity:.5">${empresa}</span><span style="font-size:10px;color:#aaa;font-weight:500">${String(pgCur).padStart(2,'0')} / ${String(pgTotal).padStart(2,'0')}</span></div>`;};
-
-  // Critérios IG
-  const igCriticasHtml=(()=>{
-    const tom=form.tom||"original";
-    return IG_CRITERIOS
-      .filter(c=>{ const v=ig[c.k]; return c.criticaPositiva?v===true:v===false; })
-      .map(c=>`<div style="margin-bottom:12px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:6px;height:6px;border-radius:50%;background:#EF4444;flex-shrink:0"></div><span style="font-size:11px;font-weight:700;color:#111;letter-spacing:.02em">${c.label}</span></div><p style="font-size:12px;color:#555;line-height:1.7;padding-left:14px;margin:0">${c.critica[tom]||c.critica.original}</p></div>`)
-      .join("");
-  })();
-
-  // Score bars
   const scoreCritsData=[
     {l:"Nota Google",pts:Math.round(Math.min((parseFloat(form.nota)||0)/5*25,25)),max:25},
     {l:"Avaliações",pts:Math.round(Math.min((parseInt(form.numAvals)||0)/200*20,20)),max:20},
@@ -1429,78 +1434,525 @@ function buildPDF({form,ig,kws,concs,logoUrl,textos,temDadosGoogle,temConcs,temI
     {l:"Posts",pts:form.postsAtivos?10:0,max:10},
     {l:"Frequência",pts:{nenhuma:0,raramente:3,mensal:5,semanal:8,diaria:10}[form.frequencia]||0,max:10},
   ];
-  const scoreBarsHtml=scoreCritsData.map(({l,pts,max})=>`
-    <div style="margin-bottom:10px">
-      <div style="display:flex;justify-content:space-between;margin-bottom:4px">
-        <span style="font-size:11px;color:#777;font-weight:500">${l}</span>
-        <span style="font-size:11px;font-weight:700;color:${pts===max?"#16A34A":pts>0?c1:"#ccc"}">${pts}<span style="color:#ccc;font-weight:400">/${max}</span></span>
-      </div>
-      <div style="height:4px;background:#f0f0f0;border-radius:2px;overflow:hidden">
-        <div style="height:100%;width:${(pts/max)*100}%;background:${pts===max?"#16A34A":pts>0?c1:"transparent"};border-radius:2px;transition:.3s"></div>
-      </div>
-    </div>`).join("");
 
-  // Gauge SVG inline
+  const igCriticasHtml=(()=>{
+    const tom=form.tom||"original";
+    return IG_CRITERIOS
+      .filter(c=>{const v=ig[c.k];return c.criticaPositiva?v===true:v===false;})
+      .map(c=>`<div style="margin-bottom:10px;padding:10px 14px;background:#FEE2E2;border-left:3px solid #EF4444;border-radius:0 8px 8px 0"><div style="font-size:11px;font-weight:700;color:#991B1B;margin-bottom:4px">${c.label}</div><p style="font-size:12px;color:#7F1D1D;line-height:1.65;margin:0">${c.critica[tom]||c.critica.original}</p></div>`)
+      .join("");
+  })();
+
+  const kwPageHtml=(kws||[]).length>0?`<div class="pg"><div class="accent"></div><div class="body"><div class="label" style="margin-bottom:8px">Visibilidade de busca</div><h1 style="margin-bottom:14px">Oportunidades de pesquisa</h1><p style="max-width:460px;margin-bottom:28px">${n.cliente}s buscam por <strong>${form.categoria}</strong> em <strong>${form.cidade}</strong>. Veja onde você está posicionado.</p><div class="card">${(kws||[]).map((kw,i)=>{const term=kw.term||kw;const vol=kw.volume||"—";const pos=kw.pos;const posNum=parseInt(pos);const posColor=posNum<=3?"#16A34A":posNum<=10?"#F59E0B":"#EF4444";return`<div style="display:flex;align-items:center;gap:16px;padding:12px 0;border-bottom:1px solid #f5f5f5${i===(kws.length-1)?";border:none":""}"><div style="flex:1"><div style="font-size:13px;font-weight:600;color:#111">${term}</div><div style="font-size:11px;color:#aaa;margin-top:2px"><span style="font-weight:700;color:#2563EB">${vol}</span> buscas/mês em ${form.cidade||"sua cidade"}</div></div>${pos?`<div style="text-align:right"><div style="font-size:18px;font-weight:800;color:${posColor}">#${pos}</div><div style="font-size:10px;color:${posColor};font-weight:600">${posNum<=3?"Top 3":posNum<=10?"Página 1":"Página "+Math.ceil(posNum/10)}</div></div>`:`<div style="font-size:11px;color:#ccc">Não rastreado</div>`}</div>`;}).join("")}</div></div></div>`:"";
+
+  const mapSVG=temConcs?makeMapStatic({concs,cidade:form.cidade||"Cidade",nome:form.nome||"Negócio",cor1:c1}):"";
+  const concRows=temConcs?concs.slice(0,5).map((c,i)=>`<div style="display:flex;align-items:center;gap:14px;padding:11px 0;border-bottom:1px solid #f5f5f5"><div style="width:26px;height:26px;border-radius:50%;background:${i===0?"#EF4444":i===1?"#F59E0B":"#94A3B8"};color:#fff;font-weight:800;font-size:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0">${c.posicao||i+1}</div><div style="flex:1"><div style="font-size:12px;font-weight:600;color:#111">${c.nome}</div>${c.diferencial?`<div style="font-size:11px;color:#999">${c.diferencial}</div>`:""}</div><div style="text-align:right;font-size:12px;font-weight:700;color:#111">${c.nota}★<div style="font-size:10px;color:#aaa;font-weight:400">${c.avals}</div></div></div>`).join(""):"";
+
   const gaugeSVG=(()=>{
     const sc=Math.max(0,Math.min(100,parseInt(form.score)||0));
     const rad=(-180+(sc/100)*180)*Math.PI/180;
-    const nx=(110+80*Math.cos(rad)).toFixed(1);
-    const ny=(105+80*Math.sin(rad)).toFixed(1);
+    const nx=(110+80*Math.cos(rad)).toFixed(1);const ny=(105+80*Math.sin(rad)).toFixed(1);
     const col=sc<40?"#EF4444":sc<70?"#F59E0B":c1;
-    return `<svg width="180" height="110" viewBox="0 0 220 135" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="gg" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#EF4444"/><stop offset="40%" stop-color="#F59E0B"/><stop offset="100%" stop-color="${c1}"/></linearGradient></defs><path d="M30 105 A80 80 0 0 1 190 105" fill="none" stroke="#f0f0f0" stroke-width="14" stroke-linecap="round"/><path d="M30 105 A80 80 0 0 1 190 105" fill="none" stroke="url(#gg)" stroke-width="14" stroke-linecap="round" opacity=".9"/><line x1="110" y1="105" x2="${nx}" y2="${ny}" stroke="#111" stroke-width="3" stroke-linecap="round"/><circle cx="110" cy="105" r="5" fill="#111"/><text x="110" y="130" font-size="24" font-weight="800" fill="${col}" text-anchor="middle" font-family="'Space Grotesk',sans-serif">${sc}</text></svg>`;
+    return`<svg width="160" height="100" viewBox="0 0 220 135" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="gg" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#EF4444"/><stop offset="40%" stop-color="#F59E0B"/><stop offset="100%" stop-color="${c1}"/></linearGradient></defs><path d="M30 105 A80 80 0 0 1 190 105" fill="none" stroke="#f0f0f0" stroke-width="14" stroke-linecap="round"/><path d="M30 105 A80 80 0 0 1 190 105" fill="none" stroke="url(#gg)" stroke-width="14" stroke-linecap="round"/><line x1="110" y1="105" x2="${nx}" y2="${ny}" stroke="#111" stroke-width="3" stroke-linecap="round"/><circle cx="110" cy="105" r="5" fill="#111"/><text x="110" y="130" font-size="24" font-weight="800" fill="${col}" text-anchor="middle" font-family="sans-serif">${sc}</text></svg>`;
   })();
 
-  // Mapa concorrentes
-  const mapSVG=temConcs?makeMapStatic({concs,cidade:form.cidade||"Cidade",nome:form.nome||"Negócio",cor1:c1}):"";
+  let pgCur=0;
+  let pgTotal=1+((kws||[]).length>0?1:0)+(temDadosGoogle?1:0)+(temConcs?1:0)+(temIG?1:0)+1;
+  const pgNum=(accent="#7C3AED",bg="#fff")=>{ pgCur++;
+    return`<div style="display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:20px;border-top:1px solid ${bg==="#fff"?"#f0f0f0":"rgba(255,255,255,.1)"}"><span style="font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:${bg==="#fff"?accent:"rgba(255,255,255,.4)"}">${empresa}</span><span style="font-size:10px;color:${bg==="#fff"?"#aaa":"rgba(255,255,255,.3)"}">${String(pgCur).padStart(2,"0")} / ${String(pgTotal).padStart(2,"0")}</span></div>`;
+  };
 
-  // Concorrentes rows
-  const concRows=temConcs?concs.slice(0,5).map((c,i)=>`
-    <div style="display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid #f5f5f5">
-      <div style="width:28px;height:28px;border-radius:50%;background:${i===0?"#EF4444":i===1?"#F59E0B":"#94A3B8"};color:#fff;font-weight:800;font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0">${c.posicao||i+1}</div>
-      <div style="flex:1"><div style="font-size:13px;font-weight:600;color:#111">${c.nome}</div>${c.diferencial?`<div style="font-size:11px;color:#999;margin-top:2px">${c.diferencial}</div>`:""}</div>
-      <div style="text-align:right;flex-shrink:0"><div style="font-size:13px;font-weight:700;color:#111">${c.nota}★</div><div style="font-size:10px;color:#aaa">${c.avals} aval.</div></div>
-    </div>`).join(""):"";
+  // ═══════════════════════════════════════════════════════
+  // MODELO 1 — BÁSICO (Notion + Google Docs + Stripe)
+  // ═══════════════════════════════════════════════════════
+  if(layout==="basico") {
+    const B={bg:"#F8FAFC",text:"#0F172A",muted:"#64748B",border:"#E2E8F0",accent:"#2563EB",card:"#FFFFFF"};
+    const scoreBars=scoreCritsData.map(({l,pts,max})=>`<div style="display:flex;align-items:center;gap:12px;margin-bottom:8px"><div style="width:130px;font-size:11px;color:${B.muted};flex-shrink:0">${l}</div><div style="flex:1;height:6px;background:${B.border};border-radius:3px"><div style="height:100%;width:${(pts/max)*100}%;background:${pts===max?"#16A34A":pts>0?B.accent:B.border};border-radius:3px"></div></div><div style="font-size:11px;font-weight:700;color:${B.text};width:36px;text-align:right">${pts}/${max}</div></div>`).join("");
+    return`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"/><title>Diagnóstico — ${form.nome}</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#fff;color:${B.text};-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.pg{width:210mm;min-height:297mm;padding:48px;page-break-after:always;display:flex;flex-direction:column;background:#fff}
+.pg:last-child{page-break-after:avoid}
+h1{font-family:'Montserrat',sans-serif;font-size:26px;font-weight:800;color:${B.text};letter-spacing:-.3px;line-height:1.2}
+h2{font-family:'Montserrat',sans-serif;font-size:18px;font-weight:700;color:${B.text};margin-bottom:16px}
+h3{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:600;color:${B.text}}
+p{font-size:13px;color:${B.muted};line-height:1.75}
+.label{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:${B.accent};margin-bottom:8px;font-family:'Montserrat',sans-serif}
+.card{background:${B.card};border:1px solid ${B.border};border-radius:12px;padding:24px 28px;margin-bottom:20px}
+.divider{height:1px;background:${B.border};margin:24px 0}
+.chip{display:inline-block;background:${B.accent}12;color:${B.accent};border:1px solid ${B.accent}22;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;margin:2px 3px}
+.obs{background:#EFF6FF;border-left:3px solid ${B.accent};padding:14px 18px;border-radius:0 8px 8px 0;margin:16px 0}
+.check{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px}
+@page{size:A4;margin:0}
+</style></head><body>
 
-  const kwChips=(kws||[]).map(k=>`<span style="display:inline-block;background:${c1}10;color:${c1};border:1px solid ${c1}22;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;margin:2px 3px">${k.term||k}</span>`).join("");
-  
-  // Página de keywords com volume e posição
-  const kwPageHtml = (kws||[]).length>0 ? `
 <div class="pg">
-  <div class="accent"></div>
-  <div class="body">
-    <div style="margin-bottom:40px">
-      <div class="label">Visibilidade de busca</div>
-      <h1 style="margin-bottom:14px">Oportunidades de pesquisa</h1>
-      <p style="max-width:460px">Estes são os termos que potenciais ${n.cliente}s usam para encontrar <strong>${form.categoria}</strong> em <strong>${form.cidade}</strong>. A posição atual no Google determina quantas dessas pessoas chegam até você.</p>
-    </div>
-    <div class="card" style="margin-bottom:24px">
-      ${(kws||[]).map((kw,i)=>{
-        const term = kw.term||kw;
-        const vol = kw.volume||"—";
-        const pos = kw.pos;
-        const posNum = parseInt(pos);
-        const posColor = posNum<=3?"#16A34A":posNum<=10?"#F59E0B":"#EF4444";
-        const posLabel = posNum<=3?"Top 3":posNum<=10?"Página 1":posNum?"Página "+(Math.ceil(posNum/10)):"Não rastreado";
-        return `<div style="display:flex;align-items:center;gap:16px;padding:14px 0;border-bottom:1px solid #f5f5f5${i===kws.length-1?";border-bottom:none":""}">
-          <div style="flex:1">
-            <div style="font-size:13px;font-weight:600;color:#111;margin-bottom:3px">${term}</div>
-            <div style="font-size:11px;color:#aaa"><span style="font-weight:700;color:${c1}">${vol}</span> buscas/mês estimadas em ${form.cidade||"sua cidade"}</div>
-          </div>
-          <div style="text-align:center;flex-shrink:0;min-width:80px">
-            ${pos?`<div style="font-size:20px;font-weight:800;color:${posColor};font-family:'Space Grotesk',sans-serif">#${pos}</div><div style="font-size:10px;font-weight:600;color:${posColor};letter-spacing:.04em">${posLabel}</div>`:`<div style="font-size:11px;color:#ccc;font-weight:500">Não<br/>rastreado</div>`}
-          </div>
-        </div>`;
-      }).join("")}
-    </div>
-    <div class="insight">
-      <div style="font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:${c1};margin-bottom:10px">Por que isso importa</div>
-      <p style="color:#aaa;font-size:13px;line-height:1.75">Mais de <strong style="color:#fff">76% dos ${n.cliente}s</strong> entram em contato com um dos 3 primeiros resultados. Cada posição perdida representa uma parcela das <strong style="color:${c1}">${(kws||[]).reduce((a,k)=>{const n=parseInt((k.volume||"0").replace(/\./g,""));return a+n;},0).toLocaleString("pt-BR")} buscas mensais</strong> que passam pela sua categoria em ${form.cidade||"sua cidade"} — e vão para os concorrentes.</p>
-    </div>
-    ${pgNum()}
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:48px;padding-bottom:20px;border-bottom:1px solid ${B.border}">
+    ${logoHtml}
+    <div style="text-align:right"><div style="font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:${B.accent};font-family:'Montserrat',sans-serif">Diagnóstico Digital</div><div style="font-size:11px;color:${B.muted};margin-top:2px">Presença Local — ${form.cidade||""}${form.estado?", "+form.estado:""}</div></div>
   </div>
-</div>` : "";
+  <div style="flex:1">
+    <div class="label">${t.tituloIntro}</div>
+    <h1 style="margin-bottom:8px">${form.nome||"Diagnóstico Digital"}</h1>
+    <div style="font-size:14px;color:${B.muted};margin-bottom:32px">${form.categoria||""}${form.especializacao?" · "+form.especializacao:""}</div>
+    <div class="card">
+      <p style="font-size:14px;line-height:1.8;color:${B.text}">${t.intro}</p>
+    </div>
+    <div class="obs"><p style="color:${B.accent};font-weight:500">${t.problema}</p></div>
+    ${(kws||[]).length>0?`<div style="margin-top:20px"><div class="label">Termos monitorados</div><div>${(kws||[]).map(k=>`<span class="chip">${k.term||k}</span>`).join("")}</div></div>`:""}
+  </div>
+  ${pgNum(B.accent)}
+</div>
 
-  return `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"/><title>Diagnóstico — ${form.nome||"Negócio"}</title>
+${kwPageHtml}
+
+${temDadosGoogle?`
+<div class="pg">
+  <div class="label">${t.tituloAnalise}</div>
+  <h2>Presença no Google</h2>
+  <p style="margin-bottom:24px">${t.dados}</p>
+  ${form.fichaScreenshot?`<div style="margin-bottom:20px;border-radius:10px;overflow:hidden;border:1px solid ${B.border}"><img src="${form.fichaScreenshot}" style="max-width:100%;max-height:160px;object-fit:contain;display:block;margin:0 auto"/></div>`:""}
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+    <div class="card" style="text-align:center">${gaugeSVG}<div style="font-size:11px;color:${B.muted};margin-top:4px">Score de presença</div></div>
+    <div class="card">
+      <div style="font-size:32px;font-weight:800;font-family:'Montserrat',sans-serif;color:${B.text}">${form.nota||"—"}<span style="font-size:14px;color:${B.muted};font-weight:400">/5.0</span></div>
+      <div style="color:#F59E0B;font-size:14px;margin-bottom:12px">${"★".repeat(Math.floor(parseFloat(form.nota)||0))}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div><div style="font-size:16px;font-weight:700;color:${B.text}">${form.numAvals||"—"}</div><div style="font-size:10px;color:${B.muted}">Avaliações</div></div>
+        <div><div style="font-size:16px;font-weight:700;color:${B.text}">${form.numFotos||"—"}</div><div style="font-size:10px;color:${B.muted}">Fotos</div></div>
+        <div><div style="font-size:16px;font-weight:700;color:${B.accent}">#${form.posicao||"—"}</div><div style="font-size:10px;color:${B.muted}">Posição</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="card">${scoreBars}</div>
+  ${pgNum(B.accent)}
+</div>`:""}
+
+${temConcs?`
+<div class="pg">
+  <div class="label">${t.tituloConc}</div>
+  <h2>Cenário competitivo</h2>
+  <p style="margin-bottom:20px">${t.diferenciais}</p>
+  <div style="border-radius:10px;overflow:hidden;border:1px solid ${B.border};margin-bottom:20px">${mapSVG}</div>
+  <div class="card">${concRows}</div>
+  ${pgNum(B.accent)}
+</div>`:""}
+
+${temIG?`
+<div class="pg">
+  <div class="label">${t.tituloIg}</div>
+  <h2>Presença no Instagram</h2>
+  ${ig.handle?`<div style="font-size:13px;font-weight:600;color:${B.accent};margin-bottom:16px">@${ig.handle}${ig.seguidores?" · "+ig.seguidores+" seguidores":""}</div>`:""}
+  ${ig.printUrl?`<div style="margin-bottom:20px;border-radius:10px;overflow:hidden;border:1px solid ${B.border}"><img src="${ig.printUrl}" style="max-width:100%;max-height:180px;object-fit:contain;display:block"/></div>`:""}
+  <div class="obs"><p>${t.igAnalise}</p></div>
+  ${igCriticasHtml?`<div style="margin-top:16px">${igCriticasHtml}</div>`:""}
+  ${pgNum(B.accent)}
+</div>`:""}
+
+<div class="pg">
+  <div style="border:2px solid ${B.accent};border-radius:16px;padding:36px;flex:1;display:flex;flex-direction:column;justify-content:space-between">
+    <div>
+      <div class="label">${t.tituloProx}</div>
+      <h1 style="margin-bottom:16px">Próximos passos</h1>
+      <p style="font-size:14px;color:${B.text};line-height:1.8">${t.proximos}</p>
+    </div>
+    <div style="display:flex;align-items:center;gap:20px;padding:20px;background:${B.bg};border-radius:12px;margin-top:28px">
+      ${qrHtml?`<div style="flex-shrink:0">${qrHtml}</div>`:""}
+      <div>
+        <div style="font-size:16px;font-weight:700;color:${B.text};font-family:'Montserrat',sans-serif">${form.cslNome||empresa}</div>
+        <div style="font-size:12px;color:${B.accent};font-weight:600;margin-bottom:8px">${empresa}</div>
+        ${form.cslWhats?`<div style="font-size:12px;color:${B.muted}">📱 ${form.cslWhats}</div>`:""}
+        ${form.cslInsta?`<div style="font-size:12px;color:${B.muted}">@${form.cslInsta}</div>`:""}
+      </div>
+    </div>
+  </div>
+  ${pgNum(B.accent)}
+</div>
+
+</body></html>`;
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // MODELO 2 — PREMIUM (McKinsey + Deloitte + Apple)
+  // ═══════════════════════════════════════════════════════
+  if(layout==="premium") {
+    const P={bg:"#F9F7F3",dark:"#111111",gold:"#C9A227",muted:"#6B7280",card:"#FFFFFF",border:"#E5E1D8"};
+    const scoreBars=scoreCritsData.map(({l,pts,max})=>`<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:11px;color:${P.muted}">${l}</span><span style="font-size:11px;font-weight:700;color:${pts===max?"#16A34A":pts>0?P.gold:P.muted}">${pts}/${max}</span></div><div style="height:3px;background:${P.border};border-radius:2px"><div style="height:100%;width:${(pts/max)*100}%;background:${pts===max?"#16A34A":pts>0?P.gold:P.border};border-radius:2px"></div></div></div>`).join("");
+    return`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"/><title>Diagnóstico — ${form.nome}</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#fff;color:${P.dark};-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.pg{width:210mm;min-height:297mm;padding:52px 56px;page-break-after:always;display:flex;flex-direction:column;background:#fff}
+.pg:last-child{page-break-after:avoid}
+.pg-dark{background:${P.dark}}
+h1{font-family:'Playfair Display',serif;font-size:30px;font-weight:700;color:${P.dark};line-height:1.2;letter-spacing:-.2px}
+h2{font-family:'Playfair Display',serif;font-size:22px;font-weight:600;color:${P.dark};margin-bottom:18px}
+h3{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:600;color:${P.dark}}
+p{font-size:13px;color:${P.muted};line-height:1.8}
+.label{font-size:9px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:${P.gold};margin-bottom:10px;font-family:'Montserrat',sans-serif}
+.card{background:${P.card};border:1px solid ${P.border};border-radius:16px;padding:28px 32px;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.gold-line{height:1px;background:linear-gradient(90deg,${P.gold},transparent);margin:28px 0}
+.highlight{background:${P.bg};border-left:2px solid ${P.gold};padding:18px 22px;border-radius:0 10px 10px 0;margin:16px 0}
+@page{size:A4;margin:0}
+</style></head><body>
+
+<div class="pg pg-dark" style="justify-content:space-between">
+  <div style="display:flex;align-items:center;justify-content:space-between">
+    ${logoHtml}
+    <div style="font-size:9px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:${P.gold};font-family:'Montserrat',sans-serif">Diagnóstico Digital · Confidencial</div>
+  </div>
+  <div>
+    <div style="font-size:9px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:${P.gold};font-family:'Montserrat',sans-serif;margin-bottom:20px">Análise Estratégica de Presença Digital</div>
+    <h1 style="font-size:42px;color:#fff;margin-bottom:10px;line-height:1.05">${form.nome||"Diagnóstico"}</h1>
+    ${form.categoria?`<div style="font-size:15px;color:#888;font-family:'Montserrat',sans-serif;letter-spacing:.02em">${form.categoria}${form.especializacao?" · "+form.especializacao:""}</div>`:""}
+    ${form.cidade?`<div style="font-size:13px;color:#555;margin-top:6px">${form.cidade}${form.estado?", "+form.estado:""}</div>`:""}
+  </div>
+  <div style="display:flex;align-items:flex-end;justify-content:space-between">
+    <div><div style="font-size:11px;color:#555;margin-bottom:4px;font-family:'Montserrat',sans-serif">Preparado por</div><div style="font-size:15px;font-weight:700;color:#fff;font-family:'Montserrat',sans-serif">${form.cslNome||empresa}</div><div style="font-size:12px;color:${P.gold};font-weight:600;font-family:'Montserrat',sans-serif">${empresa}</div></div>
+    <div style="text-align:right"><div style="width:40px;height:1px;background:${P.gold};margin-left:auto;margin-bottom:6px"></div><div style="font-size:9px;color:#444;letter-spacing:.1em;text-transform:uppercase">Análise Premium</div></div>
+  </div>
+</div>
+
+<div class="pg">
+  <div class="label">${t.tituloIntro}</div>
+  <h2 style="margin-bottom:8px">Resumo Executivo</h2>
+  <div class="gold-line"></div>
+  <div class="card"><p style="font-size:14px;color:${P.dark};line-height:1.85">${t.intro}</p></div>
+  <div class="highlight"><p style="color:${P.dark};font-size:13px">${t.problema}</p></div>
+  ${(kws||[]).length>0?`<div style="margin-top:20px"><div class="label">Termos estratégicos</div><div>${(kws||[]).map(k=>`<span style="display:inline-block;background:${P.gold}12;color:${P.gold};border:1px solid ${P.gold}33;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:600;margin:2px 3px;font-family:'Montserrat',sans-serif">${k.term||k}</span>`).join("")}</div></div>`:""}
+  ${pgNum(P.gold)}
+</div>
+
+${kwPageHtml}
+
+${temDadosGoogle?`
+<div class="pg">
+  <div class="label">${t.tituloAnalise}</div>
+  <h2>Diagnóstico de Presença</h2>
+  <div class="gold-line"></div>
+  <p style="margin-bottom:24px">${t.dados}</p>
+  ${form.fichaScreenshot?`<div style="margin-bottom:20px;border-radius:12px;overflow:hidden;border:1px solid ${P.border}"><img src="${form.fichaScreenshot}" style="max-width:100%;max-height:160px;object-fit:contain;display:block;margin:0 auto"/></div>`:""}
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:20px">
+    <div class="card" style="text-align:center">${gaugeSVG}<div style="font-size:11px;color:${P.muted};margin-top:4px;font-family:'Montserrat',sans-serif">Score de presença</div></div>
+    <div class="card">
+      <div style="font-size:34px;font-weight:700;font-family:'Playfair Display',serif;color:${P.dark}">${form.nota||"—"}<span style="font-size:16px;color:${P.muted};font-weight:400">/5.0</span></div>
+      <div style="color:#F59E0B;margin-bottom:12px">${"★".repeat(Math.floor(parseFloat(form.nota)||0))}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div><div style="font-size:18px;font-weight:700;color:${P.dark}">${form.numAvals||"—"}</div><div style="font-size:10px;color:${P.muted};font-family:'Montserrat',sans-serif;letter-spacing:.05em">Avaliações</div></div>
+        <div><div style="font-size:18px;font-weight:700;color:${P.dark}">${form.numFotos||"—"}</div><div style="font-size:10px;color:${P.muted};font-family:'Montserrat',sans-serif;letter-spacing:.05em">Fotos</div></div>
+        <div><div style="font-size:18px;font-weight:700;color:${P.gold}">#${form.posicao||"—"}</div><div style="font-size:10px;color:${P.muted};font-family:'Montserrat',sans-serif;letter-spacing:.05em">Posição</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="card">${scoreBars}</div>
+  ${pgNum(P.gold)}
+</div>`:""}
+
+${temConcs?`
+<div class="pg">
+  <div class="label">${t.tituloConc}</div>
+  <h2>Benchmarking Competitivo</h2>
+  <div class="gold-line"></div>
+  <p style="margin-bottom:20px">${t.diferenciais}</p>
+  <div style="border-radius:12px;overflow:hidden;border:1px solid ${P.border};margin-bottom:20px">${mapSVG}</div>
+  <div class="card">${concRows}</div>
+  ${pgNum(P.gold)}
+</div>`:""}
+
+${temIG?`
+<div class="pg">
+  <div class="label">${t.tituloIg}</div>
+  <h2>Análise de Autoridade Digital</h2>
+  <div class="gold-line"></div>
+  ${ig.handle?`<div style="font-size:13px;font-weight:600;color:${P.gold};margin-bottom:16px;font-family:'Montserrat',sans-serif">@${ig.handle}${ig.seguidores?" · "+ig.seguidores+" seguidores":""}</div>`:""}
+  ${ig.printUrl?`<div style="margin-bottom:20px;border-radius:12px;overflow:hidden;border:1px solid ${P.border}"><img src="${ig.printUrl}" style="max-width:100%;max-height:180px;object-fit:contain;display:block"/></div>`:""}
+  <div class="highlight"><p style="color:${P.dark}">${t.igAnalise}</p></div>
+  ${igCriticasHtml?`<div style="margin-top:16px">${igCriticasHtml}</div>`:""}
+  ${pgNum(P.gold)}
+</div>`:""}
+
+<div class="pg pg-dark" style="justify-content:space-between">
+  <div>
+    <div style="font-size:9px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:${P.gold};font-family:'Montserrat',sans-serif;margin-bottom:20px">${t.tituloProx}</div>
+    <h1 style="color:#fff;font-size:36px;margin-bottom:20px;line-height:1.1">Plano de ação estratégico</h1>
+    <p style="color:#777;font-size:14px;line-height:1.85;max-width:420px">${t.proximos}</p>
+  </div>
+  <div style="background:#1a1a1a;border:1px solid #333;border-radius:16px;padding:28px 32px">
+    <div style="display:flex;align-items:center;gap:20px">
+      ${qrHtml?`<div style="flex-shrink:0">${qrHtml}</div>`:""}
+      <div>
+        <div style="font-size:16px;font-weight:700;color:#fff;font-family:'Montserrat',sans-serif;margin-bottom:4px">${form.cslNome||empresa}</div>
+        <div style="font-size:12px;color:${P.gold};font-weight:600;margin-bottom:12px;font-family:'Montserrat',sans-serif">${empresa}</div>
+        ${form.cslWhats?`<div style="font-size:12px;color:#666;margin-bottom:4px">📱 ${form.cslWhats}</div>`:""}
+        ${form.cslInsta?`<div style="font-size:12px;color:#666">@${form.cslInsta}</div>`:""}
+      </div>
+    </div>
+  </div>
+  ${pgNum(P.gold,"#111")}
+</div>
+
+</body></html>`;
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // MODELO 3 — LUXO (Louis Vuitton + Rolex + Bentley)
+  // ═══════════════════════════════════════════════════════
+  if(layout==="luxo") {
+    const L={dark:"#0A0A0A",gold:"#D4AF37",champagne:"#E8D9B5",white:"#FAFAFA",muted:"#888",border:"rgba(212,175,55,.25)"};
+    const scoreBars=scoreCritsData.map(({l,pts,max})=>`<div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;margin-bottom:5px"><span style="font-size:10px;color:${L.muted};letter-spacing:.06em;text-transform:uppercase">${l}</span><span style="font-size:10px;font-weight:600;color:${pts===max?L.gold:L.muted}">${pts}/${max}</span></div><div style="height:1px;background:rgba(255,255,255,.08)"><div style="height:100%;width:${(pts/max)*100}%;background:${pts===max?L.gold:"rgba(212,175,55,.4)"};"></div></div></div>`).join("");
+    const logoHtmlL=logoUrl?`<img src="${logoUrl}" style="height:44px;width:44px;object-fit:cover;border-radius:10px;display:block"/>`:`<img src="${LOGO_B64}" style="height:44px;width:auto;object-fit:contain;display:block;filter:brightness(10)"/>`;
+    return`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"/><title>Diagnóstico — ${form.nome}</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#fff;color:${L.dark};-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.pg{width:210mm;min-height:297mm;padding:56px;page-break-after:always;display:flex;flex-direction:column;background:${L.dark}}
+.pg:last-child{page-break-after:avoid}
+.pg-light{background:${L.white};color:${L.dark}}
+h1{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:400;letter-spacing:.02em;line-height:1.2}
+h2{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:400;margin-bottom:20px;letter-spacing:.02em}
+p{font-size:12px;line-height:1.9;font-weight:300;letter-spacing:.01em}
+.label{font-size:9px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:${L.gold};margin-bottom:12px}
+.gold-border{border:1px solid ${L.border};border-radius:12px;padding:28px 32px;margin-bottom:20px}
+.thin-line{height:1px;background:${L.border};margin:24px 0}
+@page{size:A4;margin:0}
+</style></head><body>
+
+<div class="pg" style="justify-content:space-between">
+  <div style="display:flex;align-items:center;justify-content:space-between">
+    ${logoHtmlL}
+    <div style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:${L.gold};font-weight:500">Diagnóstico · Exclusivo</div>
+  </div>
+  <div style="text-align:center">
+    <div class="label" style="text-align:center">${t.tituloIntro}</div>
+    <div style="width:40px;height:1px;background:${L.gold};margin:0 auto 24px"></div>
+    <h1 style="color:${L.white};font-size:44px;margin-bottom:12px;line-height:1">${form.nome||"Diagnóstico"}</h1>
+    ${form.categoria?`<div style="font-size:13px;color:${L.gold};letter-spacing:.1em;text-transform:uppercase;font-weight:300">${form.categoria}${form.especializacao?" · "+form.especializacao:""}</div>`:""}
+    ${form.cidade?`<div style="font-size:12px;color:${L.muted};margin-top:8px;letter-spacing:.08em">${form.cidade}${form.estado?", "+form.estado:""}</div>`:""}
+    <div style="width:40px;height:1px;background:${L.border};margin:24px auto 0"></div>
+  </div>
+  <div style="display:flex;align-items:flex-end;justify-content:space-between">
+    <div><div style="font-size:10px;color:${L.muted};letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px">Preparado por</div><div style="font-size:14px;color:${L.white};font-family:'Cormorant Garamond',serif;font-weight:400;font-style:italic">${form.cslNome||empresa}</div><div style="font-size:11px;color:${L.gold};letter-spacing:.08em">${empresa}</div></div>
+    <div style="font-size:9px;color:${L.muted};letter-spacing:.12em;text-transform:uppercase">Confidencial</div>
+  </div>
+</div>
+
+<div class="pg pg-light">
+  <div class="label">${t.tituloIntro}</div>
+  <h2>${form.nome}</h2>
+  <div class="thin-line"></div>
+  <div class="gold-border" style="background:${L.white}"><p style="font-size:14px;line-height:1.9;color:${L.dark};font-weight:400">${t.intro}</p></div>
+  <div style="padding:20px 0;border-top:1px solid ${L.border};border-bottom:1px solid ${L.border};margin:8px 0"><p style="font-style:italic;color:#555;font-size:13px;line-height:1.85">${t.problema}</p></div>
+  ${(kws||[]).length>0?`<div style="margin-top:20px"><div class="label">Palavras-chave monitoradas</div><div>${(kws||[]).map(k=>`<span style="display:inline-block;border:1px solid ${L.border};padding:4px 12px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;margin:2px 3px;color:${L.dark}">${k.term||k}</span>`).join("")}</div></div>`:""}
+  ${pgNum(L.gold)}
+</div>
+
+${kwPageHtml}
+
+${temDadosGoogle?`
+<div class="pg pg-light">
+  <div class="label">${t.tituloAnalise}</div>
+  <h2>Análise de Presença</h2>
+  <div class="thin-line"></div>
+  ${form.fichaScreenshot?`<div style="margin-bottom:20px;border:1px solid ${L.border};border-radius:8px;overflow:hidden"><img src="${form.fichaScreenshot}" style="max-width:100%;max-height:160px;object-fit:contain;display:block;margin:0 auto"/></div>`:""}
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+    <div class="gold-border" style="text-align:center;background:${L.white}">${gaugeSVG}<div style="font-size:10px;color:${L.muted};letter-spacing:.1em;text-transform:uppercase;margin-top:4px">Score digital</div></div>
+    <div class="gold-border" style="background:${L.white}">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:36px;color:${L.dark}">${form.nota||"—"}<span style="font-size:16px;color:${L.muted}">/5.0</span></div>
+      <div style="color:#D4AF37;font-size:14px;margin-bottom:12px">${"★".repeat(Math.floor(parseFloat(form.nota)||0))}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div><div style="font-size:16px;font-family:'Cormorant Garamond',serif;color:${L.dark}">${form.numAvals||"—"}</div><div style="font-size:9px;color:${L.muted};text-transform:uppercase;letter-spacing:.08em">Avaliações</div></div>
+        <div><div style="font-size:16px;font-family:'Cormorant Garamond',serif;color:${L.gold}">#${form.posicao||"—"}</div><div style="font-size:9px;color:${L.muted};text-transform:uppercase;letter-spacing:.08em">Posição</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="gold-border" style="background:${L.white}">${scoreBars}</div>
+  ${pgNum(L.gold)}
+</div>`:""}
+
+${temConcs?`
+<div class="pg pg-light">
+  <div class="label">${t.tituloConc}</div>
+  <h2>Posicionamento competitivo</h2>
+  <div class="thin-line"></div>
+  <div style="border:1px solid ${L.border};border-radius:8px;overflow:hidden;margin-bottom:20px">${mapSVG}</div>
+  <div class="gold-border" style="background:${L.white}">${concRows}</div>
+  ${pgNum(L.gold)}
+</div>`:""}
+
+${temIG?`
+<div class="pg pg-light">
+  <div class="label">${t.tituloIg}</div>
+  <h2>Presença digital</h2>
+  <div class="thin-line"></div>
+  ${ig.handle?`<div style="font-size:12px;color:${L.gold};letter-spacing:.1em;text-transform:uppercase;margin-bottom:16px">@${ig.handle}</div>`:""}
+  ${ig.printUrl?`<div style="margin-bottom:20px;border:1px solid ${L.border};overflow:hidden"><img src="${ig.printUrl}" style="max-width:100%;max-height:180px;object-fit:contain;display:block"/></div>`:""}
+  <div style="padding:20px;background:${L.white};border-top:1px solid ${L.border};border-bottom:1px solid ${L.border};margin-bottom:16px"><p style="font-style:italic;color:#555">${t.igAnalise}</p></div>
+  ${igCriticasHtml?`<div>${igCriticasHtml}</div>`:""}
+  ${pgNum(L.gold)}
+</div>`:""}
+
+<div class="pg" style="justify-content:space-between">
+  <div>
+    <div class="label" style="color:${L.gold}">${t.tituloProx}</div>
+    <div style="width:40px;height:1px;background:${L.gold};margin:16px 0 24px"></div>
+    <h1 style="color:${L.white};font-size:38px;margin-bottom:20px;line-height:1.1;font-style:italic">O próximo passo<br/>é uma conversa.</h1>
+    <p style="color:${L.muted};font-size:13px;max-width:380px;line-height:1.9">${t.proximos}</p>
+  </div>
+  <div style="border:1px solid ${L.border};padding:28px 32px;border-radius:4px">
+    <div style="display:flex;align-items:center;gap:20px">
+      ${qrHtml?`<div style="flex-shrink:0">${qrHtml}</div>`:""}
+      <div>
+        <div style="font-size:16px;font-family:'Cormorant Garamond',serif;color:${L.white};font-style:italic;margin-bottom:4px">${form.cslNome||empresa}</div>
+        <div style="font-size:11px;color:${L.gold};letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px">${empresa}</div>
+        ${form.cslWhats?`<div style="font-size:11px;color:${L.muted};margin-bottom:4px">${form.cslWhats}</div>`:""}
+        ${form.cslInsta?`<div style="font-size:11px;color:${L.muted}">@${form.cslInsta}</div>`:""}
+      </div>
+    </div>
+  </div>
+  ${pgNum(L.gold,"#111")}
+</div>
+
+</body></html>`;
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // MODELO 4 — RELATÓRIO (PwC + KPMG + Nubank)
+  // ═══════════════════════════════════════════════════════
+  if(layout==="relatorio") {
+    const R={dark:"#0B1F3A",mid:"#1E3A5F",gray:"#E5E7EB",white:"#FFFFFF",muted:"#6B7280",accent:"#0B1F3A",text:"#111827"};
+    const scoreBars=scoreCritsData.map(({l,pts,max})=>`<tr><td style="padding:8px 12px;font-size:12px;color:${R.text};border-bottom:1px solid ${R.gray}">${l}</td><td style="padding:8px 12px;text-align:center;font-size:12px;font-weight:700;color:${R.dark};border-bottom:1px solid ${R.gray}">${pts}</td><td style="padding:8px 12px;text-align:center;font-size:12px;color:${R.muted};border-bottom:1px solid ${R.gray}">${max}</td><td style="padding:8px 12px;border-bottom:1px solid ${R.gray}"><div style="height:8px;background:${R.gray};border-radius:2px"><div style="height:100%;width:${(pts/max)*100}%;background:${pts===max?"#16A34A":pts>0?R.dark:R.gray};border-radius:2px"></div></div></td><td style="padding:8px 12px;text-align:center;font-size:11px;font-weight:600;color:${pts===max?"#16A34A":pts>0?R.dark:R.muted};border-bottom:1px solid ${R.gray}">${Math.round((pts/max)*100)}%</td></tr>`).join("");
+    return`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"/><title>Diagnóstico — ${form.nome}</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#fff;color:${R.text};-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.pg{width:210mm;min-height:297mm;page-break-after:always;display:flex;flex-direction:column;background:#fff}
+.pg:last-child{page-break-after:avoid}
+.header{background:${R.dark};padding:20px 40px;display:flex;align-items:center;justify-content:space-between}
+.body{padding:32px 40px;flex:1;display:flex;flex-direction:column}
+h1{font-family:'IBM Plex Sans',sans-serif;font-size:22px;font-weight:700;color:${R.dark};margin-bottom:6px}
+h2{font-family:'IBM Plex Sans',sans-serif;font-size:16px;font-weight:600;color:${R.dark};margin-bottom:12px}
+h3{font-family:'IBM Plex Sans',sans-serif;font-size:13px;font-weight:600;color:${R.dark}}
+p{font-size:12px;color:${R.muted};line-height:1.7}
+.label{font-size:9px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:${R.dark};margin-bottom:6px;font-family:'IBM Plex Sans',sans-serif;opacity:.6}
+.section{margin-bottom:24px}
+table{width:100%;border-collapse:collapse}
+th{background:${R.dark};color:#fff;padding:8px 12px;font-size:11px;font-weight:600;text-align:left;font-family:'IBM Plex Sans',sans-serif;letter-spacing:.04em}
+.kpi{background:${R.gray};border-radius:8px;padding:14px 16px;text-align:center}
+.kpi-val{font-family:'IBM Plex Sans',sans-serif;font-size:26px;font-weight:700;color:${R.dark}}
+.kpi-label{font-size:10px;color:${R.muted};text-transform:uppercase;letter-spacing:.08em;margin-top:2px}
+.divider{height:1px;background:${R.gray};margin:16px 0}
+@page{size:A4;margin:0}
+</style></head><body>
+
+<div class="pg">
+  <div class="header">
+    ${logoHtml}
+    <div style="text-align:right"><div style="font-size:10px;color:rgba(255,255,255,.5);font-family:'IBM Plex Sans',sans-serif;letter-spacing:.08em;text-transform:uppercase">Diagnóstico de Presença Digital</div><div style="font-size:10px;color:rgba(255,255,255,.3);margin-top:2px">${empresa} · Confidencial</div></div>
+  </div>
+  <div class="body">
+    <div style="border-left:4px solid ${R.dark};padding-left:20px;margin-bottom:28px">
+      <div class="label">Relatório Técnico</div>
+      <h1>${form.nome||"Diagnóstico"}</h1>
+      <div style="font-size:12px;color:${R.muted}">${form.categoria||""}${form.especializacao?" · "+form.especializacao:""} · ${form.cidade||""}${form.estado?", "+form.estado:""}</div>
+    </div>
+    <div class="section">
+      <h2>Sumário executivo</h2>
+      <div class="divider"></div>
+      <p style="font-size:13px;color:${R.text};line-height:1.75">${t.intro}</p>
+    </div>
+    <div style="background:${R.dark};color:#fff;padding:16px 20px;border-radius:8px;margin-bottom:20px">
+      <div style="font-size:10px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;font-family:'IBM Plex Sans',sans-serif">Contexto de mercado</div>
+      <p style="color:rgba(255,255,255,.8);font-size:12px;line-height:1.7">${t.problema}</p>
+    </div>
+    ${(kws||[]).length>0?`<div class="section"><h2>Termos monitorados</h2><div class="divider"></div><table><thead><tr><th>Palavra-chave</th><th>Vol. estimado/mês</th><th>Posição atual</th><th>Status</th></tr></thead><tbody>${(kws||[]).map(k=>{const pos=parseInt(k.pos||0);const st=pos<=3?"Top 3":pos<=10?"Pág. 1":pos>10?"Pág. "+Math.ceil(pos/10):"—";const stC=pos<=3?"#16A34A":pos<=10?"#F59E0B":pos>10?"#EF4444":R.muted;return`<tr><td style="padding:8px 12px;font-size:12px;border-bottom:1px solid ${R.gray}">${k.term||k}</td><td style="padding:8px 12px;font-size:12px;font-weight:600;color:${R.dark};border-bottom:1px solid ${R.gray}">${k.volume||"—"}</td><td style="padding:8px 12px;font-size:12px;font-weight:700;color:${R.dark};border-bottom:1px solid ${R.gray}">${k.pos?"#"+k.pos:"—"}</td><td style="padding:8px 12px;font-size:11px;font-weight:600;color:${stC};border-bottom:1px solid ${R.gray}">${st}</td></tr>`;}).join("")}</tbody></table></div>`:""}
+    ${pgNum(R.dark)}
+  </div>
+</div>
+
+${temDadosGoogle?`
+<div class="pg">
+  <div class="header"><h2 style="color:#fff;font-family:'IBM Plex Sans',sans-serif;font-size:14px;font-weight:600">${t.tituloAnalise}</h2><div style="font-size:10px;color:rgba(255,255,255,.4)">${empresa}</div></div>
+  <div class="body">
+    ${form.fichaScreenshot?`<div style="margin-bottom:16px;border:1px solid ${R.gray};border-radius:8px;overflow:hidden"><img src="${form.fichaScreenshot}" style="max-width:100%;max-height:140px;object-fit:contain;display:block;margin:0 auto"/></div>`:""}
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px">
+      <div class="kpi"><div class="kpi-val">${form.nota||"—"}</div><div class="kpi-label">Nota Google</div></div>
+      <div class="kpi"><div class="kpi-val">${form.numAvals||"—"}</div><div class="kpi-label">Avaliações</div></div>
+      <div class="kpi"><div class="kpi-val">${form.numFotos||"—"}</div><div class="kpi-label">Fotos</div></div>
+      <div class="kpi"><div class="kpi-val" style="color:${R.dark}">#${form.posicao||"—"}</div><div class="kpi-label">Posição</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 2fr;gap:16px;margin-bottom:20px">
+      <div style="text-align:center;background:${R.gray};border-radius:8px;padding:16px">${gaugeSVG}<div class="kpi-label" style="margin-top:4px">Score geral</div></div>
+      <div>
+        <h3 style="margin-bottom:12px">Análise por critério</h3>
+        <table><thead><tr><th>Critério</th><th style="text-align:center">Pts</th><th style="text-align:center">Max</th><th>Progresso</th><th style="text-align:center">%</th></tr></thead><tbody>${scoreBars}</tbody></table>
+      </div>
+    </div>
+    <p style="font-size:12px;color:${R.text};line-height:1.7">${t.dados}</p>
+    ${pgNum(R.dark)}
+  </div>
+</div>`:""}
+
+${temConcs?`
+<div class="pg">
+  <div class="header"><h2 style="color:#fff;font-family:'IBM Plex Sans',sans-serif;font-size:14px;font-weight:600">${t.tituloConc}</h2><div style="font-size:10px;color:rgba(255,255,255,.4)">${empresa}</div></div>
+  <div class="body">
+    <p style="margin-bottom:16px">${t.diferenciais}</p>
+    <div style="border:1px solid ${R.gray};border-radius:8px;overflow:hidden;margin-bottom:16px">${mapSVG}</div>
+    <table><thead><tr><th>Pos.</th><th>Negócio</th><th style="text-align:center">Nota</th><th style="text-align:center">Aval.</th><th>Diferencial</th></tr></thead><tbody>${concs.slice(0,5).map((c,i)=>`<tr><td style="padding:8px 12px;font-weight:700;color:${i===0?"#EF4444":i===1?"#F59E0B":R.dark};border-bottom:1px solid ${R.gray}">#${c.posicao||i+1}</td><td style="padding:8px 12px;font-size:12px;font-weight:600;border-bottom:1px solid ${R.gray}">${c.nome}</td><td style="padding:8px 12px;text-align:center;font-size:12px;font-weight:700;border-bottom:1px solid ${R.gray}">${c.nota}★</td><td style="padding:8px 12px;text-align:center;font-size:12px;border-bottom:1px solid ${R.gray}">${c.avals}</td><td style="padding:8px 12px;font-size:11px;color:${R.muted};border-bottom:1px solid ${R.gray}">${c.diferencial||"—"}</td></tr>`).join("")}</tbody></table>
+    ${pgNum(R.dark)}
+  </div>
+</div>`:""}
+
+${temIG?`
+<div class="pg">
+  <div class="header"><h2 style="color:#fff;font-family:'IBM Plex Sans',sans-serif;font-size:14px;font-weight:600">${t.tituloIg}</h2><div style="font-size:10px;color:rgba(255,255,255,.4)">${empresa}</div></div>
+  <div class="body">
+    ${ig.printUrl?`<div style="margin-bottom:16px;border:1px solid ${R.gray};border-radius:8px;overflow:hidden"><img src="${ig.printUrl}" style="max-width:100%;max-height:160px;object-fit:contain;display:block"/></div>`:""}
+    ${ig.handle?`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px"><div class="kpi"><div class="kpi-val">@${ig.handle}</div><div class="kpi-label">Handle</div></div><div class="kpi"><div class="kpi-val">${ig.seguidores||"—"}</div><div class="kpi-label">Seguidores</div></div><div class="kpi"><div class="kpi-val">${ig.score||"—"}</div><div class="kpi-label">Score</div></div></div>`:""}
+    <p style="margin-bottom:16px">${t.igAnalise}</p>
+    ${igCriticasHtml?`<div>${igCriticasHtml}</div>`:""}
+    ${pgNum(R.dark)}
+  </div>
+</div>`:""}
+
+<div class="pg">
+  <div class="header"><h2 style="color:#fff;font-family:'IBM Plex Sans',sans-serif;font-size:14px;font-weight:600">${t.tituloProx}</h2><div style="font-size:10px;color:rgba(255,255,255,.4)">${empresa}</div></div>
+  <div class="body" style="justify-content:space-between">
+    <div>
+      <h1 style="margin-bottom:8px">Recomendações</h1>
+      <div class="divider"></div>
+      <p style="font-size:13px;color:${R.text};line-height:1.75;margin-bottom:20px">${t.proximos}</p>
+    </div>
+    <div style="background:${R.dark};border-radius:12px;padding:24px 28px">
+      <div style="display:flex;align-items:center;gap:20px">
+        ${qrHtml?`<div style="flex-shrink:0">${qrHtml}</div>`:""}
+        <div>
+          <div style="font-size:15px;font-weight:700;color:#fff;font-family:'IBM Plex Sans',sans-serif;margin-bottom:4px">${form.cslNome||empresa}</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.5);margin-bottom:10px;font-family:'IBM Plex Sans',sans-serif;text-transform:uppercase;letter-spacing:.08em">${empresa}</div>
+          ${form.cslWhats?`<div style="font-size:12px;color:rgba(255,255,255,.5);margin-bottom:4px">${form.cslWhats}</div>`:""}
+          ${form.cslInsta?`<div style="font-size:12px;color:rgba(255,255,255,.5)">@${form.cslInsta}</div>`:""}
+        </div>
+      </div>
+    </div>
+    ${pgNum(R.dark,"#0B1F3A")}
+  </div>
+</div>
+
+</body></html>`;
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // MODELO 5 — CUSTOM (cor da marca — design atual)
+  // ═══════════════════════════════════════════════════════
+  {
+    const logoHtmlC=logoUrl?`<img src="${logoUrl}" style="height:44px;width:44px;object-fit:cover;border-radius:12px;display:block"/>`:`<img src="${LOGO_B64}" style="height:44px;width:auto;object-fit:contain;display:block;filter:brightness(10)"/>`;
+    const scoreBars=scoreCritsData.map(({l,pts,max})=>`<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:11px;color:#777;font-weight:500">${l}</span><span style="font-size:11px;font-weight:700;color:${pts===max?"#16A34A":pts>0?c1:"#ccc"}">${pts}<span style="color:#ccc;font-weight:400">/${max}</span></span></div><div style="height:4px;background:#f0f0f0;border-radius:2px"><div style="height:100%;width:${(pts/max)*100}%;background:${pts===max?"#16A34A":pts>0?c1:"transparent"};border-radius:2px"></div></div></div>`).join("");
+    return`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"/><title>Diagnóstico — ${form.nome}</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -1511,186 +1963,78 @@ body{font-family:'Inter',-apple-system,sans-serif;background:#fff;color:#111;-we
 .body{padding:52px 56px 44px 60px;flex:1;display:flex;flex-direction:column}
 h1{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:800;color:#0a0a0a;letter-spacing:-.5px;line-height:1.2}
 h2{font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;color:#0a0a0a;letter-spacing:-.3px;line-height:1.3}
-h3{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;color:#0a0a0a;letter-spacing:-.1px}
 p{font-size:13px;color:#555;line-height:1.75}
 .label{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:${c1};margin-bottom:8px}
-.card{background:#fff;border:1px solid #f0f0f0;border-radius:16px;padding:28px 32px;box-shadow:0 1px 3px rgba(0,0,0,.04),0 1px 2px rgba(0,0,0,.03)}
+.card{background:#fff;border:1px solid #f0f0f0;border-radius:16px;padding:28px 32px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
 .highlight{background:${c1}08;border:1px solid ${c1}20;border-left:3px solid ${c1};border-radius:0 12px 12px 0;padding:18px 22px}
 .insight{background:#0a0a0a;border-radius:14px;padding:22px 28px;margin:24px 0}
 .divider{height:1px;background:#f5f5f5;margin:28px 0}
 @page{size:A4;margin:0}
-@media print{.pg{page-break-after:always}.pg:last-child{page-break-after:avoid}}
 </style></head><body>
 
-<!-- ══ CAPA ══════════════════════════════════════════════ -->
 <div class="pg" style="background:#0a0a0a">
   <div style="position:absolute;top:0;right:0;width:45%;height:100%;background:linear-gradient(135deg,${c1}18 0%,${c1}06 50%,transparent 100%)"></div>
-  <div style="position:absolute;bottom:0;left:0;width:60%;height:40%;background:radial-gradient(ellipse at bottom left,${c1}10 0%,transparent 70%)"></div>
-  <div class="body" style="padding:64px 64px 52px;justify-content:space-between">
+  <div class="body" style="padding:64px 64px 52px;justify-content:space-between;background:transparent">
     <div style="display:flex;align-items:center;justify-content:space-between">
-      ${logoHtml}
+      ${logoHtmlC}
       <div style="font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:${c1};opacity:.8">Diagnóstico Digital</div>
     </div>
     <div>
       <div style="font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:${c1};margin-bottom:20px">Análise de Presença Digital</div>
       <h1 style="font-size:38px;color:#fff;margin-bottom:12px;line-height:1.1">${form.nome||"Seu Negócio"}</h1>
-      ${form.categoria?`<div style="font-size:15px;color:#888;margin-bottom:6px;font-weight:400">${form.categoria}${form.especializacao?` · ${form.especializacao}`:""}</div>`:""}
-      ${form.cidade?`<div style="font-size:13px;color:#666">${form.cidade}${form.estado?`, ${form.estado}`:""}</div>`:""}
+      ${form.categoria?`<div style="font-size:15px;color:#888;margin-bottom:6px">${form.categoria}${form.especializacao?" · "+form.especializacao:""}</div>`:""}
+      ${form.cidade?`<div style="font-size:13px;color:#666">${form.cidade}${form.estado?", "+form.estado:""}</div>`:""}
     </div>
     <div style="display:flex;align-items:flex-end;justify-content:space-between">
-      <div>
-        <div style="font-size:11px;color:#555;margin-bottom:4px">Preparado por</div>
-        <div style="font-size:14px;font-weight:700;color:#fff">${form.cslNome||empresa}</div>
-        <div style="font-size:12px;color:${c1};font-weight:500">${empresa}</div>
-      </div>
-      <div style="text-align:right">
-        <div style="font-size:10px;color:#444;letter-spacing:.08em;text-transform:uppercase">Confidencial</div>
-      </div>
+      <div><div style="font-size:11px;color:#555;margin-bottom:4px">Preparado por</div><div style="font-size:14px;font-weight:700;color:#fff">${form.cslNome||empresa}</div><div style="font-size:12px;color:${c1};font-weight:500">${empresa}</div></div>
+      <div style="text-align:right"><div style="font-size:10px;color:#444;letter-spacing:.08em;text-transform:uppercase">Confidencial</div></div>
     </div>
   </div>
 </div>
 
-<!-- ══ INTRO ══════════════════════════════════════════════ -->
-<div class="pg">
-  <div class="accent"></div>
-  <div class="body">
-    <div style="margin-bottom:48px">
-      <div class="label">${t.tituloIntro}</div>
-      <h1 style="margin-bottom:16px">Diagnóstico de<br/>Presença Digital</h1>
-      <p style="max-width:480px;font-size:14px;line-height:1.8">${t.intro}</p>
-    </div>
+<div class="pg"><div class="accent"></div><div class="body">
+  <div style="margin-bottom:48px"><div class="label">${t.tituloIntro}</div><h1 style="margin-bottom:16px">Diagnóstico de<br/>Presença Digital</h1><p style="max-width:480px;font-size:14px;line-height:1.8">${t.intro}</p></div>
+  <div class="insight"><div style="font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:${c1};margin-bottom:12px">Contexto de mercado</div><p style="color:#aaa;font-size:13px;line-height:1.75">${t.problema}</p></div>
+  ${(kws||[]).length>0?`<div style="margin-top:28px"><div class="label" style="margin-bottom:10px">Termos monitorados</div><div>${(kws||[]).map(k=>`<span style="display:inline-block;background:${c1}10;color:${c1};border:1px solid ${c1}22;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;margin:2px 3px">${k.term||k}</span>`).join("")}</div></div>`:""}
+  ${pgNum(c1)}
+</div></div>
 
-    <div class="insight">
-      <div style="font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:${c1};margin-bottom:12px">Contexto de mercado</div>
-      <p style="color:#aaa;font-size:13px;line-height:1.75">${t.problema}</p>
-    </div>
-
-    ${kwChips?`<div style="margin-top:28px"><div class="label" style="margin-bottom:10px">Termos monitorados</div><div>${kwChips}</div></div>`:""}
-
-    ${form.endereco?`<div class="divider"></div><p style="font-size:12px;color:#aaa">📍 ${form.endereco}${form.cidade?` · ${form.cidade}`:""}${form.estado?`, ${form.estado}`:""}</p>`:""}
-
-    ${pgNum()}
-  </div>
-</div>
-
-<!-- ══ KEYWORDS ══════════════════════════════════════════ -->
 ${kwPageHtml}
 
-<!-- ══ GOOGLE ══════════════════════════════════════════════ -->
-${temDadosGoogle?`
-<div class="pg">
-  <div class="accent"></div>
-  <div class="body">
-    <div style="margin-bottom:40px">
-      <div class="label">${t.tituloAnalise}</div>
-      <h1 style="margin-bottom:14px">Presença no Google</h1>
-      <p style="max-width:460px">${t.dados}</p>
-    </div>
-
-    ${form.fichaScreenshot?`<div style="margin-bottom:28px;border-radius:14px;overflow:hidden;border:1px solid #f0f0f0"><img src="${form.fichaScreenshot}" style="max-width:100%;max-height:180px;object-fit:contain;display:block;margin:0 auto"/></div>`:""}
-
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:28px">
-      <div class="card" style="text-align:center">
-        ${gaugeSVG}
-        <div style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#aaa;margin-top:4px">Score de presença</div>
-      </div>
-      <div class="card">
-        <div style="margin-bottom:6px">
-          <div style="font-size:32px;font-weight:800;color:#0a0a0a;font-family:'Space Grotesk',sans-serif;letter-spacing:-1px">${form.nota}<span style="font-size:16px;color:#ccc;font-weight:400">/5.0</span></div>
-          <div style="color:#f59e0b;font-size:16px;letter-spacing:2px">${"★".repeat(Math.floor(parseFloat(form.nota)||0))}${"☆".repeat(5-Math.floor(parseFloat(form.nota)||0))}</div>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px">
-          <div><div style="font-size:18px;font-weight:700;color:#0a0a0a">${form.numAvals||"—"}</div><div style="font-size:10px;color:#aaa;font-weight:500;text-transform:uppercase;letter-spacing:.06em">Avaliações</div></div>
-          <div><div style="font-size:18px;font-weight:700;color:#0a0a0a">${form.numFotos||"—"}</div><div style="font-size:10px;color:#aaa;font-weight:500;text-transform:uppercase;letter-spacing:.06em">Fotos</div></div>
-          <div><div style="font-size:18px;font-weight:700;color:${c1}">#${form.posicao||"—"}</div><div style="font-size:10px;color:#aaa;font-weight:500;text-transform:uppercase;letter-spacing:.06em">Posição</div></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      ${scoreBarsHtml}
-    </div>
-
-    ${pgNum()}
+${temDadosGoogle?`<div class="pg"><div class="accent"></div><div class="body">
+  <div style="margin-bottom:40px"><div class="label">${t.tituloAnalise}</div><h1 style="margin-bottom:14px">Presença no Google</h1><p style="max-width:460px">${t.dados}</p></div>
+  ${form.fichaScreenshot?`<div style="margin-bottom:28px;border-radius:14px;overflow:hidden;border:1px solid #f0f0f0"><img src="${form.fichaScreenshot}" style="max-width:100%;max-height:180px;object-fit:contain;display:block;margin:0 auto"/></div>`:""}
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:28px">
+    <div class="card" style="text-align:center">${gaugeSVG}<div style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#aaa;margin-top:4px">Score de presença</div></div>
+    <div class="card"><div style="font-size:32px;font-weight:800;color:#0a0a0a;font-family:'Space Grotesk',sans-serif;letter-spacing:-1px">${form.nota}<span style="font-size:16px;color:#ccc;font-weight:400">/5.0</span></div><div style="color:#f59e0b;font-size:16px;letter-spacing:2px">${"★".repeat(Math.floor(parseFloat(form.nota)||0))}</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px"><div><div style="font-size:18px;font-weight:700">${form.numAvals||"—"}</div><div style="font-size:10px;color:#aaa;text-transform:uppercase;letter-spacing:.06em">Avaliações</div></div><div><div style="font-size:18px;font-weight:700">${form.numFotos||"—"}</div><div style="font-size:10px;color:#aaa;text-transform:uppercase;letter-spacing:.06em">Fotos</div></div><div><div style="font-size:18px;font-weight:700;color:${c1}">#${form.posicao||"—"}</div><div style="font-size:10px;color:#aaa;text-transform:uppercase;letter-spacing:.06em">Posição</div></div></div></div>
   </div>
-</div>`:""}
+  <div class="card">${scoreBars}</div>
+  ${pgNum(c1)}
+</div></div>`:""}
 
-<!-- ══ CONCORRENTES ══════════════════════════════════════ -->
-${temConcs?`
-<div class="pg">
-  <div class="accent"></div>
-  <div class="body">
-    <div style="margin-bottom:40px">
-      <div class="label">${t.tituloConc}</div>
-      <h1 style="margin-bottom:14px">Cenário competitivo</h1>
-      <p style="max-width:460px">${t.diferenciais}</p>
-    </div>
+${temConcs?`<div class="pg"><div class="accent"></div><div class="body">
+  <div style="margin-bottom:40px"><div class="label">${t.tituloConc}</div><h1 style="margin-bottom:14px">Cenário competitivo</h1><p style="max-width:460px">${t.diferenciais}</p></div>
+  <div style="border-radius:14px;overflow:hidden;border:1px solid #f0f0f0;margin-bottom:24px">${mapSVG}</div>
+  <div class="card"><div class="label" style="margin-bottom:16px">Concorrentes identificados</div>${concs.slice(0,5).map((c,i)=>`<div style="display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid #f5f5f5"><div style="width:28px;height:28px;border-radius:50%;background:${i===0?"#EF4444":i===1?"#F59E0B":"#94A3B8"};color:#fff;font-weight:800;font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0">${c.posicao||i+1}</div><div style="flex:1"><div style="font-size:13px;font-weight:600;color:#111">${c.nome}</div>${c.diferencial?`<div style="font-size:11px;color:#999;margin-top:2px">${c.diferencial}</div>`:""}</div><div style="text-align:right"><div style="font-size:13px;font-weight:700">${c.nota}★</div><div style="font-size:10px;color:#aaa">${c.avals}</div></div></div>`).join("")}</div>
+  ${pgNum(c1)}
+</div></div>`:""}
 
-    <div style="border-radius:14px;overflow:hidden;border:1px solid #f0f0f0;margin-bottom:24px">
-      ${mapSVG}
-    </div>
+${temIG?`<div class="pg"><div class="accent"></div><div class="body">
+  <div style="margin-bottom:40px"><div class="label">${t.tituloIg}</div><h1 style="margin-bottom:14px">Presença no Instagram</h1>${ig.handle?`<div style="font-size:14px;font-weight:600;color:${c1}">@${ig.handle}${ig.seguidores?" · "+ig.seguidores+" seguidores":""}</div>`:""}</div>
+  ${ig.printUrl?`<div style="margin-bottom:24px;border-radius:14px;overflow:hidden;border:1px solid #f0f0f0;max-height:200px;display:flex;align-items:center;justify-content:center;background:#fafafa"><img src="${ig.printUrl}" style="max-width:100%;max-height:200px;object-fit:contain;display:block"/></div>`:""}
+  <div class="highlight" style="margin-bottom:28px"><p style="font-size:13px;color:#444;line-height:1.75">${t.igAnalise}</p></div>
+  ${igCriticasHtml?`<div class="card"><div class="label" style="margin-bottom:16px;color:#EF4444">Pontos de atenção</div>${igCriticasHtml}</div>`:""}
+  ${pgNum(c1)}
+</div></div>`:""}
 
-    <div class="card">
-      <div class="label" style="margin-bottom:16px">Concorrentes identificados</div>
-      ${concRows}
-    </div>
-
-    ${pgNum()}
-  </div>
-</div>`:""}
-
-<!-- ══ INSTAGRAM ══════════════════════════════════════════ -->
-${temIG?`
-<div class="pg">
-  <div class="accent"></div>
-  <div class="body">
-    <div style="margin-bottom:40px">
-      <div class="label">${t.tituloIg}</div>
-      <h1 style="margin-bottom:14px">Presença no Instagram</h1>
-      ${ig.handle?`<div style="font-size:14px;font-weight:600;color:${c1}">@${ig.handle}${ig.seguidores?` · ${ig.seguidores} seguidores`:""}</div>`:""}
-    </div>
-
-    ${ig.printUrl?`<div style="margin-bottom:24px;border-radius:14px;overflow:hidden;border:1px solid #f0f0f0;max-height:200px;display:flex;align-items:center;justify-content:center;background:#fafafa"><img src="${ig.printUrl}" style="max-width:100%;max-height:200px;object-fit:contain;display:block"/></div>`:""}
-
-    <div class="highlight" style="margin-bottom:28px">
-      <p style="font-size:13px;color:#444;line-height:1.75">${t.igAnalise}</p>
-    </div>
-
-    ${igCriticasHtml?`
-    <div class="card">
-      <div class="label" style="margin-bottom:16px;color:#EF4444">Pontos de atenção</div>
-      ${igCriticasHtml}
-    </div>`:""}
-
-    ${pgNum()}
-  </div>
-</div>`:""}
-
-<!-- ══ PRÓXIMOS PASSOS ══════════════════════════════════ -->
-<div class="pg" style="background:#0a0a0a">
-  <div style="position:absolute;top:0;right:0;width:40%;height:100%;background:linear-gradient(135deg,${c1}12 0%,transparent 70%)"></div>
-  <div class="body" style="padding:64px;justify-content:space-between">
-    <div>
-      <div style="font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:${c1};margin-bottom:20px">${t.tituloProx}</div>
-      <h1 style="font-size:34px;color:#fff;margin-bottom:20px;line-height:1.15">O próximo passo<br/>é uma conversa.</h1>
-      <p style="color:#777;font-size:14px;line-height:1.8;max-width:400px">${t.proximos}</p>
-    </div>
-
-    <div style="background:#161616;border:1px solid #222;border-radius:20px;padding:32px 36px">
-      <div style="display:flex;align-items:center;gap:24px">
-        ${qrHtml?`<div style="flex-shrink:0">${qrHtml}</div>`:""}
-        <div>
-          <div style="font-size:18px;font-weight:800;color:#fff;font-family:'Space Grotesk',sans-serif;margin-bottom:4px">${form.cslNome||empresa}</div>
-          <div style="font-size:13px;color:${c1};font-weight:600;margin-bottom:14px">${empresa}</div>
-          ${form.cslWhats?`<div style="font-size:12px;color:#666;margin-bottom:4px">📱 ${form.cslWhats}</div>`:""}
-          ${form.cslInsta?`<div style="font-size:12px;color:#666">instagram.com/${form.cslInsta}</div>`:""}
-        </div>
-      </div>
-    </div>
-
-    ${pgNum()}
+<div class="pg" style="background:#0a0a0a"><div style="position:absolute;top:0;right:0;width:40%;height:100%;background:linear-gradient(135deg,${c1}12 0%,transparent 70%)"></div>
+  <div class="body" style="padding:64px;justify-content:space-between;background:transparent">
+    <div><div style="font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:${c1};margin-bottom:20px">${t.tituloProx}</div><h1 style="font-size:34px;color:#fff;margin-bottom:20px;line-height:1.15">O próximo passo<br/>é uma conversa.</h1><p style="color:#777;font-size:14px;line-height:1.8;max-width:400px">${t.proximos}</p></div>
+    <div style="background:#161616;border:1px solid #222;border-radius:20px;padding:32px 36px"><div style="display:flex;align-items:center;gap:24px">${qrHtml?`<div style="flex-shrink:0">${qrHtml}</div>`:""}<div><div style="font-size:18px;font-weight:800;color:#fff;font-family:'Space Grotesk',sans-serif;margin-bottom:4px">${form.cslNome||empresa}</div><div style="font-size:13px;color:${c1};font-weight:600;margin-bottom:14px">${empresa}</div>${form.cslWhats?`<div style="font-size:12px;color:#666;margin-bottom:4px">📱 ${form.cslWhats}</div>`:""}${form.cslInsta?`<div style="font-size:12px;color:#666">@${form.cslInsta}</div>`:""}</div></div></div>
+    ${pgNum(c1,"#0a0a0a")}
   </div>
 </div>
 
 </body></html>`;
+  }
 }
