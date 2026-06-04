@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 
-// logo via public folder
+import LOGO_B64 from "./logo.png";
 
 
 /* ─── TOKENS ─────────────────────────────────────────────── */
@@ -230,7 +230,7 @@ function PasteImage({value, onChange, label="Cole um print (Ctrl+V)", hint=""}) 
 
 
 const LogoIcon = ({size=40,fill=false}) => (
-  <img src="/logo.png" alt="SCentral" style={{width:fill?"100%":`${size}px`,height:"auto",objectFit:"contain",display:"block",margin:"0 auto"}}/>
+  <img src={LOGO_B64} alt="SCentral" style={{width:fill?"100%":`${size}px`,height:"auto",objectFit:"contain",display:"block",margin:"0 auto"}}/>
 );
 
 /* ─── APP ────────────────────────────────────────────────── */
@@ -751,7 +751,7 @@ Retorne SOMENTE JSON sem markdown:
   const progressPct = Math.round((pg/8)*100);
 
   return(
-    <div style={{display:"flex",minHeight:"100vh",background:V.bg,fontFamily:"'Inter',sans-serif"}}>
+    <div style={{display:"block",minHeight:"100vh",background:V.bg,fontFamily:"'Inter',sans-serif",width:"100%"}}>
       <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Sora:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 
       {/* ══ SIDEBAR ══════════════════════════════════════ */}
@@ -760,7 +760,7 @@ Retorne SOMENTE JSON sem markdown:
         {/* Logo */}
         <div style={{padding:"12px 16px 10px",borderBottom:`1px solid ${V.sidebarBdr}`}}>
           {logoUrl
-            ?<img src={logoUrl} style={{width:"100%",height:"auto",objectFit:"contain",display:"block",mixBlendMode:"lighten"}}/>
+            ?<img src={logoUrl} style={{width:"100%",height:"auto",objectFit:"contain",display:"block"}}/>
             :<LogoIcon size={168} fill={true}/>
           }
         </div>
@@ -821,10 +821,10 @@ Retorne SOMENTE JSON sem markdown:
       </aside>
 
       {/* ══ MAIN ═════════════════════════════════════════ */}
-      <div style={{marginLeft:"200px",flex:1,display:"flex",flexDirection:"column",minWidth:0,overflow:"hidden"}}>
+      <div style={{marginLeft:"200px",minHeight:"100vh",display:"flex",flexDirection:"column",width:"calc(100% - 200px)"}}>
 
         {/* Header */}
-        <header style={{background:V.surface,borderBottom:`1px solid ${V.border}`,padding:"0 20px 0 16px",height:"48px",display:"flex",alignItems:"center",justifyContent:"space-between",position:"sticky",top:0,zIndex:99,boxShadow:V.shadow,width:"100%",boxSizing:"border-box"}}>
+        <header style={{background:V.surface,borderBottom:`1px solid ${V.border}`,padding:"0 20px 0 16px",height:"48px",display:"flex",alignItems:"center",justifyContent:"space-between",position:"sticky",top:0,zIndex:99,boxShadow:V.shadow}}>
           <div>
             <div style={{fontSize:"16px",fontWeight:600,color:V.txt,fontFamily:"'Sora',sans-serif"}}>
               {p2modo==="auto"?"Diagnóstico Automático":navItems.find(n=>n.id===pg)?.label||"Diagnóstico"}
@@ -1435,7 +1435,7 @@ function buildPDF({form,ig,kws,concs,logoUrl,textos,temDadosGoogle,temConcs,temI
   // Shared helpers
   const logoHtml=logoUrl
     ?`<img src="${logoUrl}" style="height:48px;width:48px;object-fit:cover;border-radius:12px;display:block"/>`
-    :`<img src="/logo.png" style="height:48px;width:auto;object-fit:contain;display:block;filter:brightness(10)"/>`;
+    :`<img src={LOGO_B64} style="height:48px;width:auto;object-fit:contain;display:block;filter:brightness(10)"/>`;
   const qrHtml=wUrl?`<img src="${qrUrl(wUrl)}" width="100" height="100" style="border-radius:10px;display:block"/>`:""
 
   const scoreCritsData=[
@@ -1716,7 +1716,7 @@ ${temIG?`
   if(layout==="luxo") {
     const L={dark:"#0A0A0A",gold:"#D4AF37",champagne:"#E8D9B5",white:"#FAFAFA",muted:"#888",border:"rgba(212,175,55,.25)"};
     const scoreBars=scoreCritsData.map(({l,pts,max})=>`<div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;margin-bottom:5px"><span style="font-size:10px;color:${L.muted};letter-spacing:.06em;text-transform:uppercase">${l}</span><span style="font-size:10px;font-weight:600;color:${pts===max?L.gold:L.muted}">${pts}/${max}</span></div><div style="height:1px;background:rgba(255,255,255,.08)"><div style="height:100%;width:${(pts/max)*100}%;background:${pts===max?L.gold:"rgba(212,175,55,.4)"};"></div></div></div>`).join("");
-    const logoHtmlL=logoUrl?`<img src="${logoUrl}" style="height:44px;width:44px;object-fit:cover;border-radius:10px;display:block"/>`:`<img src="/logo.png" style="height:44px;width:auto;object-fit:contain;display:block;filter:brightness(10)"/>`;
+    const logoHtmlL=logoUrl?`<img src="${logoUrl}" style="height:44px;width:44px;object-fit:cover;border-radius:10px;display:block"/>`:`<img src={LOGO_B64} style="height:44px;width:auto;object-fit:contain;display:block;filter:brightness(10)"/>`;
     return`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"/><title>Diagnóstico — ${form.nome}</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet"/>
 <style>
@@ -1963,7 +1963,7 @@ ${temIG?`
   // MODELO 5 — CUSTOM (cor da marca — design atual)
   // ═══════════════════════════════════════════════════════
   {
-    const logoHtmlC=logoUrl?`<img src="${logoUrl}" style="height:44px;width:44px;object-fit:cover;border-radius:12px;display:block"/>`:`<img src="/logo.png" style="height:44px;width:auto;object-fit:contain;display:block;filter:brightness(10)"/>`;
+    const logoHtmlC=logoUrl?`<img src="${logoUrl}" style="height:44px;width:44px;object-fit:cover;border-radius:12px;display:block"/>`:`<img src={LOGO_B64} style="height:44px;width:auto;object-fit:contain;display:block;filter:brightness(10)"/>`;
     const scoreBars=scoreCritsData.map(({l,pts,max})=>`<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:11px;color:#777;font-weight:500">${l}</span><span style="font-size:11px;font-weight:700;color:${pts===max?"#16A34A":pts>0?c1:"#ccc"}">${pts}<span style="color:#ccc;font-weight:400">/${max}</span></span></div><div style="height:4px;background:#f0f0f0;border-radius:2px"><div style="height:100%;width:${(pts/max)*100}%;background:${pts===max?"#16A34A":pts>0?c1:"transparent"};border-radius:2px"></div></div></div>`).join("");
     return`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"/><title>Diagnóstico — ${form.nome}</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Sora:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
