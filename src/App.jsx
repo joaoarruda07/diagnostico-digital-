@@ -230,7 +230,7 @@ function PasteImage({value, onChange, label="Cole um print (Ctrl+V)", hint=""}) 
 
 
 const LogoIcon = ({size=40,fill=false}) => (
-  <img src="/logo.png" alt="SCentral" style={{width:fill?"100%":`${size}px`,height:"auto",objectFit:"contain",display:"block",margin:"0 auto",mixBlendMode:"lighten"}}/>
+  <img src="/logo.png" alt="SCentral" style={{width:fill?"100%":`${size}px`,height:"auto",objectFit:"contain",display:"block",margin:"0 auto"}}/>
 );
 
 /* ─── APP ────────────────────────────────────────────────── */
@@ -821,10 +821,10 @@ Retorne SOMENTE JSON sem markdown:
       </aside>
 
       {/* ══ MAIN ═════════════════════════════════════════ */}
-      <div style={{marginLeft:"230px",flex:1,display:"flex",flexDirection:"column"}}>
+      <div style={{marginLeft:"200px",flex:1,display:"flex",flexDirection:"column",minWidth:0,overflow:"hidden"}}>
 
         {/* Header */}
-        <header style={{background:V.surface,borderBottom:`1px solid ${V.border}`,padding:"0 24px 0 16px",height:"48px",display:"flex",alignItems:"center",justifyContent:"space-between",position:"sticky",top:0,zIndex:99,boxShadow:V.shadow}}>
+        <header style={{background:V.surface,borderBottom:`1px solid ${V.border}`,padding:"0 20px 0 16px",height:"48px",display:"flex",alignItems:"center",justifyContent:"space-between",position:"sticky",top:0,zIndex:99,boxShadow:V.shadow,width:"100%",boxSizing:"border-box"}}>
           <div>
             <div style={{fontSize:"16px",fontWeight:600,color:V.txt,fontFamily:"'Sora',sans-serif"}}>
               {p2modo==="auto"?"Diagnóstico Automático":navItems.find(n=>n.id===pg)?.label||"Diagnóstico"}
@@ -845,10 +845,10 @@ Retorne SOMENTE JSON sem markdown:
         </header>
 
         {/* Content */}
-        <div style={{flex:1,padding:"20px 24px 20px 16px",display:"flex",gap:"20px",alignItems:"flex-start",minWidth:0}}>
+        <div style={{flex:1,padding:"16px 20px 20px 16px",display:"flex",gap:"20px",alignItems:"flex-start",minWidth:0,width:"100%",boxSizing:"border-box"}}>
 
           {/* Main col */}
-          <div style={{flex:1,minWidth:0,maxWidth:"100%"}}>
+          <div style={{flex:1,minWidth:0}}>
 
             {/* ══ AUTO IA ══════════════════════════════ */}
             {pg===1&&p2modo==="auto"&&<div>
