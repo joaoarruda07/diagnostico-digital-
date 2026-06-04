@@ -94,7 +94,7 @@ function textosPadrao(form, concs) {
       tituloProx: "Próximos Passos",
       intro: `Meu nome é <strong>${form.cslNome||"o consultor"}</strong>, fundador da <strong>${empresa}</strong>, especializada em aumentar o reconhecimento e o faturamento de negócios do segmento de <strong>${cat}</strong>. Recentemente analisei a presença digital de negócios em <strong>${cid}</strong> e fiz uma leitura técnica do seu posicionamento no Google. Essa análise não é baseada em opinião — ela segue critérios reais de como o Google mostra os negócios e, principalmente, <strong>como o cliente decide com quem vai fechar</strong>.`,
       problema: `Quando alguém pesquisa por <strong>${cat} em ${cid}</strong>, essa pessoa já está pronta para ${n.acao}. E, normalmente, ela entra em contato com um dos <strong>3 primeiros que aparecem</strong>. Hoje, sua presença no Google está abaixo do potencial da sua qualificação — não por falta de competência, mas por um <strong>posicionamento que ainda não reflete o que você oferece</strong> para quem não te conhece. Existem ${n.cliente}s procurando exatamente o que você faz, mas seu nome não está aparecendo com a frequência que deveria.`,
-      dados: `Atualmente você aparece na posição <strong>#${form.posicao||"—"}</strong> nas buscas por ${cat} em ${cid}. Com nota <strong>${form.nota}★</strong>, <strong>${form.numAvals} avaliações</strong> e score de presença <strong>${form.score}/100</strong>, existem ajustes estratégicos claros que, feitos corretamente, mudam significativamente sua visibilidade.`,
+      dados: `Atualmente você aparece na posição <strong>#${form.posicao||"—"}</strong> nas buscas por ${cat} em ${cid}. Com nota <strong>${form.nota}</strong>, <strong>${form.numAvals} avaliações</strong> e score de presença <strong>${form.score}/100</strong>, existem ajustes estratégicos claros que, feitos corretamente, mudam significativamente sua visibilidade.`,
       diferenciais: `Os negócios que aparecem antes possuem fichas mais completas, mais avaliações recentes e maior frequência de atualização — fatores que o algoritmo do Google prioriza diretamente. <strong>Esses ${n.cliente}s acabam escolhendo outros que aparecem primeiro</strong>, muitas vezes com menos qualidade, mas com mais visibilidade digital.`,
       igAnalise: `Seu Instagram apresenta oportunidades claras de crescimento. A frequência de publicações e o tipo de conteúdo impactam diretamente o alcance orgânico e a percepção de autoridade pelo ${n.cliente}. <strong>Sem uma estratégia consistente, seu perfil deixa de converter visitantes em ${n.cliente}s.</strong>`,
       proximos: `Este diagnóstico tem como objetivo fornecer uma <strong>visão inicial</strong> sobre seu momento atual. O próximo passo é marcarmos uma conversa para que eu me aprofunde nessa análise e explique como corrigir essas lacunas identificadas — além de apresentar outras oportunidades de crescimento. Entre em contato com <strong>${form.cslNome||"o consultor"}</strong> agora.`,
@@ -107,7 +107,7 @@ function textosPadrao(form, concs) {
       tituloProx: "Como posso ajudar",
       intro: `Meu nome é <strong>${form.cslNome||"o consultor"}</strong>, da <strong>${empresa}</strong>. Dediquei um tempo para analisar com cuidado a presença digital do <strong>${neg}</strong> — e o que encontrei me motivou a entrar em contato. Você já tem uma base real de qualidade: <strong>${n.positivo}</strong>. O que quero te mostrar é como tornar isso ainda mais visível para quem está buscando um <strong>${cat}</strong> em <strong>${cid}</strong>.`,
       problema: `Você já conquistou o que é mais difícil: a <strong>confiança dos seus ${n.cliente}s</strong>. A oportunidade agora está em fazer com que essa mesma qualidade apareça para quem ainda não te conhece — as pessoas que buscam por <strong>${cat} em ${cid}</strong> e tomam a decisão de ${n.acao} no momento da busca.`,
-      dados: `Sua nota de <strong>${form.nota}★</strong> no Google já está acima de vários concorrentes da região${form.temSite?" e seu site ativo complementa bem essa presença":""}. Com <strong>${form.numAvals} avaliações</strong> e score de presença de <strong>${form.score}/100</strong>, existem pontos estratégicos que, ajustados, colocam seu nome em uma posição muito mais favorável.`,
+      dados: `Sua nota de <strong>${form.nota}</strong> no Google já está acima de vários concorrentes da região${form.temSite?" e seu site ativo complementa bem essa presença":""}. Com <strong>${form.numAvals} avaliações</strong> e score de presença de <strong>${form.score}/100</strong>, existem pontos estratégicos que, ajustados, colocam seu nome em uma posição muito mais favorável.`,
       diferenciais: `Os negócios que aparecem nas primeiras posições chegaram lá com ações simples e consistentes — mais fotos, avaliações recentes e ficha completa. São ajustes que fazem diferença real no número de ${n.cliente}s que chegam até você, e a sua qualidade de serviço é o diferencial que fecha a conversão.`,
       igAnalise: `Seu perfil já <strong>comunica sua especialidade</strong> e transmite profissionalismo. O próximo passo é simples: <strong>consistência e dois ajustes técnicos</strong> que colocam seu perfil em outro nível de visibilidade e conversão de ${n.cliente}s.`,
       proximos: `Gostaria de te mostrar, em uma conversa rápida, um caminho claro e personalizado para o <strong>${neg}</strong> em <strong>${cid}</strong>. Sem complicação — só ações práticas que fazem sentido para o seu momento. <strong>${form.cslNome||"Estou"}</strong> à disposição quando for melhor para você.`,
@@ -120,7 +120,7 @@ function textosPadrao(form, concs) {
       tituloProx: "Plano de ação recomendado",
       intro: `Sou <strong>${form.cslNome||"especialista"}</strong> da <strong>${empresa}</strong>, com metodologia baseada nos critérios técnicos do algoritmo Google para ranqueamento de negócios locais no segmento de <strong>${cat}</strong>. Realizei uma análise completa da presença digital do <strong>${neg}</strong> em <strong>${cid}</strong>. Os dados revelam uma base sólida com oportunidades técnicas específicas e acionáveis.`,
       problema: `Segundo o comportamento de busca local, mais de 76% dos ${n.cliente}s entram em contato com um dos 3 primeiros resultados. O algoritmo do Google avalia ficha completa, volume e recência de avaliações, presença de fotos e frequência de atualização. O <strong>${neg}</strong> tem os atributos de qualidade — o que falta é o posicionamento técnico correto para que isso seja reconhecido pelo algoritmo.`,
-      dados: `A nota de <strong>${form.nota}★</strong> com <strong>${form.numAvals} avaliações</strong> posiciona o <strong>${neg}</strong> com boa reputação base. O score de presença digital de <strong>${form.score}/100</strong> indica gaps técnicos específicos: são exatamente esses pontos que determinam a diferença de posicionamento entre você e os líderes do segmento em ${cid}.`,
+      dados: `A nota de <strong>${form.nota}</strong> com <strong>${form.numAvals} avaliações</strong> posiciona o <strong>${neg}</strong> com boa reputação base. O score de presença digital de <strong>${form.score}/100</strong> indica gaps técnicos específicos: são exatamente esses pontos que determinam a diferença de posicionamento entre você e os líderes do segmento em ${cid}.`,
       diferenciais: `Os líderes do segmento em ${cid} utilizam sinais que o algoritmo do Google prioriza: volume de avaliações recentes, galeria de fotos atualizada, horários completos e posts regulares. Cada um desses sinais contribui com pontos no score de relevância local — e todos são corrigíveis com um plano técnico estruturado.`,
       igAnalise: `O Instagram é o segundo canal de decisão para ${n.cliente}s — pesquisas indicam que 67% verificam o perfil antes de entrar em contato. O algoritmo do Instagram distribui conteúdo com base em frequência, formato (Reels têm 3x mais alcance) e engajamento. <strong>Uma estratégia de conteúdo técnico bem executada posiciona você como referência do segmento em ${cid}.</strong>`,
       proximos: `A <strong>${empresa}</strong> desenvolveu uma metodologia específica para <strong>${cat}</strong>. Em uma sessão de diagnóstico aprofundado, apresento o roadmap técnico completo — com metas de posicionamento, cronograma e métricas de acompanhamento. Entre em contato com <strong>${form.cslNome||"o consultor"}</strong> para agendar.`,
@@ -136,20 +136,7 @@ function GaugeSVG({score,size=200}) {
   const nx=(110+80*Math.cos(rad)).toFixed(1), ny=(105+80*Math.sin(rad)).toFixed(1);
   const col=sc<40?"#DC2626":sc<70?"#F59E0B":T.gold;
   return(
-    <svg width={size} viewBox="0 0 220 135" style={{display:"block",margin:"0 auto"}}>
-      <defs><linearGradient id="gg" x1="0%" y1="0%" x2="100%" y2="0%">
-        <stop offset="0%" stopColor="#DC2626"/><stop offset="40%" stopColor="#F59E0B"/>
-        <stop offset="70%" stopColor={T.goldM}/><stop offset="100%" stopColor={T.gold}/>
-      </linearGradient></defs>
-      <path d="M30 105 A80 80 0 0 1 190 105" fill="none" stroke={T.n200} strokeWidth="18" strokeLinecap="round"/>
-      <path d="M30 105 A80 80 0 0 1 190 105" fill="none" stroke="url(#gg)" strokeWidth="18" strokeLinecap="round"/>
-      <text x="22" y="122" fontSize="10" fill={T.n400} textAnchor="middle" fontFamily="Manrope,sans-serif">0</text>
-      <text x="110" y="20" fontSize="10" fill={T.n400} textAnchor="middle" fontFamily="Manrope,sans-serif">50</text>
-      <text x="198" y="122" fontSize="10" fill={T.n400} textAnchor="middle" fontFamily="Manrope,sans-serif">100</text>
-      <line x1="110" y1="105" x2={nx} y2={ny} stroke={T.dark} strokeWidth="3.5" strokeLinecap="round"/>
-      <circle cx="110" cy="105" r="6" fill={T.dark}/>
-      <text x="110" y="133" fontSize="22" fontWeight="800" fill={col} textAnchor="middle" fontFamily="Manrope,sans-serif">{sc}</text>
-    </svg>
+    <svg width={size} viewBox="0 0 220 135" style={{display:"block",margin:"0 auto"}}><defs><linearGradient id="gg" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stopColor="#DC2626"/><stop offset="40%" stopColor="#F59E0B"/><stop offset="70%" stopColor={T.goldM}/><stop offset="100%" stopColor={T.gold}/></linearGradient></defs><path d="M30 105 A80 80 0 0 1 190 105" fill="none" stroke={T.n200} strokeWidth="18" strokeLinecap="round"/><path d="M30 105 A80 80 0 0 1 190 105" fill="none" stroke="url(#gg)" strokeWidth="18" strokeLinecap="round"/><text x="22" y="122" fontSize="10" fill={T.n400} textAnchor="middle" fontFamily="Manrope,sans-serif">0</text><text x="110" y="20" fontSize="10" fill={T.n400} textAnchor="middle" fontFamily="Manrope,sans-serif">50</text><text x="198" y="122" fontSize="10" fill={T.n400} textAnchor="middle" fontFamily="Manrope,sans-serif">100</text><line x1="110" y1="105" x2={nx} y2={ny} stroke={T.dark} strokeWidth="3.5" strokeLinecap="round"/><circle cx="110" cy="105" r="6" fill={T.dark}/><text x="110" y="133" fontSize="22" fontWeight="800" fill={col} textAnchor="middle" fontFamily="Manrope,sans-serif">{sc}</text></svg>
   );
 }
 function gaugeStatic(sc) {
@@ -224,8 +211,7 @@ function PasteImage({value, onChange, label="Cole um print (Ctrl+V)", hint=""}) 
   },[onChange]);
   const load = f => { if(!f||!f.type.startsWith("image/"))return; const r=new FileReader(); r.onload=ev=>onChange(ev.target.result); r.readAsDataURL(f); };
   return(
-    <div onDragOver={e=>{e.preventDefault();setDrag(true);}} onDragLeave={()=>setDrag(false)} onDrop={e=>{e.preventDefault();setDrag(false);load(e.dataTransfer.files[0]);}} onClick={()=>fileRef.current?.click()} style={{border:`1.5px dashed ${drag?"#7C3AED":"#CEC9DC"}`,borderRadius:"10px",padding:"14px",textAlign:"center",cursor:"pointer",background:drag?"#F3EEFF":"#FAFAF9",transition:"all .15s",minHeight:"80px",display:"flex",alignItems:"center",justifyContent:"center"}}>
-      <input ref={fileRef} type="file" accept="image/*" style={{display:"none"}} onChange={e=>load(e.target.files[0])}/>
+    <div onDragOver={e=>{e.preventDefault();setDrag(true);}} onDragLeave={()=>setDrag(false)} onDrop={e=>{e.preventDefault();setDrag(false);load(e.dataTransfer.files[0]);}} onClick={()=>fileRef.current?.click()} style={{border:`1.5px dashed ${drag?"#7C3AED":"#CEC9DC"}`,borderRadius:"10px",padding:"14px",textAlign:"center",cursor:"pointer",background:drag?"#F3EEFF":"#FAFAF9",transition:"all .15s",minHeight:"80px",display:"flex",alignItems:"center",justifyContent:"center"}}><input ref={fileRef} type="file" accept="image/*" style={{display:"none"}} onChange={e=>load(e.target.files[0])}/>
       {value
         ?<div style={{width:"100%"}}><img src={value} style={{maxHeight:"180px",maxWidth:"100%",objectFit:"contain",borderRadius:"8px",display:"block",margin:"0 auto"}}/><button onClick={e=>{e.stopPropagation();onChange("");}} style={{marginTop:"8px",background:"none",border:"none",cursor:"pointer",color:"#9991AF",fontSize:"12px"}}>Remover</button></div>
         :<div><div style={{fontSize:"20px",marginBottom:"5px",color:"#CEC9DC"}}>⌘</div><div style={{fontSize:"13px",fontWeight:600,color:"#5C5575"}}>{label}</div>{hint&&<div style={{fontSize:"11px",color:"#9991AF",marginTop:"3px"}}>{hint}</div>}<div style={{fontSize:"11px",color:"#9991AF",marginTop:"4px"}}>ou arraste · ou clique</div></div>
@@ -455,7 +441,7 @@ Se não conhecer o negócio específico, use benchmarks típicos do segmento na 
       const cat=(p.categoria||"").toLowerCase();
       const found=Object.entries(NICHOS).find(([,v])=>cat.includes(v.label.toLowerCase().split(" ")[0]));
       if(found) setNichoKey(found[0]);
-      setStatus({t:"ok",m:`✓ "${next.nome}" carregado! Confira e ajuste se necessário.`});
+      setStatus({t:"ok",m:` "${next.nome}" carregado! Confira e ajuste se necessário.`});
     } catch(e){
       setStatus({t:"err",m:"Não foi possível extrair. Preencha manualmente."});
     }
@@ -509,7 +495,7 @@ Retorne SOMENTE JSON sem markdown:
       Object.keys(p).forEach(k=>{if(p[k]!==undefined)next[k]=p[k];});
       next.score=String(calcIgScore(next));
       setIg(next);
-      setStatus({t:"ok",m:`✓ Perfil @${handle} analisado!`});
+      setStatus({t:"ok",m:` Perfil @${handle} analisado!`});
     } catch(e){
       console.error("extrairIG error:", e);
       setStatus({t:"err",m:`Erro: ${e.message||"Tente novamente."}`});
@@ -542,7 +528,7 @@ Retorne SOMENTE JSON sem markdown:
       const parsed=JSON.parse(text.slice(s,e+1));
       const novos=(parsed.concorrentes||[]).map(c=>({...c,manual:false}));
       setConcs([...novos,...concs.filter(c=>c.manual)]);
-      setStatus({t:"ok",m:`✓ ${novos.length} concorrentes encontrados!`});
+      setStatus({t:"ok",m:` ${novos.length} concorrentes encontrados!`});
     } catch(e){
       setStatus({t:"err",m:"Erro. Adicione manualmente."});
     }
@@ -631,7 +617,7 @@ INSTRUÇÃO: ${ton.instrucao}
 
 NEGÓCIO: ${form.nome} | SEGMENTO: ${form.categoria} | CIDADE: ${form.cidade} ${form.estado}
 CLIENTE: ${n.cliente} | POSITIVO JÁ EXISTENTE: ${n.positivo}
-${temDadosGoogle?`NOTA GOOGLE: ${form.nota}★ (${form.numAvals} avals) | SCORE: ${form.score}/100 | POSIÇÃO: #${form.posicao}`:"SEM DADOS GOOGLE DISPONÍVEIS"}
+${temDadosGoogle?`NOTA GOOGLE: ${form.nota} (${form.numAvals} avals) | SCORE: ${form.score}/100 | POSIÇÃO: #${form.posicao}`:"SEM DADOS GOOGLE DISPONÍVEIS"}
 ${temConcs?`CONCORRENTES: ${concs.length} mapeados`:"SEM ANÁLISE DE CONCORRENTES"}
 ${temIG?`IG HANDLE: @${ig.handle} | SEGUIDORES: ${ig.seguidores} | IG SCORE: ${ig.score}/100`:"SEM ANÁLISE DE INSTAGRAM"}
 CONSULTOR: ${form.cslNome} da ${form.cslEmpresa}
@@ -647,7 +633,7 @@ INSTRUÇÃO: ${ton.instrucao}
 
 NEGÓCIO: ${form.nome} | SEGMENTO: ${form.categoria} | CIDADE: ${form.cidade} ${form.estado}
 CLIENTE: ${n.cliente} | POSITIVO JÁ EXISTENTE: ${n.positivo}
-${temDadosGoogle?`NOTA GOOGLE: ${form.nota}★ (${form.numAvals} avals) | SCORE: ${form.score}/100 | POSIÇÃO: #${form.posicao}`:"SEM DADOS GOOGLE DISPONÍVEIS"}
+${temDadosGoogle?`NOTA GOOGLE: ${form.nota} (${form.numAvals} avals) | SCORE: ${form.score}/100 | POSIÇÃO: #${form.posicao}`:"SEM DADOS GOOGLE DISPONÍVEIS"}
 ${temConcs?`CONCORRENTES: ${concs.length} mapeados`:"SEM ANÁLISE DE CONCORRENTES"}
 ${temIG?`IG HANDLE: @${ig.handle} | SEGUIDORES: ${ig.seguidores} | IG SCORE: ${ig.score}/100`:"SEM ANÁLISE DE INSTAGRAM"}
 CONSULTOR: ${form.cslNome} da ${form.cslEmpresa}
@@ -673,7 +659,7 @@ Retorne SOMENTE JSON sem markdown:
     if(!win){setStatus({t:"err",m:"Popup bloqueado!"});return;}
     win.document.write(html); win.document.close();
     setTimeout(()=>{win.focus();win.print();},1600);
-    setStatus({t:"ok",m:"Aberto! Ctrl+P → Salvar como PDF."});
+    setStatus({t:"ok",m:"Aberto! Ctrl+P  Salvar como PDF."});
   };
 
   /* helpers UI */
@@ -709,18 +695,18 @@ Retorne SOMENTE JSON sem markdown:
 
   // ─── NAV ITEMS ─────────────────────────────────────────
   const navAuto = [
-    {id:1, icon:'⚡', label:'Diagnóstico IA'},
-    {id:8, icon:'📄', label:'Editar & PDF'},
+    {id:1, icon:'', label:'Diagnóstico IA'},
+    {id:8, icon:'', label:'Editar & PDF'},
   ];
   const navManual = [
-    {id:1, icon:'🏢', label:'Segmento & Dados', group:'Negócio'},
-    {id:2, icon:'📊', label:'Análise de Presença', group:'Negócio', opt:!temDadosGoogle},
-    {id:3, icon:'🔍', label:'Oportunidades', group:'Negócio'},
-    {id:4, icon:'⚔️', label:'Concorrentes', group:'Análise', opt:!temConcs},
-    {id:5, icon:'📸', label:'Instagram', group:'Análise', opt:!temIG},
-    {id:6, icon:'🎨', label:'Cores & Logo', group:'Design'},
-    {id:7, icon:'👤', label:'Consultor', group:'Design'},
-    {id:8, icon:'📄', label:'Plano de Ação', group:'Saída'},
+    {id:1, icon:'', label:'Segmento & Dados', group:'Negócio'},
+    {id:2, icon:'', label:'Análise de Presença', group:'Negócio', opt:!temDadosGoogle},
+    {id:3, icon:'', label:'Oportunidades', group:'Negócio'},
+    {id:4, icon:'', label:'Concorrentes', group:'Análise', opt:!temConcs},
+    {id:5, icon:'', label:'Instagram', group:'Análise', opt:!temIG},
+    {id:6, icon:'', label:'Cores & Logo', group:'Design'},
+    {id:7, icon:'', label:'Consultor', group:'Design'},
+    {id:8, icon:'', label:'Plano de Ação', group:'Saída'},
   ];
   const navItems = p2modo==='auto' ? navAuto : navManual;
 
@@ -735,13 +721,9 @@ Retorne SOMENTE JSON sem markdown:
     </div>
   );
   const SectionTitle = ({icon, title, subtitle}) => (
-    <div style={{display:'flex',alignItems:'center',gap:'12px',marginBottom:'20px'}}>
-      <div style={{width:'36px',height:'36px',borderRadius:'10px',background:D.accent+'18',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'18px',flexShrink:0}}>{icon}</div>
-      <div>
-        <div style={{fontSize:'16px',fontWeight:700,color:D.text,fontFamily:"'Plus Jakarta Sans',sans-serif"}}>{title}</div>
+    <div style={{display:'flex',alignItems:'center',gap:'12px',marginBottom:'20px'}}><div style={{width:'36px',height:'36px',borderRadius:'10px',background:D.accent+'18',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'18px',flexShrink:0}}>{icon}</div><div><div style={{fontSize:'16px',fontWeight:700,color:D.text,fontFamily:"'Plus Jakarta Sans',sans-serif"}}>{title}</div>
         {subtitle&&<div style={{fontSize:'12px',color:D.muted,marginTop:'2px'}}>{subtitle}</div>}
-      </div>
-    </div>
+      </div></div>
   );
   const FieldLabel = ({children, required}) => (
     <div style={{fontSize:'11px',fontWeight:600,letterSpacing:'.06em',textTransform:'uppercase',color:D.muted,marginBottom:'6px'}}>
@@ -776,15 +758,14 @@ Retorne SOMENTE JSON sem markdown:
   const StatusBar = () => {
     if(!status) return null;
     const styles = {
-      err:{bg:'#FEF2F2',col:D.danger,border:'#FECACA',icon:'⚠️'},
-      ok:{bg:'#F0FDF4',col:'#166534',border:'#BBF7D0',icon:'✓'},
-      load:{bg:'#FFFBEB',col:'#92400E',border:'#FDE68A',icon:'⏳'},
-      warn:{bg:'#FFFBEB',col:'#92400E',border:'#FDE68A',icon:'ℹ️'},
+      err:{bg:'#FEF2F2',col:D.danger,border:'#FECACA',icon:''},
+      ok:{bg:'#F0FDF4',col:'#166534',border:'#BBF7D0',icon:''},
+      load:{bg:'#FFFBEB',col:'#92400E',border:'#FDE68A',icon:''},
+      warn:{bg:'#FFFBEB',col:'#92400E',border:'#FDE68A',icon:''},
     };
     const s = styles[status.t]||styles.ok;
     return(
-      <div style={{padding:'12px 16px',borderRadius:'10px',background:s.bg,border:`1px solid ${s.border}`,color:s.col,fontSize:'13px',display:'flex',alignItems:'center',gap:'10px',marginTop:'12px'}}>
-        <span>{s.icon}</span>{status.m}
+      <div style={{padding:'12px 16px',borderRadius:'10px',background:s.bg,border:`1px solid ${s.border}`,color:s.col,fontSize:'13px',display:'flex',alignItems:'center',gap:'10px',marginTop:'12px'}}><span>{s.icon}</span>{status.m}
       </div>
     );
   };
@@ -800,40 +781,25 @@ Retorne SOMENTE JSON sem markdown:
         <div style={{padding:'20px 16px',borderBottom:`1px solid ${D.sidebarBorder}`}}>
           {logoUrl
             ?<img src={logoUrl} style={{height:'44px',width:'44px',objectFit:'cover',borderRadius:'12px',display:'block'}}/>
-            :<LogoIcon size={44}/>
+            :<LogoIcon size={68}/>
           }
           {form.cslEmpresa&&<div style={{fontSize:'11px',color:'#555',marginTop:'8px',fontWeight:500}}>{form.cslEmpresa}</div>}
         </div>
 
         {/* Projeto atual */}
-        {form.nome&&<div style={{padding:'10px 16px',background:'#1C1A28',margin:'8px',borderRadius:'10px',border:`1px solid ${D.sidebarBorder}`}}>
-          <div style={{fontSize:'9px',color:'#555',letterSpacing:'.08em',textTransform:'uppercase',marginBottom:'4px'}}>Projeto atual</div>
-          <div style={{display:'flex',alignItems:'center',gap:'6px'}}>
-            <div style={{width:'7px',height:'7px',borderRadius:'50%',background:D.success,flexShrink:0}}/>
-            <div style={{fontSize:'12px',color:'#fff',fontWeight:600,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{form.nome}</div>
-          </div>
-        </div>}
+        {form.nome&&<div style={{padding:'10px 16px',background:'#1C1A28',margin:'8px',borderRadius:'10px',border:`1px solid ${D.sidebarBorder}`}}><div style={{fontSize:'9px',color:'#555',letterSpacing:'.08em',textTransform:'uppercase',marginBottom:'4px'}}>Projeto atual</div><div style={{display:'flex',alignItems:'center',gap:'6px'}}><div style={{width:'7px',height:'7px',borderRadius:'50%',background:D.success,flexShrink:0}}/><div style={{fontSize:'12px',color:'#fff',fontWeight:600,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{form.nome}</div></div></div>}
 
         {/* Toggle Manual/Auto */}
-        <div style={{padding:'8px 12px'}}>
-          <div style={{display:'flex',background:'#1C1A28',borderRadius:'8px',overflow:'hidden',border:`1px solid ${D.sidebarBorder}`}}>
-            <button onClick={()=>setP2modo('manual')} style={{flex:1,padding:'7px',fontSize:'10px',fontWeight:700,cursor:'pointer',border:'none',background:p2modo==='manual'?D.accent:'transparent',color:p2modo==='manual'?'#fff':'#555',transition:'all .15s',letterSpacing:'.04em'}}>MANUAL</button>
-            <button onClick={()=>setP2modo('auto')} style={{flex:1,padding:'7px',fontSize:'10px',fontWeight:700,cursor:'pointer',border:'none',background:p2modo==='auto'?D.accent:'transparent',color:p2modo==='auto'?'#fff':'#555',transition:'all .15s',letterSpacing:'.04em',display:'flex',alignItems:'center',justifyContent:'center',gap:'4px'}}>
-              <span style={{width:'5px',height:'5px',borderRadius:'50%',background:p2modo==='auto'?'#fff':D.accent,display:'inline-block'}}/>AUTO IA
-            </button>
-          </div>
-        </div>
+        <div style={{padding:'8px 12px'}}><div style={{display:'flex',background:'#1C1A28',borderRadius:'8px',overflow:'hidden',border:`1px solid ${D.sidebarBorder}`}}><button onClick={()=>setP2modo('manual')} style={{flex:1,padding:'7px',fontSize:'10px',fontWeight:700,cursor:'pointer',border:'none',background:p2modo==='manual'?D.accent:'transparent',color:p2modo==='manual'?'#fff':'#555',transition:'all .15s',letterSpacing:'.04em'}}>MANUAL</button><button onClick={()=>setP2modo('auto')} style={{flex:1,padding:'7px',fontSize:'10px',fontWeight:700,cursor:'pointer',border:'none',background:p2modo==='auto'?D.accent:'transparent',color:p2modo==='auto'?'#fff':'#555',transition:'all .15s',letterSpacing:'.04em',display:'flex',alignItems:'center',justifyContent:'center',gap:'4px'}}><span style={{width:'5px',height:'5px',borderRadius:'50%',background:p2modo==='auto'?'#fff':D.accent,display:'inline-block'}}/>AUTO IA
+            </button></div></div>
 
         {/* Nav */}
         <nav style={{flex:1,padding:'8px 8px',overflowY:'auto'}}>
           {p2modo==='manual'?groups.map(g=>(
-            <div key={g}>
-              <div style={{fontSize:'9px',color:'#333',padding:'10px 8px 4px',letterSpacing:'.1em',textTransform:'uppercase',fontWeight:700}}>{g}</div>
+            <div key={g}><div style={{fontSize:'9px',color:'#333',padding:'10px 8px 4px',letterSpacing:'.1em',textTransform:'uppercase',fontWeight:700}}>{g}</div>
               {navItems.filter(n=>n.group===g).map(n=>(
                 <div key={n.id} onClick={()=>setPg(n.id)}
-                  style={{display:'flex',alignItems:'center',gap:'10px',padding:'9px 10px',borderRadius:'9px',cursor:'pointer',background:pg===n.id?D.accent+'18':'transparent',marginBottom:'2px',transition:'all .12s'}}>
-                  <span style={{fontSize:'14px',width:'20px',textAlign:'center'}}>{n.icon}</span>
-                  <span style={{fontSize:'12px',fontWeight:pg===n.id?600:400,color:pg===n.id?'#fff':'#666',flex:1}}>{n.label}</span>
+                  style={{display:'flex',alignItems:'center',gap:'10px',padding:'9px 10px',borderRadius:'9px',cursor:'pointer',background:pg===n.id?D.accent+'18':'transparent',marginBottom:'2px',transition:'all .12s'}}><span style={{fontSize:'14px',width:'20px',textAlign:'center'}}>{n.icon}</span><span style={{fontSize:'12px',fontWeight:pg===n.id?600:400,color:pg===n.id?'#fff':'#666',flex:1}}>{n.label}</span>
                   {n.opt&&<span style={{fontSize:'9px',color:'#333',fontStyle:'italic'}}>opt.</span>}
                   {pg===n.id&&<div style={{width:'3px',height:'16px',borderRadius:'2px',background:D.accent,flexShrink:0}}/>}
                 </div>
@@ -841,26 +807,19 @@ Retorne SOMENTE JSON sem markdown:
             </div>
           )):navItems.map(n=>(
             <div key={n.id} onClick={()=>setPg(n.id)}
-              style={{display:'flex',alignItems:'center',gap:'10px',padding:'10px',borderRadius:'9px',cursor:'pointer',background:pg===n.id?D.accent+'18':'transparent',marginBottom:'4px',transition:'all .12s'}}>
-              <span style={{fontSize:'16px',width:'22px',textAlign:'center'}}>{n.icon}</span>
-              <span style={{fontSize:'13px',fontWeight:pg===n.id?600:400,color:pg===n.id?'#fff':'#666'}}>{n.label}</span>
+              style={{display:'flex',alignItems:'center',gap:'10px',padding:'10px',borderRadius:'9px',cursor:'pointer',background:pg===n.id?D.accent+'18':'transparent',marginBottom:'4px',transition:'all .12s'}}><span style={{fontSize:'16px',width:'22px',textAlign:'center'}}>{n.icon}</span><span style={{fontSize:'13px',fontWeight:pg===n.id?600:400,color:pg===n.id?'#fff':'#666'}}>{n.label}</span>
               {pg===n.id&&<div style={{width:'3px',height:'18px',borderRadius:'2px',background:D.accent,flexShrink:0,marginLeft:'auto'}}/>}
             </div>
           ))}
         </nav>
 
         {/* Consultor footer */}
-        <div style={{padding:'12px 16px',borderTop:`1px solid ${D.sidebarBorder}`}}>
-          <BtnPrimary onClick={()=>setPg(8)} style={{width:'100%',justifyContent:'center',fontSize:'12px',padding:'9px'}}>
+        <div style={{padding:'12px 16px',borderTop:`1px solid ${D.sidebarBorder}`}}><BtnPrimary onClick={()=>setPg(8)} style={{width:'100%',justifyContent:'center',fontSize:'12px',padding:'9px'}}>
             Editar & PDF
           </BtnPrimary>
-          {form.cslNome&&<div style={{display:'flex',alignItems:'center',gap:'8px',marginTop:'10px'}}>
-            <div style={{width:'28px',height:'28px',borderRadius:'50%',background:D.accent+'33',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'12px',fontWeight:700,color:D.accent,flexShrink:0}}>{form.cslNome[0]}</div>
-            <div><div style={{fontSize:'11px',color:'#fff',fontWeight:600}}>{form.cslNome}</div><div style={{fontSize:'10px',color:'#444'}}>Admin</div></div>
-          </div>}
+          {form.cslNome&&<div style={{display:'flex',alignItems:'center',gap:'8px',marginTop:'10px'}}><div style={{width:'28px',height:'28px',borderRadius:'50%',background:D.accent+'33',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'12px',fontWeight:700,color:D.accent,flexShrink:0}}>{form.cslNome[0]}</div><div><div style={{fontSize:'11px',color:'#fff',fontWeight:600}}>{form.cslNome}</div><div style={{fontSize:'10px',color:'#444'}}>Admin</div></div></div>}
           {!form.cslNome&&<div style={{fontSize:'10px',color:'#333',marginTop:'8px',textAlign:'center'}}>Configure o consultor na etapa 7</div>}
-        </div>
-      </div>
+        </div></div>
     );
   };
 
@@ -871,69 +830,39 @@ Retorne SOMENTE JSON sem markdown:
       : (pg<=3?0:pg<=5?1:pg<=7?2:3);
     const currentNav = navItems.find(n=>n.id===pg);
     return(
-      <div style={{position:'fixed',top:0,left:'220px',right:0,height:'60px',background:D.header,borderBottom:`1px solid ${D.cardBorder}`,display:'flex',alignItems:'center',justifyContent:'space-between',padding:'0 28px',zIndex:99,boxShadow:'0 1px 3px rgba(0,0,0,.04)'}}>
-        <div>
-          <div style={{fontSize:'18px',fontWeight:700,color:D.text,fontFamily:"'Plus Jakarta Sans',sans-serif"}}>
-            {form.cslNome?`Olá, ${form.cslNome.split(' ')[0]}!`:'Olá!'}
+      <div style={{position:'fixed',top:0,left:'220px',right:0,height:'60px',background:D.header,borderBottom:`1px solid ${D.cardBorder}`,display:'flex',alignItems:'center',justifyContent:'space-between',padding:'0 28px',zIndex:99,boxShadow:'0 1px 3px rgba(0,0,0,.04)'}}><div><div style={{fontSize:'18px',fontWeight:700,color:D.text,fontFamily:"'Plus Jakarta Sans',sans-serif"}}>
+            {currentNav?.label||"Diagnóstico Digital"}
           </div>
-          <div style={{fontSize:'12px',color:D.muted}}>{currentNav?.label||'Diagnóstico Digital'}</div>
+          <div style={{fontSize:"11px",color:D.faint,marginTop:"1px"}}>
+            {form.nome?`Projeto: ${form.nome}`:"Nenhum projeto iniciado"}
+          </div>
         </div>
         {/* Steps indicator (Auto IA) */}
         {p2modo==='auto'&&<div style={{display:'flex',alignItems:'center',gap:'8px'}}>
           {stepLabels.map((s,i)=>(
-            <div key={i} style={{display:'flex',alignItems:'center',gap:'8px'}}>
-              <div style={{display:'flex',alignItems:'center',gap:'6px'}}>
-                <div style={{width:'24px',height:'24px',borderRadius:'50%',background:i===stepPg?D.accent:i<stepPg?D.success:D.cardBorder,color:i<=stepPg?'#fff':D.muted,fontSize:'11px',fontWeight:700,display:'flex',alignItems:'center',justifyContent:'center'}}>{i<stepPg?'✓':i+1}</div>
-                <span style={{fontSize:'12px',fontWeight:i===stepPg?600:400,color:i===stepPg?D.text:D.faint}}>{s}</span>
-              </div>
+            <div key={i} style={{display:'flex',alignItems:'center',gap:'8px'}}><div style={{display:'flex',alignItems:'center',gap:'6px'}}><div style={{width:'24px',height:'24px',borderRadius:'50%',background:i===stepPg?D.accent:i<stepPg?D.success:D.cardBorder,color:i<=stepPg?'#fff':D.muted,fontSize:'11px',fontWeight:700,display:'flex',alignItems:'center',justifyContent:'center'}}>{i<stepPg?'':i+1}</div><span style={{fontSize:'12px',fontWeight:i===stepPg?600:400,color:i===stepPg?D.text:D.faint}}>{s}</span></div>
               {i<stepLabels.length-1&&<div style={{width:'24px',height:'1px',background:D.cardBorder}}/>}
             </div>
           ))}
         </div>}
-        <div style={{fontSize:'12px',color:D.muted,display:'flex',alignItems:'center',gap:'6px'}}>
-          <span style={{width:'8px',height:'8px',borderRadius:'50%',background:D.success,display:'inline-block'}}/>
+        <div style={{fontSize:'12px',color:D.muted,display:'flex',alignItems:'center',gap:'6px'}}><span style={{width:'8px',height:'8px',borderRadius:'50%',background:D.success,display:'inline-block'}}/>
           {form.nome||'Nenhum projeto'}
-        </div>
-      </div>
+        </div></div>
     );
   };
 
   // ─── TIPS PANEL ────────────────────────────────────────
   const TipsPanel = ({tips=[]}) => (
-    <div style={{width:'280px',flexShrink:0}}>
-      <div style={{background:D.card,border:`1px solid ${D.cardBorder}`,borderRadius:'16px',padding:'20px',marginBottom:'16px'}}>
-        <div style={{display:'flex',alignItems:'center',gap:'8px',marginBottom:'16px',color:D.accent}}>
-          <span style={{fontSize:'16px'}}>💡</span>
-          <span style={{fontSize:'13px',fontWeight:700,color:D.accent}}>Dicas para melhores resultados</span>
-        </div>
+    <div style={{width:'280px',flexShrink:0}}><div style={{background:D.card,border:`1px solid ${D.cardBorder}`,borderRadius:'16px',padding:'20px',marginBottom:'16px'}}><div style={{display:'flex',alignItems:'center',gap:'8px',marginBottom:'16px',color:D.accent}}><span style={{fontSize:'16px'}}></span><span style={{fontSize:'13px',fontWeight:700,color:D.accent}}>Dicas para melhores resultados</span></div>
         {tips.map((tip,i)=>(
-          <div key={i} style={{display:'flex',gap:'12px',marginBottom:'14px'}}>
-            <div style={{width:'32px',height:'32px',borderRadius:'8px',background:D.bg,display:'flex',alignItems:'center',justifyContent:'center',fontSize:'14px',flexShrink:0}}>{tip.icon}</div>
-            <div>
-              <div style={{fontSize:'12px',fontWeight:600,color:D.text,marginBottom:'2px'}}>{tip.title}</div>
-              <div style={{fontSize:'11px',color:D.muted,lineHeight:1.5}}>{tip.text}</div>
-            </div>
-          </div>
+          <div key={i} style={{display:'flex',gap:'12px',marginBottom:'14px'}}><div style={{width:'32px',height:'32px',borderRadius:'8px',background:D.bg,display:'flex',alignItems:'center',justifyContent:'center',fontSize:'14px',flexShrink:0}}>{tip.icon}</div><div><div style={{fontSize:'12px',fontWeight:600,color:D.text,marginBottom:'2px'}}>{tip.title}</div><div style={{fontSize:'11px',color:D.muted,lineHeight:1.5}}>{tip.text}</div></div></div>
         ))}
-      </div>
-      <div style={{background:D.accent+'0d',border:`1px solid ${D.accent}22`,borderRadius:'16px',padding:'16px 20px'}}>
-        <div style={{display:'flex',alignItems:'center',gap:'8px',marginBottom:'8px'}}>
-          <span style={{fontSize:'16px'}}>✨</span>
-          <span style={{fontSize:'12px',fontWeight:700,color:D.accent}}>IA Inteligente</span>
-        </div>
-        <p style={{fontSize:'11px',color:D.muted,lineHeight:1.6,margin:0}}>Nossa IA analisa mais de 50 pontos de presença digital para gerar insights acionáveis.</p>
-      </div>
-    </div>
+      </div><div style={{background:D.accent+'0d',border:`1px solid ${D.accent}22`,borderRadius:'16px',padding:'16px 20px'}}><div style={{display:'flex',alignItems:'center',gap:'8px',marginBottom:'8px'}}><span style={{fontSize:'16px'}}></span><span style={{fontSize:'12px',fontWeight:700,color:D.accent}}>IA Inteligente</span></div><p style={{fontSize:'11px',color:D.muted,lineHeight:1.6,margin:0}}>Nossa IA analisa mais de 50 pontos de presença digital para gerar insights acionáveis.</p></div></div>
   );
 
   // ─── MAIN LAYOUT ───────────────────────────────────────
   return(
-    <div style={{display:'flex',minHeight:'100vh',background:D.bg,fontFamily:"'Inter',sans-serif"}}>
-      <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
-      <Sidebar/>
-      <div style={{marginLeft:'220px',flex:1,display:'flex',flexDirection:'column',minHeight:'100vh'}}>
-        <Header/>
-        <div style={{marginTop:'60px',flex:1,padding:'24px 28px',display:'flex',gap:'24px',alignItems:'flex-start'}}>
+    <div style={{display:'flex',minHeight:'100vh',background:D.bg,fontFamily:"'Inter',sans-serif"}}><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/><Sidebar/><div style={{marginLeft:'220px',flex:1,display:'flex',flexDirection:'column',minHeight:'100vh'}}><Header/><div style={{marginTop:'60px',flex:1,padding:'24px 28px',display:'flex',gap:'24px',alignItems:'flex-start'}}>
 
           {/* MAIN CONTENT */}
           <div style={{flex:1,minWidth:0}}>
@@ -941,108 +870,49 @@ Retorne SOMENTE JSON sem markdown:
             {/* ══ AUTO IA ══════════════════════════════════════ */}
             {pg===1&&p2modo==='auto'&&<div>
               {/* Hero card */}
-              <div style={{background:`linear-gradient(135deg,${D.sidebar} 0%,#1C1A28 100%)`,borderRadius:'20px',padding:'24px 28px',marginBottom:'20px',display:'flex',alignItems:'center',gap:'16px'}}>
-                <div style={{width:'48px',height:'48px',borderRadius:'14px',background:D.accent+'33',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'24px',flexShrink:0}}>🤖</div>
-                <div style={{flex:1}}>
-                  <div style={{fontSize:'18px',fontWeight:700,color:'#fff',fontFamily:"'Plus Jakarta Sans',sans-serif",marginBottom:'4px'}}>Diagnóstico Automático</div>
-                  <div style={{fontSize:'13px',color:'#666'}}>Nossa IA analisa os links e gera um diagnóstico completo do negócio.</div>
-                </div>
-                <div style={{display:'flex',alignItems:'center',gap:'8px'}}>
+              <div style={{background:`linear-gradient(135deg,${D.sidebar} 0%,#1C1A28 100%)`,borderRadius:'20px',padding:'24px 28px',marginBottom:'20px',display:'flex',alignItems:'center',gap:'16px'}}><div style={{width:'48px',height:'48px',borderRadius:'14px',background:D.accent+'33',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'24px',flexShrink:0}}></div><div style={{flex:1}}><div style={{fontSize:'18px',fontWeight:700,color:'#fff',fontFamily:"'Plus Jakarta Sans',sans-serif",marginBottom:'4px'}}>Diagnóstico Automático</div><div style={{fontSize:'13px',color:'#666'}}>Nossa IA analisa os links e gera um diagnóstico completo do negócio.</div></div><div style={{display:'flex',alignItems:'center',gap:'8px'}}>
                   {stepLabels.map((s,i)=>(
-                    <div key={i} style={{display:'flex',alignItems:'center',gap:'6px'}}>
-                      <div style={{width:'22px',height:'22px',borderRadius:'50%',background:i===0?D.accent:D.sidebarBorder,color:i===0?'#fff':'#444',fontSize:'10px',fontWeight:700,display:'flex',alignItems:'center',justifyContent:'center'}}>{i+1}</div>
-                      <span style={{fontSize:'11px',color:i===0?'#fff':'#444'}}>{s}</span>
+                    <div key={i} style={{display:'flex',alignItems:'center',gap:'6px'}}><div style={{width:'22px',height:'22px',borderRadius:'50%',background:i===0?D.accent:D.sidebarBorder,color:i===0?'#fff':'#444',fontSize:'10px',fontWeight:700,display:'flex',alignItems:'center',justifyContent:'center'}}>{i+1}</div><span style={{fontSize:'11px',color:i===0?'#fff':'#444'}}>{s}</span>
                       {i<stepLabels.length-1&&<div style={{width:'20px',height:'1px',background:'#2a2840'}}/>}
                     </div>
                   ))}
-                </div>
-              </div>
+                </div></div>
 
               {/* Links */}
-              <Card>
-                <SectionTitle icon="🔗" title="Links do Negócio" subtitle="Cole os links para extração automática de dados"/>
-                <div style={{marginBottom:'16px'}}>
-                  <FieldLabel required>Link da ficha Google Maps</FieldLabel>
-                  <div style={{fontSize:'11px',color:D.muted,marginBottom:'8px'}}>Cole o link completo da ficha da empresa no Google Maps.</div>
-                  <div style={{display:'flex',gap:'8px'}}>
-                    <Input value={form.fichaUrl} onChange={e=>setF('fichaUrl',e.target.value)} placeholder="https://www.google.com/maps/place/..."/>
-                    <BtnPrimary onClick={extrairFicha} disabled={fichaLoad} style={{whiteSpace:'nowrap',padding:'10px 20px'}}>
-                      {fichaLoad?'⏳ Buscando...':'Extrair'}
-                    </BtnPrimary>
-                  </div>
-                  {form.nome&&<div style={{marginTop:'10px',padding:'10px 14px',background:'#F0FDF4',border:'1px solid #BBF7D0',borderRadius:'10px',display:'flex',alignItems:'center',gap:'8px'}}>
-                    <span style={{color:D.success,fontSize:'16px'}}>✓</span>
-                    <span style={{fontSize:'13px',fontWeight:600,color:'#166534'}}>{form.nome} · {form.nota}★ · {form.numAvals} avaliações</span>
-                  </div>}
-                </div>
-                <div>
-                  <FieldLabel>Perfil do Instagram <span style={{color:D.faint,fontWeight:400,textTransform:'none',letterSpacing:0}}>(opcional)</span></FieldLabel>
-                  <div style={{fontSize:'11px',color:D.muted,marginBottom:'8px'}}>Cole o link do perfil do Instagram da empresa.</div>
-                  <div style={{display:'flex',gap:'8px'}}>
-                    <Input value={ig.url} onChange={e=>setIG('url',e.target.value)} placeholder="https://www.instagram.com/perfil/"/>
-                    <BtnSecondary onClick={extrairIG} disabled={igLoad} style={{whiteSpace:'nowrap',padding:'10px 20px',opacity:igLoad?.6:1}}>
-                      {igLoad?'⏳ Analisando...':'Analisar'}
-                    </BtnSecondary>
-                  </div>
-                  {ig.handle&&<div style={{marginTop:'10px',padding:'10px 14px',background:'#EFF6FF',border:'1px solid #BFDBFE',borderRadius:'10px',display:'flex',alignItems:'center',gap:'8px'}}>
-                    <span style={{fontSize:'16px'}}>ℹ️</span>
-                    <span style={{fontSize:'13px',fontWeight:600,color:'#1E40AF'}}>@{ig.handle}{ig.seguidores?' · '+ig.seguidores+' seguidores':''}</span>
-                  </div>}
-                </div>
-                <StatusBar/>
-              </Card>
+              <Card><SectionTitle icon="" title="Links do Negócio" subtitle="Cole os links para extração automática de dados"/><div style={{marginBottom:'16px'}}><FieldLabel required>Link da ficha Google Maps</FieldLabel><div style={{fontSize:'11px',color:D.muted,marginBottom:'8px'}}>Cole o link completo da ficha da empresa no Google Maps.</div><div style={{display:'flex',gap:'8px'}}><Input value={form.fichaUrl} onChange={e=>setF('fichaUrl',e.target.value)} placeholder="https://www.google.com/maps/place/..."/><BtnPrimary onClick={extrairFicha} disabled={fichaLoad} style={{whiteSpace:'nowrap',padding:'10px 20px'}}>
+                      {fichaLoad?' Buscando...':'Extrair'}
+                    </BtnPrimary></div>
+                  {form.nome&&<div style={{marginTop:'10px',padding:'10px 14px',background:'#F0FDF4',border:'1px solid #BBF7D0',borderRadius:'10px',display:'flex',alignItems:'center',gap:'8px'}}><span style={{color:D.success,fontSize:'16px'}}></span><span style={{fontSize:'13px',fontWeight:600,color:'#166534'}}>{form.nome} · {form.nota} · {form.numAvals} avaliações</span></div>}
+                </div><div><FieldLabel>Perfil do Instagram <span style={{color:D.faint,fontWeight:400,textTransform:'none',letterSpacing:0}}>(opcional)</span></FieldLabel><div style={{fontSize:'11px',color:D.muted,marginBottom:'8px'}}>Cole o link do perfil do Instagram da empresa.</div><div style={{display:'flex',gap:'8px'}}><Input value={ig.url} onChange={e=>setIG('url',e.target.value)} placeholder="https://www.instagram.com/perfil/"/><BtnSecondary onClick={extrairIG} disabled={igLoad} style={{whiteSpace:'nowrap',padding:'10px 20px',opacity:igLoad?.6:1}}>
+                      {igLoad?' Analisando...':'Analisar'}
+                    </BtnSecondary></div>
+                  {ig.handle&&<div style={{marginTop:'10px',padding:'10px 14px',background:'#EFF6FF',border:'1px solid #BFDBFE',borderRadius:'10px',display:'flex',alignItems:'center',gap:'8px'}}><span style={{fontSize:'16px'}}></span><span style={{fontSize:'13px',fontWeight:600,color:'#1E40AF'}}>@{ig.handle}{ig.seguidores?' · '+ig.seguidores+' seguidores':''}</span></div>}
+                </div><StatusBar/></Card>
 
               {/* Tom */}
-              <Card>
-                <SectionTitle icon="💬" title="Tom de Comunicação" subtitle="Selecione o tom que mais representa a comunicação do negócio."/>
-                <div style={{display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:'10px'}}>
+              <Card><SectionTitle icon="" title="Tom de Comunicação" subtitle="Selecione o tom que mais representa a comunicação do negócio."/><div style={{display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:'10px'}}>
                   {Object.entries(TONS).map(([k,v])=>(
                     <div key={k} onClick={()=>setF('tom',k)}
-                      style={{padding:'14px 16px',borderRadius:'12px',border:form.tom===k?`2px solid ${D.accent}`:`1.5px solid ${D.cardBorder}`,background:form.tom===k?D.accent+'0d':'#fff',cursor:'pointer',transition:'all .12s',display:'flex',alignItems:'flex-start',gap:'12px'}}>
-                      <div style={{width:'32px',height:'32px',borderRadius:'8px',background:form.tom===k?D.accent+'18':D.bg,display:'flex',alignItems:'center',justifyContent:'center',fontSize:'16px',flexShrink:0}}>
-                        {k==='original'?'⚡':k==='parceiro'?'🤝':k==='autoridade'?'🚀':'💡'}
-                      </div>
-                      <div style={{flex:1}}>
-                        <div style={{fontSize:'13px',fontWeight:700,color:form.tom===k?D.accent:D.text,marginBottom:'3px'}}>{v.label}</div>
-                        <div style={{fontSize:'11px',color:D.muted,lineHeight:1.5}}>{v.desc}</div>
-                      </div>
-                      <div style={{width:'16px',height:'16px',borderRadius:'50%',border:`2px solid ${form.tom===k?D.accent:D.cardBorder}`,background:form.tom===k?D.accent:'transparent',flexShrink:0,display:'flex',alignItems:'center',justifyContent:'center'}}>
+                      style={{padding:'14px 16px',borderRadius:'12px',border:form.tom===k?`2px solid ${D.accent}`:`1.5px solid ${D.cardBorder}`,background:form.tom===k?D.accent+'0d':'#fff',cursor:'pointer',transition:'all .12s',display:'flex',alignItems:'flex-start',gap:'12px'}}><div style={{width:'32px',height:'32px',borderRadius:'8px',background:form.tom===k?D.accent+'18':D.bg,display:'flex',alignItems:'center',justifyContent:'center',fontSize:'16px',flexShrink:0}}>
+                        {k==='original'?'':k==='parceiro'?'':k==='autoridade'?'':''}
+                      </div><div style={{flex:1}}><div style={{fontSize:'13px',fontWeight:700,color:form.tom===k?D.accent:D.text,marginBottom:'3px'}}>{v.label}</div><div style={{fontSize:'11px',color:D.muted,lineHeight:1.5}}>{v.desc}</div></div><div style={{width:'16px',height:'16px',borderRadius:'50%',border:`2px solid ${form.tom===k?D.accent:D.cardBorder}`,background:form.tom===k?D.accent:'transparent',flexShrink:0,display:'flex',alignItems:'center',justifyContent:'center'}}>
                         {form.tom===k&&<div style={{width:'6px',height:'6px',borderRadius:'50%',background:'#fff'}}/>}
-                      </div>
-                    </div>
+                      </div></div>
                   ))}
-                </div>
-              </Card>
+                </div></Card>
 
               {/* Identidade + Consultor em grid */}
-              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'16px',marginBottom:'16px'}}>
-                <Card style={{marginBottom:0}}>
-                  <SectionTitle icon="🎨" title="Identidade Visual"/>
-                  <div style={{display:'flex',gap:'6px',flexWrap:'wrap',marginBottom:'12px'}}>
+              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'16px',marginBottom:'16px'}}><Card style={{marginBottom:0}}><SectionTitle icon="" title="Identidade Visual"/><div style={{display:'flex',gap:'6px',flexWrap:'wrap',marginBottom:'12px'}}>
                     {[['#7C3AED','#0D0B12'],['#2563EB','#0D0B12'],['#0D9488','#0D0B12'],['#C9A84C','#0D0B12'],['#DC2626','#0D0B12'],['#0891B2','#0D0B12']].map(([c1,c2],i)=>(
                       <div key={i} onClick={()=>setForm(f=>({...f,cor1:c1,cor2:c2}))}
                         style={{width:'26px',height:'26px',borderRadius:'50%',background:c1,cursor:'pointer',border:form.cor1===c1?`3px solid #111`:`2px solid transparent`,transform:form.cor1===c1?'scale(1.2)':'scale(1)',transition:'.12s'}}/>
                     ))}
-                    <input type="color" value={form.cor1} onChange={e=>setForm(f=>({...f,cor1:e.target.value}))} style={{width:'26px',height:'26px',border:'none',borderRadius:'50%',cursor:'pointer',padding:0}}/>
-                  </div>
-                  <div onClick={()=>logoRef.current?.click()} style={{border:`1.5px dashed ${D.cardBorder}`,borderRadius:'10px',padding:'14px',textAlign:'center',cursor:'pointer',background:D.bg}}>
+                    <input type="color" value={form.cor1} onChange={e=>setForm(f=>({...f,cor1:e.target.value}))} style={{width:'26px',height:'26px',border:'none',borderRadius:'50%',cursor:'pointer',padding:0}}/></div><div onClick={()=>logoRef.current?.click()} style={{border:`1.5px dashed ${D.cardBorder}`,borderRadius:'10px',padding:'14px',textAlign:'center',cursor:'pointer',background:D.bg}}>
                     {logoUrl
                       ?<img src={logoUrl} style={{height:'50px',width:'50px',objectFit:'cover',borderRadius:'10px',display:'block',margin:'0 auto'}}/>
-                      :<div style={{fontSize:'12px',color:D.muted}}>📁 Upload da logo</div>
+                      :<div style={{fontSize:'12px',color:D.muted}}> Upload da logo</div>
                     }
-                  </div>
-                  <input ref={logoRef} type="file" accept="image/*" style={{display:'none'}} onChange={loadLogo}/>
-                </Card>
-                <Card style={{marginBottom:0}}>
-                  <SectionTitle icon="👤" title="Consultor"/>
-                  <div style={{display:'flex',flexDirection:'column',gap:'10px'}}>
-                    <div><FieldLabel>Seu nome</FieldLabel><Input value={form.cslNome} onChange={e=>setF('cslNome',e.target.value)} placeholder="Nathan"/></div>
-                    <div><FieldLabel>Empresa</FieldLabel><Input value={form.cslEmpresa} onChange={e=>setF('cslEmpresa',e.target.value)} placeholder="SCentral"/></div>
-                    <div><FieldLabel>WhatsApp</FieldLabel><Input value={form.cslWhats} onChange={e=>setF('cslWhats',e.target.value)} placeholder="(37) 9 9999-9999"/></div>
-                    <div><FieldLabel>Instagram</FieldLabel><Input value={form.cslInsta} onChange={e=>setF('cslInsta',e.target.value)} placeholder="scentral.ia"/></div>
-                  </div>
-                </Card>
-              </div>
+                  </div><input ref={logoRef} type="file" accept="image/*" style={{display:'none'}} onChange={loadLogo}/></Card><Card style={{marginBottom:0}}><SectionTitle icon="" title="Consultor"/><div style={{display:'flex',flexDirection:'column',gap:'10px'}}><div><FieldLabel>Seu nome</FieldLabel><Input value={form.cslNome} onChange={e=>setF('cslNome',e.target.value)} placeholder="Nathan"/></div><div><FieldLabel>Empresa</FieldLabel><Input value={form.cslEmpresa} onChange={e=>setF('cslEmpresa',e.target.value)} placeholder="SCentral"/></div><div><FieldLabel>WhatsApp</FieldLabel><Input value={form.cslWhats} onChange={e=>setF('cslWhats',e.target.value)} placeholder="(37) 9 9999-9999"/></div><div><FieldLabel>Instagram</FieldLabel><Input value={form.cslInsta} onChange={e=>setF('cslInsta',e.target.value)} placeholder="scentral.ia"/></div></div></Card></div>
 
               {/* Botão gerar */}
               <BtnPrimary onClick={async()=>{
@@ -1050,332 +920,138 @@ Retorne SOMENTE JSON sem markdown:
                 await gerarTextoIA();
                 setPg(8);
               }} disabled={loading||fichaLoad} style={{width:'100%',padding:'16px',fontSize:'15px',fontWeight:700,borderRadius:'14px',justifyContent:'center'}}>
-                {loading?'⏳ Gerando diagnóstico...':fichaLoad?'Carregando ficha...':'✦ Iniciar Diagnóstico →'}
-              </BtnPrimary>
-              <StatusBar/>
-            </div>}
+                {loading?' Gerando diagnóstico...':fichaLoad?'Carregando ficha...':' Iniciar Diagnóstico '}
+              </BtnPrimary><StatusBar/></div>}
 
             {/* ══ P1 MANUAL ══════════════════════════════════ */}
-            {pg===1&&p2modo==='manual'&&<div>
-              <div style={{padding:'10px 16px',background:D.accent+'0d',border:`1px solid ${D.accent}20`,borderRadius:'12px',fontSize:'13px',color:D.accent,marginBottom:'16px',display:'flex',alignItems:'center',gap:'8px'}}>
-                <span>📋</span> Modo Manual — preencha os dados do negócio nas etapas abaixo.
+            {pg===1&&p2modo==='manual'&&<div><div style={{padding:'10px 16px',background:D.accent+'0d',border:`1px solid ${D.accent}20`,borderRadius:'12px',fontSize:'13px',color:D.accent,marginBottom:'16px',display:'flex',alignItems:'center',gap:'8px'}}><span></span> Modo Manual — preencha os dados do negócio nas etapas abaixo.
               </div>
 
               {/* Presets */}
-              {presets.length>0&&<Card>
-                <div style={{fontSize:'12px',fontWeight:600,color:D.muted,letterSpacing:'.06em',textTransform:'uppercase',marginBottom:'10px'}}>Configurações salvas</div>
-                <div style={{display:'flex',flexWrap:'wrap',gap:'8px'}}>
+              {presets.length>0&&<Card><div style={{fontSize:'12px',fontWeight:600,color:D.muted,letterSpacing:'.06em',textTransform:'uppercase',marginBottom:'10px'}}>Configurações salvas</div><div style={{display:'flex',flexWrap:'wrap',gap:'8px'}}>
                   {presets.map(p=>(
-                    <div key={p.id} style={{display:'flex',alignItems:'center',gap:'6px',padding:'6px 12px',background:D.bg,border:`1px solid ${D.cardBorder}`,borderRadius:'8px'}}>
-                      <div style={{width:'10px',height:'10px',borderRadius:'50%',background:p.cor1}}/>
-                      <span style={{fontSize:'12px',fontWeight:600,color:D.text}}>{p.name}</span>
-                      <button onClick={()=>aplicarPreset(p)} style={{background:D.accent+'18',border:'none',borderRadius:'6px',padding:'2px 8px',fontSize:'11px',color:D.accent,cursor:'pointer',fontWeight:600}}>Aplicar</button>
-                      <button onClick={()=>{const u=presets.filter(x=>x.id!==p.id);setPresets(u);savePresets(u);}} style={{background:'none',border:'none',cursor:'pointer',color:D.faint,fontSize:'16px',lineHeight:1}}>×</button>
-                    </div>
+                    <div key={p.id} style={{display:'flex',alignItems:'center',gap:'6px',padding:'6px 12px',background:D.bg,border:`1px solid ${D.cardBorder}`,borderRadius:'8px'}}><div style={{width:'10px',height:'10px',borderRadius:'50%',background:p.cor1}}/><span style={{fontSize:'12px',fontWeight:600,color:D.text}}>{p.name}</span><button onClick={()=>aplicarPreset(p)} style={{background:D.accent+'18',border:'none',borderRadius:'6px',padding:'2px 8px',fontSize:'11px',color:D.accent,cursor:'pointer',fontWeight:600}}>Aplicar</button><button onClick={()=>{const u=presets.filter(x=>x.id!==p.id);setPresets(u);savePresets(u);}} style={{background:'none',border:'none',cursor:'pointer',color:D.faint,fontSize:'16px',lineHeight:1}}></button></div>
                   ))}
-                </div>
-              </Card>}
+                </div></Card>}
 
               {/* Tom */}
-              <Card>
-                <SectionTitle icon="💬" title="Tom de Comunicação"/>
-                <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:'10px'}}>
+              <Card><SectionTitle icon="" title="Tom de Comunicação"/><div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:'10px'}}>
                   {Object.entries(TONS).map(([k,v])=>(
                     <div key={k} onClick={()=>setF('tom',k)}
-                      style={{padding:'12px 14px',borderRadius:'12px',border:form.tom===k?`2px solid ${D.accent}`:`1.5px solid ${D.cardBorder}`,background:form.tom===k?D.accent+'0d':'#fff',cursor:'pointer',transition:'all .12s'}}>
-                      <div style={{fontSize:'13px',fontWeight:700,color:form.tom===k?D.accent:D.text,marginBottom:'4px'}}>{v.label}</div>
-                      <div style={{fontSize:'11px',color:D.muted,lineHeight:1.4}}>{v.desc}</div>
-                    </div>
+                      style={{padding:'12px 14px',borderRadius:'12px',border:form.tom===k?`2px solid ${D.accent}`:`1.5px solid ${D.cardBorder}`,background:form.tom===k?D.accent+'0d':'#fff',cursor:'pointer',transition:'all .12s'}}><div style={{fontSize:'13px',fontWeight:700,color:form.tom===k?D.accent:D.text,marginBottom:'4px'}}>{v.label}</div><div style={{fontSize:'11px',color:D.muted,lineHeight:1.4}}>{v.desc}</div></div>
                   ))}
-                </div>
-              </Card>
+                </div></Card>
 
               {/* Segmento */}
-              <Card>
-                <SectionTitle icon="🏢" title="Segmento"/>
-                <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(100px,1fr))',gap:'8px',marginBottom:'16px'}}>
+              <Card><SectionTitle icon="" title="Segmento"/><div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(100px,1fr))',gap:'8px',marginBottom:'16px'}}>
                   {Object.entries(NICHOS).map(([k,v])=>(
                     <div key={k} onClick={()=>setNicho(k)}
-                      style={{padding:'10px 8px',borderRadius:'10px',border:nichoKey===k?`2px solid ${D.accent}`:`1.5px solid ${D.cardBorder}`,background:nichoKey===k?D.accent+'0d':'#fff',cursor:'pointer',textAlign:'center',transition:'all .12s'}}>
-                      <div style={{fontSize:'11px',fontWeight:600,color:nichoKey===k?D.accent:D.muted}}>{v.label}</div>
-                    </div>
+                      style={{padding:'10px 8px',borderRadius:'10px',border:nichoKey===k?`2px solid ${D.accent}`:`1.5px solid ${D.cardBorder}`,background:nichoKey===k?D.accent+'0d':'#fff',cursor:'pointer',textAlign:'center',transition:'all .12s'}}><div style={{fontSize:'11px',fontWeight:600,color:nichoKey===k?D.accent:D.muted}}>{v.label}</div></div>
                   ))}
-                </div>
-                <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'12px'}}>
-                  <div><FieldLabel>Categoria</FieldLabel><Input value={form.categoria} onChange={e=>setF('categoria',e.target.value)} placeholder="Ex: Clínica Médica"/></div>
-                  <div><FieldLabel>Especialização</FieldLabel><Input value={form.especializacao||''} onChange={e=>setF('especializacao',e.target.value)} placeholder="Ex: Ortopedia"/></div>
-                </div>
-              </Card>
+                </div><div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'12px'}}><div><FieldLabel>Categoria</FieldLabel><Input value={form.categoria} onChange={e=>setF('categoria',e.target.value)} placeholder="Ex: Clínica Médica"/></div><div><FieldLabel>Especialização</FieldLabel><Input value={form.especializacao||''} onChange={e=>setF('especializacao',e.target.value)} placeholder="Ex: Ortopedia"/></div></div></Card>
 
               {/* Dados do negócio */}
-              <Card>
-                <SectionTitle icon="📋" title="Dados do Negócio"/>
-                <div style={{display:'grid',gridTemplateColumns:'1fr',gap:'12px'}}>
-                  <div><FieldLabel required>Nome</FieldLabel><Input value={form.nome} onChange={e=>setF('nome',e.target.value)} placeholder="Ex: Clínica Dra. Marina"/></div>
-                  <div style={{display:'grid',gridTemplateColumns:'1fr 80px',gap:'12px'}}>
-                    <div><FieldLabel required>Cidade</FieldLabel><Input value={form.cidade} onChange={e=>setF('cidade',e.target.value)} placeholder="Belo Horizonte"/></div>
-                    <div><FieldLabel>UF</FieldLabel><Input value={form.estado||''} onChange={e=>setF('estado',e.target.value)} placeholder="MG"/></div>
-                  </div>
-                  <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'12px'}}>
-                    <div><FieldLabel>Site</FieldLabel><Input value={form.site||''} onChange={e=>setF('site',e.target.value)} placeholder="https://site.com.br"/></div>
-                    <div><FieldLabel>WhatsApp</FieldLabel><Input value={form.whatsapp||''} onChange={e=>setF('whatsapp',e.target.value)} placeholder="(31) 9 9999-9999"/></div>
-                  </div>
+              <Card><SectionTitle icon="" title="Dados do Negócio"/><div style={{display:'grid',gridTemplateColumns:'1fr',gap:'12px'}}><div><FieldLabel required>Nome</FieldLabel><Input value={form.nome} onChange={e=>setF('nome',e.target.value)} placeholder="Ex: Clínica Dra. Marina"/></div><div style={{display:'grid',gridTemplateColumns:'1fr 80px',gap:'12px'}}><div><FieldLabel required>Cidade</FieldLabel><Input value={form.cidade} onChange={e=>setF('cidade',e.target.value)} placeholder="Belo Horizonte"/></div><div><FieldLabel>UF</FieldLabel><Input value={form.estado||''} onChange={e=>setF('estado',e.target.value)} placeholder="MG"/></div></div><div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'12px'}}><div><FieldLabel>Site</FieldLabel><Input value={form.site||''} onChange={e=>setF('site',e.target.value)} placeholder="https://site.com.br"/></div><div><FieldLabel>WhatsApp</FieldLabel><Input value={form.whatsapp||''} onChange={e=>setF('whatsapp',e.target.value)} placeholder="(31) 9 9999-9999"/></div></div>
                   {/* Referência PDF */}
-                  <div>
-                    <button onClick={()=>setShowRef(s=>!s)} style={{display:'flex',alignItems:'center',gap:'8px',padding:'10px 14px',borderRadius:'10px',border:`1px solid ${showRef||refPdfName?D.accent:D.cardBorder}`,background:showRef||refPdfName?D.accent+'0d':'#fff',cursor:'pointer',fontSize:'12px',fontWeight:600,color:showRef||refPdfName?D.accent:D.muted,width:'100%',justifyContent:'space-between'}}>
-                      <div style={{display:'flex',alignItems:'center',gap:'8px'}}>
-                        <span>📎</span>{refPdfName?'Referência: '+refPdfName:'Usar diagnóstico anterior como referência'}
-                      </div>
-                      <div style={{display:'flex',alignItems:'center',gap:'4px',fontSize:'10px',color:D.faint}}>
-                        {refPdfName?<span style={{color:D.success,fontWeight:700}}>✓ Carregado</span>:<span>opcional</span>}
-                        <span>{showRef?'▲':'▼'}</span>
-                      </div>
-                    </button>
-                    {showRef&&<div style={{marginTop:'8px',padding:'14px',background:D.bg,borderRadius:'10px',border:`1px solid ${D.cardBorder}`}}>
-                      <p style={{fontSize:'12px',color:D.muted,marginBottom:'10px',lineHeight:1.6}}>Upload de um PDF de diagnóstico anterior como referência de contexto para a IA.</p>
-                      <label style={{display:'flex',alignItems:'center',gap:'10px',padding:'10px 14px',border:`1px dashed ${D.cardBorder}`,borderRadius:'8px',cursor:'pointer',background:'#fff'}}>
-                        <span>📄</span>
-                        <div><div style={{fontSize:'12px',fontWeight:600,color:D.text}}>{refPdfName||'Clique para selecionar o PDF'}</div><div style={{fontSize:'11px',color:D.muted}}>Apenas .pdf</div></div>
-                        <input type="file" accept=".pdf" style={{display:'none'}} onChange={e=>{const f=e.target.files[0];if(!f)return;setRefPdfName(f.name);const r=new FileReader();r.onload=ev=>setRefPdfB64(ev.target.result.split(',')[1]);r.readAsDataURL(f);}}/>
-                      </label>
+                  <div><button onClick={()=>setShowRef(s=>!s)} style={{display:'flex',alignItems:'center',gap:'8px',padding:'10px 14px',borderRadius:'10px',border:`1px solid ${showRef||refPdfName?D.accent:D.cardBorder}`,background:showRef||refPdfName?D.accent+'0d':'#fff',cursor:'pointer',fontSize:'12px',fontWeight:600,color:showRef||refPdfName?D.accent:D.muted,width:'100%',justifyContent:'space-between'}}><div style={{display:'flex',alignItems:'center',gap:'8px'}}><span></span>{refPdfName?'Referência: '+refPdfName:'Usar diagnóstico anterior como referência'}
+                      </div><div style={{display:'flex',alignItems:'center',gap:'4px',fontSize:'10px',color:D.faint}}>
+                        {refPdfName?<span style={{color:D.success,fontWeight:700}}> Carregado</span>:<span>opcional</span>}
+                        <span>{showRef?'':''}</span></div></button>
+                    {showRef&&<div style={{marginTop:'8px',padding:'14px',background:D.bg,borderRadius:'10px',border:`1px solid ${D.cardBorder}`}}><p style={{fontSize:'12px',color:D.muted,marginBottom:'10px',lineHeight:1.6}}>Upload de um PDF de diagnóstico anterior como referência de contexto para a IA.</p><label style={{display:'flex',alignItems:'center',gap:'10px',padding:'10px 14px',border:`1px dashed ${D.cardBorder}`,borderRadius:'8px',cursor:'pointer',background:'#fff'}}><span></span><div><div style={{fontSize:'12px',fontWeight:600,color:D.text}}>{refPdfName||'Clique para selecionar o PDF'}</div><div style={{fontSize:'11px',color:D.muted}}>Apenas .pdf</div></div><input type="file" accept=".pdf" style={{display:'none'}} onChange={e=>{const f=e.target.files[0];if(!f)return;setRefPdfName(f.name);const r=new FileReader();r.onload=ev=>setRefPdfB64(ev.target.result.split(',')[1]);r.readAsDataURL(f);}}/></label>
                       {refPdfName&&<button onClick={()=>{setRefPdfName('');setRefPdfB64('');}} style={{marginTop:'6px',background:'none',border:'none',cursor:'pointer',fontSize:'11px',color:D.faint}}>Remover</button>}
                     </div>}
-                  </div>
-                </div>
-              </Card>
-
-              <div style={{display:'flex',justifyContent:'flex-end'}}>
-                <BtnPrimary onClick={()=>setPg(2)}>Próximo →</BtnPrimary>
-              </div>
-            </div>}
+                  </div></div></Card><div style={{display:'flex',justifyContent:'flex-end'}}><BtnPrimary onClick={()=>setPg(2)}>Próximo </BtnPrimary></div></div>}
 
             {/* ══ P2 MÉTRICAS GOOGLE ════════════════════════ */}
-            {pg===2&&<div>
-              <div style={{padding:'10px 16px',background:'#FFFBEB',border:'1px solid #FDE68A',borderRadius:'12px',fontSize:'12px',color:'#92400E',marginBottom:'16px'}}>
-                ℹ️ Seção opcional — deixe em branco para não incluir no PDF
+            {pg===2&&<div><div style={{padding:'10px 16px',background:'#FFFBEB',border:'1px solid #FDE68A',borderRadius:'12px',fontSize:'12px',color:'#92400E',marginBottom:'16px'}}>
+                 Seção opcional — deixe em branco para não incluir no PDF
               </div>
-              {p2modo==='auto'&&<Card>
-                <SectionTitle icon="🗺️" title="Extrair dados da ficha Google" subtitle="Cole o link do Google Maps para extração automática"/>
-                <div style={{display:'flex',gap:'8px'}}>
-                  <Input value={form.fichaUrl} onChange={e=>setF('fichaUrl',e.target.value)} placeholder="https://maps.google.com/..."/>
-                  <BtnPrimary onClick={extrairFicha} disabled={fichaLoad} style={{whiteSpace:'nowrap'}}>
-                    {fichaLoad?'⏳ Buscando...':'Extrair métricas'}
-                  </BtnPrimary>
-                </div>
-                <StatusBar/>
-              </Card>}
+              {p2modo==='auto'&&<Card><SectionTitle icon="" title="Extrair dados da ficha Google" subtitle="Cole o link do Google Maps para extração automática"/><div style={{display:'flex',gap:'8px'}}><Input value={form.fichaUrl} onChange={e=>setF('fichaUrl',e.target.value)} placeholder="https://maps.google.com/..."/><BtnPrimary onClick={extrairFicha} disabled={fichaLoad} style={{whiteSpace:'nowrap'}}>
+                    {fichaLoad?' Buscando...':'Extrair métricas'}
+                  </BtnPrimary></div><StatusBar/></Card>}
 
-              <Card>
-                <SectionTitle icon="⭐" title="Avaliação no Google"/>
-                <div style={{display:'flex',alignItems:'center',gap:'8px',marginBottom:'16px'}}>
+              <Card><SectionTitle icon="" title="Avaliação no Google"/><div style={{display:'flex',alignItems:'center',gap:'8px',marginBottom:'16px'}}>
                   {[1,2,3,4,5].map(v=>(
-                    <span key={v} onClick={()=>setF('nota',String(v))} style={{fontSize:'26px',cursor:'pointer',color:parseFloat(form.nota)>=v?'#FBBF24':'#E5E7EB',lineHeight:1}}>★</span>
+                    <span key={v} onClick={()=>setF('nota',String(v))} style={{fontSize:'26px',cursor:'pointer',color:parseFloat(form.nota)>=v?'#FBBF24':'#E5E7EB',lineHeight:1}}></span>
                   ))}
-                  <Input value={form.nota} type="number" onChange={e=>setF('nota',e.target.value)} placeholder="0.0" style={{width:'70px',marginLeft:'8px'}}/>
-                  <span style={{fontSize:'13px',color:D.muted}}>/5.0</span>
-                </div>
-                <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:'12px',marginBottom:'20px'}}>
-                  <div><FieldLabel>Nº avaliações</FieldLabel><Input type="number" value={form.numAvals} onChange={e=>setF('numAvals',e.target.value)} placeholder="—"/></div>
-                  <div><FieldLabel>Fotos Google</FieldLabel><Input type="number" value={form.numFotos} onChange={e=>setF('numFotos',e.target.value)} placeholder="—"/></div>
-                  <div><FieldLabel>Posição ranking</FieldLabel><Input type="number" value={form.posicao} onChange={e=>setF('posicao',e.target.value)} placeholder="—"/></div>
-                </div>
-                <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'16px',marginBottom:'16px'}}>
-                  <div>
-                    <div style={{fontSize:'12px',fontWeight:600,color:D.muted,letterSpacing:'.06em',textTransform:'uppercase',marginBottom:'10px'}}>Presença na ficha</div>
+                  <Input value={form.nota} type="number" onChange={e=>setF('nota',e.target.value)} placeholder="0.0" style={{width:'70px',marginLeft:'8px'}}/><span style={{fontSize:'13px',color:D.muted}}>/5.0</span></div><div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:'12px',marginBottom:'20px'}}><div><FieldLabel>Nº avaliações</FieldLabel><Input type="number" value={form.numAvals} onChange={e=>setF('numAvals',e.target.value)} placeholder="—"/></div><div><FieldLabel>Fotos Google</FieldLabel><Input type="number" value={form.numFotos} onChange={e=>setF('numFotos',e.target.value)} placeholder="—"/></div><div><FieldLabel>Posição ranking</FieldLabel><Input type="number" value={form.posicao} onChange={e=>setF('posicao',e.target.value)} placeholder="—"/></div></div><div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'16px',marginBottom:'16px'}}><div><div style={{fontSize:'12px',fontWeight:600,color:D.muted,letterSpacing:'.06em',textTransform:'uppercase',marginBottom:'10px'}}>Presença na ficha</div>
                     {[{k:'temSite',l:'Site ativo?'},{k:'temWhats',l:'WhatsApp na ficha?'},{k:'postsAtivos',l:'Posts ativos?'}].map(({k,l})=>(
-                      <div key={k} style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'10px'}}>
-                        <span style={{fontSize:'12px',color:D.text}}>{l}</span>
-                        <div style={{display:'flex',borderRadius:'8px',overflow:'hidden',border:`1px solid ${D.cardBorder}`}}>
-                          <button onClick={()=>setF(k,true)} style={{padding:'5px 14px',fontSize:'11px',fontWeight:700,cursor:'pointer',border:'none',background:form[k]===true?D.success:'transparent',color:form[k]===true?'#fff':D.muted,transition:'all .15s'}}>SIM</button>
-                          <button onClick={()=>setF(k,false)} style={{padding:'5px 14px',fontSize:'11px',fontWeight:700,cursor:'pointer',border:'none',background:form[k]===false?D.danger:'transparent',color:form[k]===false?'#fff':D.muted,transition:'all .15s'}}>NÃO</button>
-                        </div>
-                      </div>
+                      <div key={k} style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'10px'}}><span style={{fontSize:'12px',color:D.text}}>{l}</span><div style={{display:'flex',borderRadius:'8px',overflow:'hidden',border:`1px solid ${D.cardBorder}`}}><button onClick={()=>setF(k,true)} style={{padding:'5px 14px',fontSize:'11px',fontWeight:700,cursor:'pointer',border:'none',background:form[k]===true?D.success:'transparent',color:form[k]===true?'#fff':D.muted,transition:'all .15s'}}>SIM</button><button onClick={()=>setF(k,false)} style={{padding:'5px 14px',fontSize:'11px',fontWeight:700,cursor:'pointer',border:'none',background:form[k]===false?D.danger:'transparent',color:form[k]===false?'#fff':D.muted,transition:'all .15s'}}>NÃO</button></div></div>
                     ))}
-                  </div>
-                  <div>
-                    <div style={{fontSize:'12px',fontWeight:600,color:D.muted,letterSpacing:'.06em',textTransform:'uppercase',marginBottom:'10px'}}>Frequência de posts</div>
+                  </div><div><div style={{fontSize:'12px',fontWeight:600,color:D.muted,letterSpacing:'.06em',textTransform:'uppercase',marginBottom:'10px'}}>Frequência de posts</div>
                     {[['nenhuma','Nenhuma'],['raramente','Raramente'],['mensal','Mensal'],['semanal','Semanal'],['diaria','Diária']].map(([v,l])=>(
                       <button key={v} onClick={()=>setF('frequencia',v)} style={{display:'block',width:'100%',textAlign:'left',padding:'7px 12px',marginBottom:'4px',borderRadius:'8px',border:`1.5px solid ${form.frequencia===v?D.accent:D.cardBorder}`,background:form.frequencia===v?D.accent+'0d':'#fff',fontSize:'12px',fontWeight:form.frequencia===v?700:400,color:form.frequencia===v?D.accent:D.muted,cursor:'pointer',transition:'all .12s'}}>
                         {l}
                       </button>
                     ))}
-                  </div>
-                </div>
-              </Card>
+                  </div></div></Card><Card><FieldLabel>Print da ficha Google <span style={{fontWeight:400,color:D.faint,textTransform:'none',letterSpacing:0,fontSize:'11px'}}>(opcional)</span></FieldLabel><PasteImage value={form.fichaScreenshot||''} onChange={v=>setF('fichaScreenshot',v)} label="Cole o print da ficha aqui (Ctrl+V)" hint="Aparece como referência visual no diagnóstico"/></Card>
 
-              <Card>
-                <FieldLabel>Print da ficha Google <span style={{fontWeight:400,color:D.faint,textTransform:'none',letterSpacing:0,fontSize:'11px'}}>(opcional)</span></FieldLabel>
-                <PasteImage value={form.fichaScreenshot||''} onChange={v=>setF('fichaScreenshot',v)} label="Cole o print da ficha aqui (Ctrl+V)" hint="Aparece como referência visual no diagnóstico"/>
-              </Card>
-
-              {temDadosGoogle&&<Card>
-                <SectionTitle icon="📊" title="Score de presença digital"/>
-                <div style={{display:'flex',alignItems:'center',gap:'20px',flexWrap:'wrap'}}>
-                  <GaugeSVG score={form.score} size={180}/>
-                  <div style={{flex:1,minWidth:'200px'}}>
+              {temDadosGoogle&&<Card><SectionTitle icon="" title="Score de presença digital"/><div style={{display:'flex',alignItems:'center',gap:'20px',flexWrap:'wrap'}}><GaugeSVG score={form.score} size={180}/><div style={{flex:1,minWidth:'200px'}}>
                     {scoreCrit.map(({l,pts,max})=>(
-                      <div key={l} style={{display:'flex',alignItems:'center',gap:'10px',marginBottom:'8px'}}>
-                        <div style={{fontSize:'11px',color:D.muted,width:'120px',flexShrink:0}}>{l}</div>
-                        <div style={{flex:1,height:'6px',background:D.bg,borderRadius:'3px',overflow:'hidden'}}>
-                          <div style={{width:`${(pts/max)*100}%`,height:'100%',background:pts===max?D.success:pts>0?D.accent:D.cardBorder,borderRadius:'3px',transition:'.4s'}}/>
-                        </div>
-                        <div style={{fontSize:'11px',fontWeight:700,color:D.text,minWidth:'34px',textAlign:'right'}}>{pts}/{max}</div>
-                      </div>
+                      <div key={l} style={{display:'flex',alignItems:'center',gap:'10px',marginBottom:'8px'}}><div style={{fontSize:'11px',color:D.muted,width:'120px',flexShrink:0}}>{l}</div><div style={{flex:1,height:'6px',background:D.bg,borderRadius:'3px',overflow:'hidden'}}><div style={{width:`${(pts/max)*100}%`,height:'100%',background:pts===max?D.success:pts>0?D.accent:D.cardBorder,borderRadius:'3px',transition:'.4s'}}/></div><div style={{fontSize:'11px',fontWeight:700,color:D.text,minWidth:'34px',textAlign:'right'}}>{pts}/{max}</div></div>
                     ))}
-                  </div>
-                </div>
-                <div style={{marginTop:'12px',display:'flex',alignItems:'center',gap:'10px'}}>
-                  <span style={{fontSize:'12px',color:D.muted}}>Ajuste manual:</span>
-                  <input type="range" min="0" max="100" value={form.score||0} onChange={e=>setForm(f=>({...f,score:e.target.value}))} style={{flex:1,accentColor:D.accent}}/>
-                  <span style={{fontSize:'16px',fontWeight:800,color:D.accent,minWidth:'36px'}}>{form.score||0}</span>
-                </div>
-              </Card>}
+                  </div></div><div style={{marginTop:'12px',display:'flex',alignItems:'center',gap:'10px'}}><span style={{fontSize:'12px',color:D.muted}}>Ajuste manual:</span><input type="range" min="0" max="100" value={form.score||0} onChange={e=>setForm(f=>({...f,score:e.target.value}))} style={{flex:1,accentColor:D.accent}}/><span style={{fontSize:'16px',fontWeight:800,color:D.accent,minWidth:'36px'}}>{form.score||0}</span></div></Card>}
 
-              <div style={{display:'flex',gap:'10px',justifyContent:'space-between'}}>
-                <BtnSecondary onClick={()=>setPg(1)}>← Voltar</BtnSecondary>
-                <BtnPrimary onClick={()=>setPg(3)}>Próximo →</BtnPrimary>
-              </div>
-            </div>}
+              <div style={{display:'flex',gap:'10px',justifyContent:'space-between'}}><BtnSecondary onClick={()=>setPg(1)}> Voltar</BtnSecondary><BtnPrimary onClick={()=>setPg(3)}>Próximo </BtnPrimary></div></div>}
 
             {/* ══ P3 PALAVRAS-CHAVE ══════════════════════════ */}
-            {pg===3&&<div>
-              <Card>
-                <SectionTitle icon="🔍" title="Oportunidades de Busca" subtitle="Adicione os termos que seus clientes buscam. O sistema estima o volume de buscas na sua cidade."/>
-                <div style={{display:'flex',gap:'8px',marginBottom:'12px'}}>
-                  <Input value={kwInput} onChange={e=>setKwInput(e.target.value)}
+            {pg===3&&<div><Card><SectionTitle icon="" title="Oportunidades de Busca" subtitle="Adicione os termos que seus clientes buscam. O sistema estima o volume de buscas na sua cidade."/><div style={{display:'flex',gap:'8px',marginBottom:'12px'}}><Input value={kwInput} onChange={e=>setKwInput(e.target.value)}
                     onKeyDown={e=>{if(e.key==='Enter'&&kwInput.trim()){addKw(kwInput.trim());e.preventDefault();}}}
-                    placeholder="ex: ortopedista belo horizonte"/>
-                  <BtnPrimary onClick={()=>addKw(kwInput.trim())} style={{whiteSpace:'nowrap'}}>+ Adicionar</BtnPrimary>
-                </div>
+                    placeholder="ex: ortopedista belo horizonte"/><BtnPrimary onClick={()=>addKw(kwInput.trim())} style={{whiteSpace:'nowrap'}}>+ Adicionar</BtnPrimary></div>
 
                 {kws.length>0&&<div style={{marginBottom:'16px'}}>
                   {kws.map((kw,i)=>(
-                    <div key={i} style={{display:'flex',alignItems:'center',gap:'12px',padding:'12px 14px',background:D.bg,borderRadius:'10px',border:`1px solid ${D.cardBorder}`,marginBottom:'6px'}}>
-                      <div style={{flex:1}}>
-                        <div style={{fontSize:'13px',fontWeight:600,color:D.text,marginBottom:'3px'}}>{kw.term}</div>
+                    <div key={i} style={{display:'flex',alignItems:'center',gap:'12px',padding:'12px 14px',background:D.bg,borderRadius:'10px',border:`1px solid ${D.cardBorder}`,marginBottom:'6px'}}><div style={{flex:1}}><div style={{fontSize:'13px',fontWeight:600,color:D.text,marginBottom:'3px'}}>{kw.term}</div>
                         {kw.volume&&<div style={{fontSize:'11px',color:D.muted}}><span style={{fontWeight:700,color:D.accent}}>{kw.volume}</span> buscas/mês est. em {form.cidade||'sua cidade'}</div>}
-                      </div>
-                      <div style={{flexShrink:0}}>
-                        <div style={{fontSize:'10px',color:D.muted,marginBottom:'3px',textAlign:'center'}}>Posição atual</div>
-                        <input type="number" min="1" max="100" value={kw.pos||''} onChange={e=>{const u=[...kws];u[i]={...u[i],pos:e.target.value};setKws(u);}} placeholder="—"
-                          style={{width:'54px',padding:'5px 8px',borderRadius:'8px',border:`1.5px solid ${D.cardBorder}`,textAlign:'center',fontSize:'12px',fontWeight:700,fontFamily:"'Inter',sans-serif",outline:'none'}}/>
-                      </div>
-                      <span onClick={()=>setKws(p=>p.filter((_,j)=>j!==i))} style={{cursor:'pointer',color:D.faint,fontSize:'18px',lineHeight:1}}>×</span>
-                    </div>
+                      </div><div style={{flexShrink:0}}><div style={{fontSize:'10px',color:D.muted,marginBottom:'3px',textAlign:'center'}}>Posição atual</div><input type="number" min="1" max="100" value={kw.pos||''} onChange={e=>{const u=[...kws];u[i]={...u[i],pos:e.target.value};setKws(u);}} placeholder="—"
+                          style={{width:'54px',padding:'5px 8px',borderRadius:'8px',border:`1.5px solid ${D.cardBorder}`,textAlign:'center',fontSize:'12px',fontWeight:700,fontFamily:"'Inter',sans-serif",outline:'none'}}/></div><span onClick={()=>setKws(p=>p.filter((_,j)=>j!==i))} style={{cursor:'pointer',color:D.faint,fontSize:'18px',lineHeight:1}}></span></div>
                   ))}
                 </div>}
 
-                <div style={{fontSize:'12px',fontWeight:600,color:D.muted,letterSpacing:'.06em',textTransform:'uppercase',marginBottom:'8px'}}>Sugestões</div>
-                <div style={{display:'flex',gap:'6px',flexWrap:'wrap'}}>
+                <div style={{fontSize:'12px',fontWeight:600,color:D.muted,letterSpacing:'.06em',textTransform:'uppercase',marginBottom:'8px'}}>Sugestões</div><div style={{display:'flex',gap:'6px',flexWrap:'wrap'}}>
                   {[...new Set([...(NICHOS[nichoKey]?.kws||[]).map(k=>k+' '+(form.cidade||'cidade')),`${form.categoria||'negócio'} ${form.cidade||'cidade'}`,`${form.especializacao||''} ${form.cidade||''}`.trim()].filter(Boolean))].slice(0,8).map(sg=>(
                     <button key={sg} onClick={()=>addKw(sg)} style={{padding:'5px 12px',borderRadius:'20px',border:`1px solid ${kws.find(k=>k.term===sg)?D.accent:D.cardBorder}`,background:kws.find(k=>k.term===sg)?D.accent+'0d':'#fff',fontSize:'11px',fontWeight:500,color:kws.find(k=>k.term===sg)?D.accent:D.muted,cursor:'pointer',transition:'all .12s'}}>
                       {sg}
                     </button>
                   ))}
-                </div>
-              </Card>
-              <div style={{display:'flex',gap:'10px',justifyContent:'space-between'}}>
-                <BtnSecondary onClick={()=>setPg(2)}>← Voltar</BtnSecondary>
-                <BtnPrimary onClick={()=>setPg(4)}>Próximo →</BtnPrimary>
-              </div>
-            </div>}
+                </div></Card><div style={{display:'flex',gap:'10px',justifyContent:'space-between'}}><BtnSecondary onClick={()=>setPg(2)}> Voltar</BtnSecondary><BtnPrimary onClick={()=>setPg(4)}>Próximo </BtnPrimary></div></div>}
 
             {/* ══ P4 CONCORRENTES ════════════════════════════ */}
-            {pg===4&&<div>
-              <div style={{padding:'10px 16px',background:'#FFFBEB',border:'1px solid #FDE68A',borderRadius:'12px',fontSize:'12px',color:'#92400E',marginBottom:'16px'}}>
-                ℹ️ Seção opcional — sem concorrentes, a página não será gerada no PDF
+            {pg===4&&<div><div style={{padding:'10px 16px',background:'#FFFBEB',border:'1px solid #FDE68A',borderRadius:'12px',fontSize:'12px',color:'#92400E',marginBottom:'16px'}}>
+                 Seção opcional — sem concorrentes, a página não será gerada no PDF
               </div>
-              {p2modo==='manual'?<Card>
-                <SectionTitle icon="ℹ️" title="Análise de concorrentes" subtitle="Disponível no modo Auto IA"/>
-                <p style={{fontSize:'13px',color:D.muted}}>Ative o modo <strong>Auto IA</strong> na sidebar para buscar concorrentes automaticamente pelo Google Maps.</p>
-              </Card>:<>
-                <Card>
-                  <SectionTitle icon="⚔️" title="Concorrentes" subtitle="Busca automática no Google Maps"/>
-                  <StatusBar/>
-                  <BtnPrimary onClick={buscarConcs} disabled={concLoad} style={{marginTop:'4px'}}>
-                    {concLoad?'⏳ Buscando...':'🔍 Buscar concorrentes com IA'}
+              {p2modo==='manual'?<Card><SectionTitle icon="" title="Análise de concorrentes" subtitle="Disponível no modo Auto IA"/><p style={{fontSize:'13px',color:D.muted}}>Ative o modo <strong>Auto IA</strong> na sidebar para buscar concorrentes automaticamente pelo Google Maps.</p></Card>:<><Card><SectionTitle icon="" title="Concorrentes" subtitle="Busca automática no Google Maps"/><StatusBar/><BtnPrimary onClick={buscarConcs} disabled={concLoad} style={{marginTop:'4px'}}>
+                    {concLoad?' Buscando...':' Buscar concorrentes com IA'}
                   </BtnPrimary>
                   {concs.length>0&&<div style={{marginTop:'16px'}}>
                     {concs.map((c,i)=>(
-                      <div key={i} style={{display:'flex',alignItems:'flex-start',gap:'12px',padding:'12px 14px',background:D.bg,borderRadius:'10px',border:`1px solid ${D.cardBorder}`,marginBottom:'8px'}}>
-                        <div style={{width:'28px',height:'28px',borderRadius:'50%',background:D.accent,color:'#fff',fontWeight:800,fontSize:'11px',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>{c.posicao||i+1}</div>
-                        <div style={{flex:1}}>
-                          <div style={{fontSize:'13px',fontWeight:600,color:D.text}}>{c.nome}</div>
-                          <div style={{fontSize:'11px',color:D.muted,marginTop:'2px'}}>{c.nota}★ ({c.avals}){c.diferencial?' · '+c.diferencial:''}</div>
-                        </div>
-                        <span onClick={()=>setConcs(p=>p.filter((_,j)=>j!==i))} style={{cursor:'pointer',color:D.faint,fontSize:'16px'}}>×</span>
-                      </div>
+                      <div key={i} style={{display:'flex',alignItems:'flex-start',gap:'12px',padding:'12px 14px',background:D.bg,borderRadius:'10px',border:`1px solid ${D.cardBorder}`,marginBottom:'8px'}}><div style={{width:'28px',height:'28px',borderRadius:'50%',background:D.accent,color:'#fff',fontWeight:800,fontSize:'11px',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>{c.posicao||i+1}</div><div style={{flex:1}}><div style={{fontSize:'13px',fontWeight:600,color:D.text}}>{c.nome}</div><div style={{fontSize:'11px',color:D.muted,marginTop:'2px'}}>{c.nota} ({c.avals}){c.diferencial?' · '+c.diferencial:''}</div></div><span onClick={()=>setConcs(p=>p.filter((_,j)=>j!==i))} style={{cursor:'pointer',color:D.faint,fontSize:'16px'}}></span></div>
                     ))}
                   </div>}
                 </Card>
-                {temConcs&&<Card>
-                  <SectionTitle icon="🗺️" title="Mapa de posicionamento"/>
-                  <div style={{borderRadius:'12px',overflow:'hidden',border:`1px solid ${D.cardBorder}`}} dangerouslySetInnerHTML={{__html:makeMapSVG({concs,cidade:form.cidade||'Cidade',nome:form.nome||'Negócio',cor1:form.cor1})}}/>
-                </Card>}
+                {temConcs&&<Card><SectionTitle icon="" title="Mapa de posicionamento"/><div style={{borderRadius:'12px',overflow:'hidden',border:`1px solid ${D.cardBorder}`}} dangerouslySetInnerHTML={{__html:makeMapSVG({concs,cidade:form.cidade||'Cidade',nome:form.nome||'Negócio',cor1:form.cor1})}}/></Card>}
               </>}
-              <Card>
-                <SectionTitle icon="➕" title="Adicionar manualmente"/>
-                <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'12px',marginBottom:'10px'}}>
-                  <div><FieldLabel>Nome</FieldLabel><input id="cNome" style={{width:'100%',padding:'10px 14px',border:`1.5px solid ${D.cardBorder}`,borderRadius:'10px',fontSize:'13px',color:D.text,background:'#fff',outline:'none',boxSizing:'border-box'}} placeholder="Concorrente"/></div>
-                  <div><FieldLabel>Nota</FieldLabel><input id="cNota" type="number" style={{width:'100%',padding:'10px 14px',border:`1.5px solid ${D.cardBorder}`,borderRadius:'10px',fontSize:'13px',outline:'none',boxSizing:'border-box'}} placeholder="4.5"/></div>
-                </div>
-                <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'12px',marginBottom:'10px'}}>
-                  <div><FieldLabel>Avaliações</FieldLabel><input id="cAvals" type="number" style={{width:'100%',padding:'10px 14px',border:`1.5px solid ${D.cardBorder}`,borderRadius:'10px',fontSize:'13px',outline:'none',boxSizing:'border-box'}} placeholder="300"/></div>
-                  <div><FieldLabel>Posição</FieldLabel><input id="cPos" type="number" style={{width:'100%',padding:'10px 14px',border:`1.5px solid ${D.cardBorder}`,borderRadius:'10px',fontSize:'13px',outline:'none',boxSizing:'border-box'}} placeholder="1"/></div>
-                </div>
-                <div style={{marginBottom:'10px'}}><FieldLabel>Diferencial</FieldLabel><input id="cDiff" style={{width:'100%',padding:'10px 14px',border:`1.5px solid ${D.cardBorder}`,borderRadius:'10px',fontSize:'13px',outline:'none',boxSizing:'border-box'}} placeholder="Mais fotos, site otimizado..."/></div>
-                <BtnSecondary onClick={addComp}>+ Adicionar</BtnSecondary>
-              </Card>
-              <div style={{display:'flex',gap:'10px',justifyContent:'space-between'}}>
-                <BtnSecondary onClick={()=>setPg(3)}>← Voltar</BtnSecondary>
-                <BtnPrimary onClick={()=>setPg(5)}>Próximo →</BtnPrimary>
-              </div>
-            </div>}
+              <Card><SectionTitle icon="" title="Adicionar manualmente"/><div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'12px',marginBottom:'10px'}}><div><FieldLabel>Nome</FieldLabel><input id="cNome" style={{width:'100%',padding:'10px 14px',border:`1.5px solid ${D.cardBorder}`,borderRadius:'10px',fontSize:'13px',color:D.text,background:'#fff',outline:'none',boxSizing:'border-box'}} placeholder="Concorrente"/></div><div><FieldLabel>Nota</FieldLabel><input id="cNota" type="number" style={{width:'100%',padding:'10px 14px',border:`1.5px solid ${D.cardBorder}`,borderRadius:'10px',fontSize:'13px',outline:'none',boxSizing:'border-box'}} placeholder="4.5"/></div></div><div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'12px',marginBottom:'10px'}}><div><FieldLabel>Avaliações</FieldLabel><input id="cAvals" type="number" style={{width:'100%',padding:'10px 14px',border:`1.5px solid ${D.cardBorder}`,borderRadius:'10px',fontSize:'13px',outline:'none',boxSizing:'border-box'}} placeholder="300"/></div><div><FieldLabel>Posição</FieldLabel><input id="cPos" type="number" style={{width:'100%',padding:'10px 14px',border:`1.5px solid ${D.cardBorder}`,borderRadius:'10px',fontSize:'13px',outline:'none',boxSizing:'border-box'}} placeholder="1"/></div></div><div style={{marginBottom:'10px'}}><FieldLabel>Diferencial</FieldLabel><input id="cDiff" style={{width:'100%',padding:'10px 14px',border:`1.5px solid ${D.cardBorder}`,borderRadius:'10px',fontSize:'13px',outline:'none',boxSizing:'border-box'}} placeholder="Mais fotos, site otimizado..."/></div><BtnSecondary onClick={addComp}>+ Adicionar</BtnSecondary></Card><div style={{display:'flex',gap:'10px',justifyContent:'space-between'}}><BtnSecondary onClick={()=>setPg(3)}> Voltar</BtnSecondary><BtnPrimary onClick={()=>setPg(5)}>Próximo </BtnPrimary></div></div>}
 
             {/* ══ P5 INSTAGRAM ══════════════════════════════ */}
-            {pg===5&&<div>
-              <div style={{padding:'10px 16px',background:'#FFFBEB',border:'1px solid #FDE68A',borderRadius:'12px',fontSize:'12px',color:'#92400E',marginBottom:'16px'}}>
-                ℹ️ Seção opcional — sem dados do Instagram, a página não será gerada no PDF
+            {pg===5&&<div><div style={{padding:'10px 16px',background:'#FFFBEB',border:'1px solid #FDE68A',borderRadius:'12px',fontSize:'12px',color:'#92400E',marginBottom:'16px'}}>
+                 Seção opcional — sem dados do Instagram, a página não será gerada no PDF
               </div>
-              {p2modo==='auto'&&<Card>
-                <SectionTitle icon="📸" title="Analisar Instagram" subtitle="Cole o link do perfil. A IA analisa e preenche os critérios."/>
-                <div style={{display:'flex',gap:'8px',marginBottom:'12px'}}>
-                  <Input value={ig.url} onChange={e=>setIG('url',e.target.value)} placeholder="https://instagram.com/perfil"/>
-                  <BtnPrimary onClick={extrairIG} disabled={igLoad} style={{whiteSpace:'nowrap'}}>
-                    {igLoad?'⏳ Analisando...':'Analisar'}
-                  </BtnPrimary>
-                </div>
-                <StatusBar/>
+              {p2modo==='auto'&&<Card><SectionTitle icon="" title="Analisar Instagram" subtitle="Cole o link do perfil. A IA analisa e preenche os critérios."/><div style={{display:'flex',gap:'8px',marginBottom:'12px'}}><Input value={ig.url} onChange={e=>setIG('url',e.target.value)} placeholder="https://instagram.com/perfil"/><BtnPrimary onClick={extrairIG} disabled={igLoad} style={{whiteSpace:'nowrap'}}>
+                    {igLoad?' Analisando...':'Analisar'}
+                  </BtnPrimary></div><StatusBar/>
                 {ig.extraido&&ig.handle&&<div style={{padding:'10px 14px',background:'#F0FDF4',border:'1px solid #BBF7D0',borderRadius:'10px',fontSize:'12px',color:'#166534',fontWeight:600}}>
-                  ✓ @{ig.handle} analisado · {ig.seguidores} seguidores
+                   @{ig.handle} analisado · {ig.seguidores} seguidores
                 </div>}
               </Card>}
 
-              <Card>
-                <SectionTitle icon="👤" title="Dados do Perfil"/>
-                <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'12px',marginBottom:'16px'}}>
-                  <div><FieldLabel>Handle (sem @)</FieldLabel><Input value={ig.handle} onChange={e=>setIG('handle',e.target.value)} placeholder="perfil"/></div>
-                  <div><FieldLabel>Seguidores</FieldLabel><Input value={ig.seguidores} onChange={e=>setIG('seguidores',e.target.value)} placeholder="1.240"/></div>
-                </div>
-                <FieldLabel>Print do perfil <span style={{fontWeight:400,color:D.faint,textTransform:'none',letterSpacing:0,fontSize:'11px'}}>(opcional)</span></FieldLabel>
-                <PasteImage value={ig.printUrl||''} onChange={v=>setIG('printUrl',v)} label="Cole o print do Instagram aqui (Ctrl+V)" hint="Aparecerá na página de Instagram do PDF"/>
-              </Card>
-
-              <Card>
-                <SectionTitle icon="✅" title="Critérios de Presença" subtitle="Marque cada critério. Os negativos geram críticas adaptadas ao tom."/>
+              <Card><SectionTitle icon="" title="Dados do Perfil"/><div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'12px',marginBottom:'16px'}}><div><FieldLabel>Handle (sem @)</FieldLabel><Input value={ig.handle} onChange={e=>setIG('handle',e.target.value)} placeholder="perfil"/></div><div><FieldLabel>Seguidores</FieldLabel><Input value={ig.seguidores} onChange={e=>setIG('seguidores',e.target.value)} placeholder="1.240"/></div></div><FieldLabel>Print do perfil <span style={{fontWeight:400,color:D.faint,textTransform:'none',letterSpacing:0,fontSize:'11px'}}>(opcional)</span></FieldLabel><PasteImage value={ig.printUrl||''} onChange={v=>setIG('printUrl',v)} label="Cole o print do Instagram aqui (Ctrl+V)" hint="Aparecerá na página de Instagram do PDF"/></Card><Card><SectionTitle icon="" title="Critérios de Presença" subtitle="Marque cada critério. Os negativos geram críticas adaptadas ao tom."/>
                 {IG_CRITERIOS.map(({k,label,critica,criticaPositiva})=>{
                   const val=ig[k];
                   const tom=form.tom||'original';
                   const mostrarCritica=criticaPositiva?val===true:val===false;
                   return(
-                    <div key={k} style={{marginBottom:'14px',paddingBottom:'14px',borderBottom:`1px solid ${D.bg}`}}>
-                      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'6px'}}>
-                        <span style={{fontSize:'13px',fontWeight:600,color:D.text}}>{label}</span>
-                        <div style={{display:'flex',borderRadius:'8px',overflow:'hidden',border:`1px solid ${D.cardBorder}`}}>
-                          <button onClick={()=>setIG(k,true)} style={{padding:'6px 16px',fontSize:'11px',fontWeight:700,cursor:'pointer',border:'none',background:val===true?D.success:'transparent',color:val===true?'#fff':D.muted,transition:'all .15s'}}>SIM</button>
-                          <button onClick={()=>setIG(k,false)} style={{padding:'6px 16px',fontSize:'11px',fontWeight:700,cursor:'pointer',border:'none',background:val===false?D.danger:'transparent',color:val===false?'#fff':D.muted,transition:'all .15s'}}>NÃO</button>
-                        </div>
-                      </div>
+                    <div key={k} style={{marginBottom:'14px',paddingBottom:'14px',borderBottom:`1px solid ${D.bg}`}}><div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'6px'}}><span style={{fontSize:'13px',fontWeight:600,color:D.text}}>{label}</span><div style={{display:'flex',borderRadius:'8px',overflow:'hidden',border:`1px solid ${D.cardBorder}`}}><button onClick={()=>setIG(k,true)} style={{padding:'6px 16px',fontSize:'11px',fontWeight:700,cursor:'pointer',border:'none',background:val===true?D.success:'transparent',color:val===true?'#fff':D.muted,transition:'all .15s'}}>SIM</button><button onClick={()=>setIG(k,false)} style={{padding:'6px 16px',fontSize:'11px',fontWeight:700,cursor:'pointer',border:'none',background:val===false?D.danger:'transparent',color:val===false?'#fff':D.muted,transition:'all .15s'}}>NÃO</button></div></div>
                       {mostrarCritica&&critica[tom]&&(
                         <div style={{padding:'10px 14px',background:'#FEF2F2',borderLeft:`3px solid ${D.danger}`,borderRadius:'0 8px 8px 0',fontSize:'12px',color:'#7F1D1D',lineHeight:1.6}}>
                           {critica[tom]}
@@ -1384,204 +1060,70 @@ Retorne SOMENTE JSON sem markdown:
                     </div>
                   );
                 })}
-              </Card>
-
-              <div style={{display:'flex',gap:'10px',justifyContent:'space-between'}}>
-                <BtnSecondary onClick={()=>setPg(4)}>← Voltar</BtnSecondary>
-                <BtnPrimary onClick={()=>setPg(6)}>Próximo →</BtnPrimary>
-              </div>
-            </div>}
+              </Card><div style={{display:'flex',gap:'10px',justifyContent:'space-between'}}><BtnSecondary onClick={()=>setPg(4)}> Voltar</BtnSecondary><BtnPrimary onClick={()=>setPg(6)}>Próximo </BtnPrimary></div></div>}
 
             {/* ══ P6 CORES & LOGO ════════════════════════════ */}
-            {pg===6&&<div>
-              <Card>
-                <SectionTitle icon="🎨" title="Paleta de Cores"/>
-                <div style={{display:'flex',gap:'8px',flexWrap:'wrap',marginBottom:'16px'}}>
+            {pg===6&&<div><Card><SectionTitle icon="" title="Paleta de Cores"/><div style={{display:'flex',gap:'8px',flexWrap:'wrap',marginBottom:'16px'}}>
                   {[['#C9A84C','#0D0D0B'],['#0F4FD1','#0D0D0B'],['#0D9488','#0D0D0B'],['#7C3AED','#0D0D0B'],['#DC2626','#0D0D0B'],['#0891B2','#0D0D0B'],['#475569','#0D0D0B']].map(([c1,c2],i)=>(
                     <div key={i} onClick={()=>setForm(f=>({...f,cor1:c1,cor2:c2}))} style={{width:'30px',height:'30px',borderRadius:'50%',background:c1,cursor:'pointer',border:form.cor1===c1?`3px solid ${D.text}`:`2px solid transparent`,transform:form.cor1===c1?'scale(1.2)':'scale(1)',transition:'.12s'}}/>
                   ))}
-                  <input type="color" value={form.cor1} onChange={e=>setForm(f=>({...f,cor1:e.target.value}))} style={{width:'30px',height:'30px',border:'none',borderRadius:'50%',cursor:'pointer',padding:0}}/>
-                </div>
-                <div style={{padding:'14px 18px',background:form.cor2,borderRadius:'10px',borderLeft:`5px solid ${form.cor1}`,color:form.cor1,fontWeight:700,fontSize:'14px'}}>
+                  <input type="color" value={form.cor1} onChange={e=>setForm(f=>({...f,cor1:e.target.value}))} style={{width:'30px',height:'30px',border:'none',borderRadius:'50%',cursor:'pointer',padding:0}}/></div><div style={{padding:'14px 18px',background:form.cor2,borderRadius:'10px',borderLeft:`5px solid ${form.cor1}`,color:form.cor1,fontWeight:700,fontSize:'14px'}}>
                   {form.cslEmpresa||'Sua Empresa'} — prévia
-                </div>
-              </Card>
-
-              <Card>
-                <SectionTitle icon="🖼️" title="Logo do Consultor"/>
-                <p style={{fontSize:'12px',color:D.muted,marginBottom:'14px'}}>Esta logo aparecerá no topo do PDF.</p>
-                <div onClick={()=>logoRef.current?.click()} style={{border:`1.5px dashed ${D.cardBorder}`,borderRadius:'12px',padding:'20px',textAlign:'center',cursor:'pointer',background:D.bg}}>
+                </div></Card><Card><SectionTitle icon="" title="Logo do Consultor"/><p style={{fontSize:'12px',color:D.muted,marginBottom:'14px'}}>Esta logo aparecerá no topo do PDF.</p><div onClick={()=>logoRef.current?.click()} style={{border:`1.5px dashed ${D.cardBorder}`,borderRadius:'12px',padding:'20px',textAlign:'center',cursor:'pointer',background:D.bg}}>
                   {logoUrl
                     ?<div style={{background:form.cor2,padding:'14px',borderRadius:'10px',display:'inline-block'}}><img src={logoUrl} style={{maxHeight:'60px',maxWidth:'160px',objectFit:'contain',borderRadius:'8px',display:'block'}}/></div>
-                    :<div><div style={{fontSize:'30px',marginBottom:'8px'}}>📁</div><div style={{fontWeight:600,fontSize:'13px',color:D.muted}}>Upload da logo</div><div style={{fontSize:'11px',color:D.faint,marginTop:'4px'}}>PNG · SVG · fundo transparente recomendado</div></div>
+                    :<div><div style={{fontSize:'30px',marginBottom:'8px'}}></div><div style={{fontWeight:600,fontSize:'13px',color:D.muted}}>Upload da logo</div><div style={{fontSize:'11px',color:D.faint,marginTop:'4px'}}>PNG · SVG · fundo transparente recomendado</div></div>
                   }
-                </div>
-                <input ref={logoRef} type="file" accept="image/*" style={{display:'none'}} onChange={loadLogo}/>
+                </div><input ref={logoRef} type="file" accept="image/*" style={{display:'none'}} onChange={loadLogo}/>
                 {logoUrl&&<button onClick={()=>setLogoUrl('')} style={{marginTop:'8px',background:'none',border:'none',cursor:'pointer',fontSize:'11px',color:D.faint}}>Remover logo</button>}
-              </Card>
-
-              <Card>
-                <SectionTitle icon="💾" title="Salvar configurações"/>
+              </Card><Card><SectionTitle icon="" title="Salvar configurações"/>
                 {!showSave
-                  ?<BtnSecondary onClick={()=>setShowSave(true)}>💾 Salvar como preset</BtnSecondary>
-                  :<div style={{display:'flex',gap:'8px',alignItems:'center'}}>
-                    <Input value={presetName} onChange={e=>setPresetName(e.target.value)} placeholder="Nome do preset" style={{maxWidth:'220px'}} onKeyDown={e=>{if(e.key==='Enter')salvarPreset();}}/>
-                    <BtnPrimary onClick={salvarPreset}>Salvar</BtnPrimary>
-                    <BtnSecondary onClick={()=>setShowSave(false)}>Cancelar</BtnSecondary>
-                  </div>
+                  ?<BtnSecondary onClick={()=>setShowSave(true)}> Salvar como preset</BtnSecondary>
+                  :<div style={{display:'flex',gap:'8px',alignItems:'center'}}><Input value={presetName} onChange={e=>setPresetName(e.target.value)} placeholder="Nome do preset" style={{maxWidth:'220px'}} onKeyDown={e=>{if(e.key==='Enter')salvarPreset();}}/><BtnPrimary onClick={salvarPreset}>Salvar</BtnPrimary><BtnSecondary onClick={()=>setShowSave(false)}>Cancelar</BtnSecondary></div>
                 }
-                <StatusBar/>
-              </Card>
-
-              <div style={{display:'flex',gap:'10px',justifyContent:'space-between'}}>
-                <BtnSecondary onClick={()=>setPg(5)}>← Voltar</BtnSecondary>
-                <BtnPrimary onClick={()=>setPg(7)}>Próximo →</BtnPrimary>
-              </div>
-            </div>}
+                <StatusBar/></Card><div style={{display:'flex',gap:'10px',justifyContent:'space-between'}}><BtnSecondary onClick={()=>setPg(5)}> Voltar</BtnSecondary><BtnPrimary onClick={()=>setPg(7)}>Próximo </BtnPrimary></div></div>}
 
             {/* ══ P7 CONSULTOR ══════════════════════════════ */}
-            {pg===7&&<div>
-              <Card>
-                <SectionTitle icon="👤" title="Dados do Consultor"/>
-                <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'12px',marginBottom:'12px'}}>
-                  <div><FieldLabel required>Seu nome</FieldLabel><Input value={form.cslNome} onChange={e=>setF('cslNome',e.target.value)} placeholder="Nathan"/></div>
-                  <div><FieldLabel required>Empresa</FieldLabel><Input value={form.cslEmpresa} onChange={e=>setF('cslEmpresa',e.target.value)} placeholder="SCentral"/></div>
-                </div>
-                <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'12px',marginBottom:'14px'}}>
-                  <div><FieldLabel>WhatsApp (gera QR no PDF)</FieldLabel><Input value={form.cslWhats} onChange={e=>setF('cslWhats',e.target.value)} placeholder="(37) 9 9809-2139"/></div>
-                  <div><FieldLabel>Instagram (sem @)</FieldLabel><Input value={form.cslInsta} onChange={e=>setF('cslInsta',e.target.value)} placeholder="scentral.ia"/></div>
-                </div>
-                {form.cslWhats&&<div style={{padding:'14px',background:D.bg,borderRadius:'10px',display:'flex',alignItems:'center',gap:'14px',marginBottom:'14px',border:`1px solid ${D.cardBorder}`}}>
-                  <img src={qrUrl(waLink(form.cslWhats))} alt="QR" style={{width:'64px',height:'64px',borderRadius:'8px'}}/>
-                  <div><div style={{fontSize:'12px',fontWeight:700,color:D.text,marginBottom:'3px'}}>QR Code — prévia</div><div style={{fontSize:'11px',color:D.muted}}>{waLink(form.cslWhats)}</div></div>
-                </div>}
-                <div><FieldLabel>Instrução extra para a IA</FieldLabel>
-                  <textarea value={form.promptExtra} onChange={e=>setF('promptExtra',e.target.value)} placeholder="Ex: mencionar rapidez das melhorias, focar em ROI..."
-                    style={{width:'100%',padding:'10px 14px',border:`1.5px solid ${D.cardBorder}`,borderRadius:'10px',fontSize:'13px',color:D.text,background:'#fff',outline:'none',boxSizing:'border-box',minHeight:'70px',resize:'vertical',fontFamily:"'Inter',sans-serif"}}/>
-                </div>
-              </Card>
-              <div style={{display:'flex',gap:'10px',justifyContent:'space-between'}}>
-                <BtnSecondary onClick={()=>setPg(6)}>← Voltar</BtnSecondary>
-                <BtnPrimary onClick={()=>setPg(8)}>Editar & PDF →</BtnPrimary>
-              </div>
-            </div>}
+            {pg===7&&<div><Card><SectionTitle icon="" title="Dados do Consultor"/><div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'12px',marginBottom:'12px'}}><div><FieldLabel required>Seu nome</FieldLabel><Input value={form.cslNome} onChange={e=>setF('cslNome',e.target.value)} placeholder="Nathan"/></div><div><FieldLabel required>Empresa</FieldLabel><Input value={form.cslEmpresa} onChange={e=>setF('cslEmpresa',e.target.value)} placeholder="SCentral"/></div></div><div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'12px',marginBottom:'14px'}}><div><FieldLabel>WhatsApp (gera QR no PDF)</FieldLabel><Input value={form.cslWhats} onChange={e=>setF('cslWhats',e.target.value)} placeholder="(37) 9 9809-2139"/></div><div><FieldLabel>Instagram (sem @)</FieldLabel><Input value={form.cslInsta} onChange={e=>setF('cslInsta',e.target.value)} placeholder="scentral.ia"/></div></div>
+                {form.cslWhats&&<div style={{padding:'14px',background:D.bg,borderRadius:'10px',display:'flex',alignItems:'center',gap:'14px',marginBottom:'14px',border:`1px solid ${D.cardBorder}`}}><img src={qrUrl(waLink(form.cslWhats))} alt="QR" style={{width:'64px',height:'64px',borderRadius:'8px'}}/><div><div style={{fontSize:'12px',fontWeight:700,color:D.text,marginBottom:'3px'}}>QR Code — prévia</div><div style={{fontSize:'11px',color:D.muted}}>{waLink(form.cslWhats)}</div></div></div>}
+                <div><FieldLabel>Instrução extra para a IA</FieldLabel><textarea value={form.promptExtra} onChange={e=>setF('promptExtra',e.target.value)} placeholder="Ex: mencionar rapidez das melhorias, focar em ROI..."
+                    style={{width:'100%',padding:'10px 14px',border:`1.5px solid ${D.cardBorder}`,borderRadius:'10px',fontSize:'13px',color:D.text,background:'#fff',outline:'none',boxSizing:'border-box',minHeight:'70px',resize:'vertical',fontFamily:"'Inter',sans-serif"}}/></div></Card><div style={{display:'flex',gap:'10px',justifyContent:'space-between'}}><BtnSecondary onClick={()=>setPg(6)}> Voltar</BtnSecondary><BtnPrimary onClick={()=>setPg(8)}>Editar & PDF </BtnPrimary></div></div>}
 
             {/* ══ P8 EDITAR & PDF ════════════════════════════ */}
-            {pg===8&&<div>
-              <Card>
-                <SectionTitle icon="🎨" title="Layout do relatório" subtitle="Escolha o estilo visual do PDF gerado"/>
-                <div style={{display:'grid',gridTemplateColumns:'repeat(5,1fr)',gap:'10px',marginBottom:'20px'}}>
+            {pg===8&&<div><Card><SectionTitle icon="" title="Layout do relatório" subtitle="Escolha o estilo visual do PDF gerado"/><div style={{display:'grid',gridTemplateColumns:'repeat(5,1fr)',gap:'10px',marginBottom:'20px'}}>
                   {[
-                    {id:'basico',label:'Básico',desc:'Notion + Stripe',cor:'#2563EB',emoji:'📋'},
-                    {id:'premium',label:'Premium',desc:'McKinsey + Apple',cor:'#C9A227',emoji:'👑'},
-                    {id:'luxo',label:'Luxo',desc:'LV + Rolex',cor:'#D4AF37',emoji:'💎'},
-                    {id:'relatorio',label:'Relatório',desc:'PwC + KPMG',cor:'#0B1F3A',emoji:'📊'},
-                    {id:'custom',label:'Custom',desc:'Sua marca',cor:form.cor1,emoji:'✨'},
+                    {id:'basico',label:'Básico',desc:'Notion + Stripe',cor:'#2563EB',emoji:''},
+                    {id:'premium',label:'Premium',desc:'McKinsey + Apple',cor:'#C9A227',emoji:''},
+                    {id:'luxo',label:'Luxo',desc:'LV + Rolex',cor:'#D4AF37',emoji:''},
+                    {id:'relatorio',label:'Relatório',desc:'PwC + KPMG',cor:'#0B1F3A',emoji:''},
+                    {id:'custom',label:'Custom',desc:'Sua marca',cor:form.cor1,emoji:''},
                   ].map(({id,label,desc,cor,emoji})=>(
                     <div key={id} onClick={()=>setLayoutPDF(id)}
-                      style={{padding:'12px 10px',borderRadius:'12px',border:layoutPDF===id?`2px solid ${cor}`:`1px solid ${D.cardBorder}`,background:layoutPDF===id?cor+'0d':'#fff',cursor:'pointer',textAlign:'center',transition:'all .12s'}}>
-                      <div style={{fontSize:'22px',marginBottom:'6px'}}>{emoji}</div>
-                      <div style={{fontSize:'11px',fontWeight:700,color:layoutPDF===id?cor:D.text}}>{label}</div>
-                      <div style={{fontSize:'9px',color:D.faint,marginTop:'2px'}}>{desc}</div>
-                    </div>
+                      style={{padding:'12px 10px',borderRadius:'12px',border:layoutPDF===id?`2px solid ${cor}`:`1px solid ${D.cardBorder}`,background:layoutPDF===id?cor+'0d':'#fff',cursor:'pointer',textAlign:'center',transition:'all .12s'}}><div style={{fontSize:'22px',marginBottom:'6px'}}>{emoji}</div><div style={{fontSize:'11px',fontWeight:700,color:layoutPDF===id?cor:D.text}}>{label}</div><div style={{fontSize:'9px',color:D.faint,marginTop:'2px'}}>{desc}</div></div>
                   ))}
                 </div>
 
                 {/* Preview do layout */}
                 <div style={{borderRadius:'12px',overflow:'hidden',border:`1px solid ${D.cardBorder}`,marginBottom:'20px'}}>
-                  {layoutPDF==='basico'&&<div>
-                    <div style={{background:'#2563EB',padding:'10px 16px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-                      <div style={{width:'20px',height:'20px',borderRadius:'5px',background:'rgba(255,255,255,.2)'}}/>
-                      <div style={{fontSize:'9px',color:'rgba(255,255,255,.8)',letterSpacing:'.1em',textTransform:'uppercase'}}>Diagnóstico Digital</div>
-                    </div>
-                    <div style={{padding:'16px',background:'#F8FAFC'}}>
-                      <div style={{fontSize:'9px',fontWeight:600,color:'#2563EB',letterSpacing:'.1em',textTransform:'uppercase',marginBottom:'4px'}}>Análise de Presença</div>
-                      <div style={{fontSize:'14px',fontWeight:800,color:'#0F172A',marginBottom:'8px',fontFamily:'Montserrat,sans-serif'}}>{form.nome||'Nome do Negócio'}</div>
-                      <div style={{background:'#fff',border:'1px solid #E2E8F0',borderRadius:'8px',padding:'10px',marginBottom:'8px'}}>
+                  {layoutPDF==='basico'&&<div><div style={{background:'#2563EB',padding:'10px 16px',display:'flex',alignItems:'center',justifyContent:'space-between'}}><div style={{width:'20px',height:'20px',borderRadius:'5px',background:'rgba(255,255,255,.2)'}}/><div style={{fontSize:'9px',color:'rgba(255,255,255,.8)',letterSpacing:'.1em',textTransform:'uppercase'}}>Diagnóstico Digital</div></div><div style={{padding:'16px',background:'#F8FAFC'}}><div style={{fontSize:'9px',fontWeight:600,color:'#2563EB',letterSpacing:'.1em',textTransform:'uppercase',marginBottom:'4px'}}>Análise de Presença</div><div style={{fontSize:'14px',fontWeight:800,color:'#0F172A',marginBottom:'8px',fontFamily:'Montserrat,sans-serif'}}>{form.nome||'Nome do Negócio'}</div><div style={{background:'#fff',border:'1px solid #E2E8F0',borderRadius:'8px',padding:'10px',marginBottom:'8px'}}>
                         {[100,80,60].map((w,i)=><div key={i} style={{height:'5px',background:'#E2E8F0',borderRadius:'3px',marginBottom:'4px',width:w+'%'}}/>)}
-                      </div>
-                    </div>
-                    <div style={{padding:'8px 16px',background:'#fff',borderTop:'1px solid #E2E8F0',display:'flex',justifyContent:'space-between'}}>
-                      <div style={{fontSize:'9px',color:'#64748B'}}>Notion + Stripe Docs</div>
-                      <div style={{fontSize:'9px',fontWeight:700,color:'#2563EB'}}>BÁSICO</div>
-                    </div>
-                  </div>}
-                  {layoutPDF==='premium'&&<div>
-                    <div style={{background:'#111',padding:'14px 16px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-                      <div style={{width:'20px',height:'20px',borderRadius:'5px',background:'rgba(201,162,39,.2)'}}/>
-                      <div style={{fontSize:'9px',color:'rgba(201,162,39,.7)',letterSpacing:'.12em',textTransform:'uppercase'}}>Análise Premium · Confidencial</div>
-                    </div>
-                    <div style={{padding:'16px',background:'#F9F7F3'}}>
-                      <div style={{fontSize:'9px',fontWeight:600,color:'#C9A227',letterSpacing:'.12em',textTransform:'uppercase',marginBottom:'6px'}}>Resumo Executivo</div>
-                      <div style={{fontSize:'14px',fontStyle:'italic',color:'#111',fontFamily:'Georgia,serif',marginBottom:'6px'}}>{form.nome||'Nome do Negócio'}</div>
-                      <div style={{height:'1px',background:'linear-gradient(90deg,#C9A227,transparent)',margin:'8px 0'}}/>
-                      <div style={{background:'#fff',border:'1px solid #E5E1D8',borderRadius:'8px',padding:'8px',boxShadow:'0 1px 3px rgba(0,0,0,.04)'}}>
+                      </div></div><div style={{padding:'8px 16px',background:'#fff',borderTop:'1px solid #E2E8F0',display:'flex',justifyContent:'space-between'}}><div style={{fontSize:'9px',color:'#64748B'}}>Notion + Stripe Docs</div><div style={{fontSize:'9px',fontWeight:700,color:'#2563EB'}}>BÁSICO</div></div></div>}
+                  {layoutPDF==='premium'&&<div><div style={{background:'#111',padding:'14px 16px',display:'flex',alignItems:'center',justifyContent:'space-between'}}><div style={{width:'20px',height:'20px',borderRadius:'5px',background:'rgba(201,162,39,.2)'}}/><div style={{fontSize:'9px',color:'rgba(201,162,39,.7)',letterSpacing:'.12em',textTransform:'uppercase'}}>Análise Premium · Confidencial</div></div><div style={{padding:'16px',background:'#F9F7F3'}}><div style={{fontSize:'9px',fontWeight:600,color:'#C9A227',letterSpacing:'.12em',textTransform:'uppercase',marginBottom:'6px'}}>Resumo Executivo</div><div style={{fontSize:'14px',fontStyle:'italic',color:'#111',fontFamily:'Georgia,serif',marginBottom:'6px'}}>{form.nome||'Nome do Negócio'}</div><div style={{height:'1px',background:'linear-gradient(90deg,#C9A227,transparent)',margin:'8px 0'}}/><div style={{background:'#fff',border:'1px solid #E5E1D8',borderRadius:'8px',padding:'8px',boxShadow:'0 1px 3px rgba(0,0,0,.04)'}}>
                         {[100,75].map((w,i)=><div key={i} style={{height:'4px',background:'#E5E1D8',borderRadius:'2px',marginBottom:'3px',width:w+'%'}}/>)}
-                      </div>
-                    </div>
-                    <div style={{padding:'8px 16px',background:'#111',display:'flex',justifyContent:'space-between'}}>
-                      <div style={{fontSize:'9px',color:'#444'}}>McKinsey · Apple</div>
-                      <div style={{fontSize:'9px',fontWeight:700,color:'#C9A227'}}>PREMIUM</div>
-                    </div>
-                  </div>}
-                  {layoutPDF==='luxo'&&<div>
-                    <div style={{background:'#0A0A0A',padding:'14px 16px',textAlign:'center'}}>
-                      <div style={{width:'30px',height:'1px',background:'#D4AF37',margin:'0 auto 10px'}}/>
-                      <div style={{fontSize:'14px',fontWeight:300,color:'#FAFAFA',fontFamily:'Georgia,serif',fontStyle:'italic'}}>{form.nome||'Nome do Negócio'}</div>
-                      <div style={{fontSize:'9px',color:'#D4AF37',letterSpacing:'.15em',textTransform:'uppercase',marginTop:'4px'}}>{form.categoria||'Categoria'}</div>
-                      <div style={{width:'30px',height:'1px',background:'rgba(212,175,55,.3)',margin:'10px auto 0'}}/>
-                    </div>
-                    <div style={{padding:'8px 16px',background:'#0A0A0A',borderTop:'1px solid rgba(212,175,55,.2)',display:'flex',justifyContent:'space-between'}}>
-                      <div style={{fontSize:'9px',color:'#444'}}>Louis Vuitton · Rolex</div>
-                      <div style={{fontSize:'9px',fontWeight:600,color:'#D4AF37',letterSpacing:'.08em'}}>LUXO</div>
-                    </div>
-                  </div>}
-                  {layoutPDF==='relatorio'&&<div>
-                    <div style={{background:'#0B1F3A',padding:'10px 16px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-                      <div style={{fontSize:'11px',color:'#fff',fontWeight:600}}>Relatório Técnico</div>
-                      <div style={{fontSize:'9px',color:'rgba(255,255,255,.4)'}}>Confidencial</div>
-                    </div>
-                    <div style={{padding:'14px 16px',background:'#fff'}}>
-                      <div style={{borderLeft:'4px solid #0B1F3A',paddingLeft:'10px',marginBottom:'10px'}}>
-                        <div style={{fontSize:'13px',fontWeight:700,color:'#0B1F3A'}}>{form.nome||'Nome do Negócio'}</div>
-                      </div>
-                      <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:'4px'}}>
-                        {['Nota','Avals','Fotos','Pos'].map((l,i)=><div key={i} style={{background:'#E5E7EB',borderRadius:'4px',padding:'4px',textAlign:'center'}}>
-                          <div style={{fontSize:'10px',fontWeight:700,color:'#0B1F3A'}}>—</div>
-                          <div style={{fontSize:'8px',color:'#6B7280'}}>{l}</div>
-                        </div>)}
-                      </div>
-                    </div>
-                    <div style={{padding:'8px 16px',background:'#0B1F3A',display:'flex',justifyContent:'space-between'}}>
-                      <div style={{fontSize:'9px',color:'rgba(255,255,255,.3)'}}>PwC · KPMG · EY</div>
-                      <div style={{fontSize:'9px',fontWeight:700,color:'rgba(255,255,255,.5)'}}>RELATÓRIO</div>
-                    </div>
-                  </div>}
-                  {layoutPDF==='custom'&&<div>
-                    <div style={{background:'#0a0a0a',padding:'14px 16px',display:'flex',alignItems:'center',justifyContent:'space-between',position:'relative',overflow:'hidden'}}>
-                      <div style={{position:'absolute',top:0,right:0,width:'40%',height:'100%',background:`linear-gradient(135deg,${form.cor1}22,transparent)`}}/>
-                      <div style={{fontSize:'13px',fontWeight:800,color:'#fff',fontFamily:"'Space Grotesk',sans-serif"}}>{form.nome||'Nome do Negócio'}</div>
-                      <div style={{fontSize:'9px',color:form.cor1,opacity:.8,letterSpacing:'.1em',textTransform:'uppercase'}}>Custom</div>
-                    </div>
-                    <div style={{padding:'14px 16px',background:'#fff'}}>
-                      <div style={{background:`${form.cor1}08`,borderLeft:`3px solid ${form.cor1}`,padding:'8px 12px',borderRadius:'0 8px 8px 0',marginBottom:'8px'}}>
+                      </div></div><div style={{padding:'8px 16px',background:'#111',display:'flex',justifyContent:'space-between'}}><div style={{fontSize:'9px',color:'#444'}}>McKinsey · Apple</div><div style={{fontSize:'9px',fontWeight:700,color:'#C9A227'}}>PREMIUM</div></div></div>}
+                  {layoutPDF==='luxo'&&<div><div style={{background:'#0A0A0A',padding:'14px 16px',textAlign:'center'}}><div style={{width:'30px',height:'1px',background:'#D4AF37',margin:'0 auto 10px'}}/><div style={{fontSize:'14px',fontWeight:300,color:'#FAFAFA',fontFamily:'Georgia,serif',fontStyle:'italic'}}>{form.nome||'Nome do Negócio'}</div><div style={{fontSize:'9px',color:'#D4AF37',letterSpacing:'.15em',textTransform:'uppercase',marginTop:'4px'}}>{form.categoria||'Categoria'}</div><div style={{width:'30px',height:'1px',background:'rgba(212,175,55,.3)',margin:'10px auto 0'}}/></div><div style={{padding:'8px 16px',background:'#0A0A0A',borderTop:'1px solid rgba(212,175,55,.2)',display:'flex',justifyContent:'space-between'}}><div style={{fontSize:'9px',color:'#444'}}>Louis Vuitton · Rolex</div><div style={{fontSize:'9px',fontWeight:600,color:'#D4AF37',letterSpacing:'.08em'}}>LUXO</div></div></div>}
+                  {layoutPDF==='relatorio'&&<div><div style={{background:'#0B1F3A',padding:'10px 16px',display:'flex',alignItems:'center',justifyContent:'space-between'}}><div style={{fontSize:'11px',color:'#fff',fontWeight:600}}>Relatório Técnico</div><div style={{fontSize:'9px',color:'rgba(255,255,255,.4)'}}>Confidencial</div></div><div style={{padding:'14px 16px',background:'#fff'}}><div style={{borderLeft:'4px solid #0B1F3A',paddingLeft:'10px',marginBottom:'10px'}}><div style={{fontSize:'13px',fontWeight:700,color:'#0B1F3A'}}>{form.nome||'Nome do Negócio'}</div></div><div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:'4px'}}>
+                        {['Nota','Avals','Fotos','Pos'].map((l,i)=><div key={i} style={{background:'#E5E7EB',borderRadius:'4px',padding:'4px',textAlign:'center'}}><div style={{fontSize:'10px',fontWeight:700,color:'#0B1F3A'}}>—</div><div style={{fontSize:'8px',color:'#6B7280'}}>{l}</div></div>)}
+                      </div></div><div style={{padding:'8px 16px',background:'#0B1F3A',display:'flex',justifyContent:'space-between'}}><div style={{fontSize:'9px',color:'rgba(255,255,255,.3)'}}>PwC · KPMG · EY</div><div style={{fontSize:'9px',fontWeight:700,color:'rgba(255,255,255,.5)'}}>RELATÓRIO</div></div></div>}
+                  {layoutPDF==='custom'&&<div><div style={{background:'#0a0a0a',padding:'14px 16px',display:'flex',alignItems:'center',justifyContent:'space-between',position:'relative',overflow:'hidden'}}><div style={{position:'absolute',top:0,right:0,width:'40%',height:'100%',background:`linear-gradient(135deg,${form.cor1}22,transparent)`}}/><div style={{fontSize:'13px',fontWeight:800,color:'#fff',fontFamily:"'Space Grotesk',sans-serif"}}>{form.nome||'Nome do Negócio'}</div><div style={{fontSize:'9px',color:form.cor1,opacity:.8,letterSpacing:'.1em',textTransform:'uppercase'}}>Custom</div></div><div style={{padding:'14px 16px',background:'#fff'}}><div style={{background:`${form.cor1}08`,borderLeft:`3px solid ${form.cor1}`,padding:'8px 12px',borderRadius:'0 8px 8px 0',marginBottom:'8px'}}>
                         {[100,70].map((w,i)=><div key={i} style={{height:'4px',background:`${form.cor1}22`,borderRadius:'2px',marginBottom:'3px',width:w+'%'}}/>)}
-                      </div>
-                      <div style={{background:'#0a0a0a',borderRadius:'8px',padding:'8px 12px'}}>
+                      </div><div style={{background:'#0a0a0a',borderRadius:'8px',padding:'8px 12px'}}>
                         {[90,60].map((w,i)=><div key={i} style={{height:'3px',background:'rgba(255,255,255,.1)',borderRadius:'2px',marginBottom:'3px',width:w+'%'}}/>)}
-                      </div>
-                    </div>
-                    <div style={{padding:'8px 16px',background:'#0a0a0a',display:'flex',justifyContent:'space-between'}}>
-                      <div style={{fontSize:'9px',color:'#444'}}>Cor da sua marca</div>
-                      <div style={{fontSize:'9px',fontWeight:700,color:form.cor1}}>CUSTOM</div>
-                    </div>
-                  </div>}
+                      </div></div><div style={{padding:'8px 16px',background:'#0a0a0a',display:'flex',justifyContent:'space-between'}}><div style={{fontSize:'9px',color:'#444'}}>Cor da sua marca</div><div style={{fontSize:'9px',fontWeight:700,color:form.cor1}}>CUSTOM</div></div></div>}
                 </div>
 
                 {/* Páginas */}
-                <div style={{padding:'12px 16px',background:D.bg,borderRadius:'10px',border:`1px solid ${D.cardBorder}`,marginBottom:'16px'}}>
-                  <div style={{fontWeight:700,color:D.text,fontSize:'12px',marginBottom:'8px'}}>Páginas que serão geradas:</div>
-                  <div style={{display:'flex',gap:'6px',flexWrap:'wrap'}}>
+                <div style={{padding:'12px 16px',background:D.bg,borderRadius:'10px',border:`1px solid ${D.cardBorder}`,marginBottom:'16px'}}><div style={{fontWeight:700,color:D.text,fontSize:'12px',marginBottom:'8px'}}>Páginas que serão geradas:</div><div style={{display:'flex',gap:'6px',flexWrap:'wrap'}}>
                     {[
                       {label:'Introdução',active:true},
                       {label:'Google',active:temDadosGoogle},
@@ -1590,30 +1132,14 @@ Retorne SOMENTE JSON sem markdown:
                       {label:'Instagram',active:temIG},
                       {label:'Plano de Ação',active:true},
                     ].map(({label,active})=>(
-                      <span key={label} style={{padding:'3px 10px',borderRadius:'20px',fontSize:'11px',fontWeight:600,background:active?'#DCFCE7':'#F3F4F6',color:active?'#166534':'#9CA3AF',border:`1px solid ${active?'#BBF7D0':'#E5E7EB'}`}}>{active?'✓ ':''}{label}</span>
+                      <span key={label} style={{padding:'3px 10px',borderRadius:'20px',fontSize:'11px',fontWeight:600,background:active?'#DCFCE7':'#F3F4F6',color:active?'#166534':'#9CA3AF',border:`1px solid ${active?'#BBF7D0':'#E5E7EB'}`}}>{active?' ':''}{label}</span>
                     ))}
-                  </div>
-                </div>
-
-                <StatusBar/>
-                <div style={{display:'flex',gap:'8px',flexWrap:'wrap'}}>
-                  <BtnPrimary onClick={gerarTextoIA} disabled={loading} style={{opacity:loading?.6:1}}>
-                    {loading?'⏳ Gerando...':'✨ Gerar textos com IA'}
-                  </BtnPrimary>
-                  <BtnSecondary onClick={()=>setTextos(null)}>↺ Restaurar padrão</BtnSecondary>
-                  <BtnSecondary onClick={abrirPDF} style={{background:D.sidebar,color:'#fff',border:'none'}}>📄 Gerar PDF</BtnSecondary>
-                </div>
-              </Card>
+                  </div></div><StatusBar/><div style={{display:'flex',gap:'8px',flexWrap:'wrap'}}><BtnPrimary onClick={gerarTextoIA} disabled={loading} style={{opacity:loading?.6:1}}>
+                    {loading?' Gerando...':' Gerar textos com IA'}
+                  </BtnPrimary><BtnSecondary onClick={()=>setTextos(null)}>↺ Restaurar padrão</BtnSecondary><BtnSecondary onClick={abrirPDF} style={{background:D.sidebar,color:'#fff',border:'none'}}> Gerar PDF</BtnSecondary></div></Card>
 
               {/* Textos editáveis */}
-              <Card>
-                <SectionTitle icon="✏️" title="Editar textos"/>
-                <div style={{padding:'10px 14px',background:D.accent+'0d',border:`1px solid ${D.accent}20`,borderRadius:'10px',marginBottom:'16px',display:'flex',alignItems:'center',gap:'8px'}}>
-                  <div style={{flex:1}}>
-                    <div style={{fontSize:'12px',fontWeight:700,color:D.accent}}>{tonAtual.label}</div>
-                    <div style={{fontSize:'11px',color:D.muted,marginTop:'2px'}}>{tonAtual.desc}</div>
-                  </div>
-                </div>
+              <Card><SectionTitle icon="" title="Editar textos"/><div style={{padding:'10px 14px',background:D.accent+'0d',border:`1px solid ${D.accent}20`,borderRadius:'10px',marginBottom:'16px',display:'flex',alignItems:'center',gap:'8px'}}><div style={{flex:1}}><div style={{fontSize:'12px',fontWeight:700,color:D.accent}}>{tonAtual.label}</div><div style={{fontSize:'11px',color:D.muted,marginTop:'2px'}}>{tonAtual.desc}</div></div></div>
                 {[
                   {titulo:'Introdução',campos:[{k:'tituloIntro',l:'Título'},{k:'intro',l:'Abertura'},{k:'problema',l:'Contexto'}]},
                   ...(temDadosGoogle?[{titulo:'Google',campos:[{k:'tituloAnalise',l:'Título'},{k:'dados',l:'Análise'}]}]:[]),
@@ -1621,14 +1147,11 @@ Retorne SOMENTE JSON sem markdown:
                   ...(temIG?[{titulo:'Instagram',campos:[{k:'tituloIg',l:'Título'},{k:'igAnalise',l:'Análise'}]}]:[]),
                   {titulo:'Plano de Ação',campos:[{k:'tituloProx',l:'Título'},{k:'proximos',l:'CTA'}]},
                 ].map(({titulo,campos})=>(
-                  <div key={titulo} style={{background:D.bg,borderRadius:'12px',padding:'16px',marginBottom:'12px',borderLeft:`3px solid ${D.accent}`}}>
-                    <div style={{fontSize:'10px',fontWeight:700,color:D.accent,textTransform:'uppercase',letterSpacing:'.08em',marginBottom:'12px'}}>{titulo}</div>
+                  <div key={titulo} style={{background:D.bg,borderRadius:'12px',padding:'16px',marginBottom:'12px',borderLeft:`3px solid ${D.accent}`}}><div style={{fontSize:'10px',fontWeight:700,color:D.accent,textTransform:'uppercase',letterSpacing:'.08em',marginBottom:'12px'}}>{titulo}</div>
                     {campos.map(({k,l})=>{
                       const val=txAtual()[k]||'';
                       return(
-                        <div key={k} style={{marginBottom:'12px'}}>
-                          <FieldLabel>{l}</FieldLabel>
-                          <textarea value={val} onChange={e=>setTx(k,e.target.value)}
+                        <div key={k} style={{marginBottom:'12px'}}><FieldLabel>{l}</FieldLabel><textarea value={val} onChange={e=>setTx(k,e.target.value)}
                             style={{width:'100%',padding:'10px 14px',border:`1.5px solid ${D.cardBorder}`,borderRadius:'10px',fontSize:'13px',color:D.text,background:'#fff',outline:'none',boxSizing:'border-box',minHeight:'64px',resize:'vertical',fontFamily:"'Inter',sans-serif",lineHeight:1.6}}/>
                           {val.includes('<strong>')&&<div style={{marginTop:'5px',padding:'8px 12px',background:D.bg,borderRadius:'8px',fontSize:'12px',color:D.muted,lineHeight:1.5}} dangerouslySetInnerHTML={{__html:val}}/>}
                         </div>
@@ -1636,36 +1159,28 @@ Retorne SOMENTE JSON sem markdown:
                     })}
                   </div>
                 ))}
-              </Card>
-
-              <div style={{display:'flex',gap:'10px',justifyContent:'space-between',marginTop:'8px'}}>
-                <BtnSecondary onClick={()=>setPg(7)}>← Voltar</BtnSecondary>
-                <BtnPrimary onClick={abrirPDF} style={{padding:'13px 28px',fontSize:'14px'}}>📄 Gerar PDF</BtnPrimary>
-              </div>
-            </div>}
+              </Card><div style={{display:'flex',gap:'10px',justifyContent:'space-between',marginTop:'8px'}}><BtnSecondary onClick={()=>setPg(7)}> Voltar</BtnSecondary><BtnPrimary onClick={abrirPDF} style={{padding:'13px 28px',fontSize:'14px'}}> Gerar PDF</BtnPrimary></div></div>}
 
           </div>
 
           {/* TIPS PANEL — aparece em algumas etapas */}
           {[1,2,5].includes(pg)&&<TipsPanel tips={
             pg===1&&p2modo==='auto'?[
-              {icon:'🔗',title:'Use o link completo',text:'Cole o link completo da ficha do Google Maps.'},
-              {icon:'🔓',title:'Perfil público',text:'O perfil do Instagram deve ser público para análise.'},
-              {icon:'🔄',title:'Dados atualizados',text:'Certifique-se que as informações da empresa estão atualizadas.'},
+              {icon:'',title:'Use o link completo',text:'Cole o link completo da ficha do Google Maps.'},
+              {icon:'',title:'Perfil público',text:'O perfil do Instagram deve ser público para análise.'},
+              {icon:'',title:'Dados atualizados',text:'Certifique-se que as informações da empresa estão atualizadas.'},
             ]:pg===2?[
-              {icon:'⭐',title:'Nota real',text:'Use a nota que aparece na ficha atual do Google.'},
-              {icon:'📸',title:'Fotos indexadas',text:'Conte apenas as fotos que aparecem na ficha pública.'},
-              {icon:'📍',title:'Posição de busca',text:'Pesquise sua categoria + cidade no Google Maps e veja qual posição aparece.'},
+              {icon:'',title:'Nota real',text:'Use a nota que aparece na ficha atual do Google.'},
+              {icon:'',title:'Fotos indexadas',text:'Conte apenas as fotos que aparecem na ficha pública.'},
+              {icon:'',title:'Posição de busca',text:'Pesquise sua categoria + cidade no Google Maps e veja qual posição aparece.'},
             ]:[
-              {icon:'📸',title:'Print do perfil',text:'Cole um print da tela inicial do Instagram para aparecer no PDF.'},
-              {icon:'✅',title:'Seja honesto',text:'Marque SIM/NÃO com base no que realmente existe no perfil hoje.'},
-              {icon:'📝',title:'Críticas automáticas',text:'Os itens marcados como NÃO geram críticas adaptadas ao tom escolhido.'},
+              {icon:'',title:'Print do perfil',text:'Cole um print da tela inicial do Instagram para aparecer no PDF.'},
+              {icon:'',title:'Seja honesto',text:'Marque SIM/NÃO com base no que realmente existe no perfil hoje.'},
+              {icon:'',title:'Críticas automáticas',text:'Os itens marcados como NÃO geram críticas adaptadas ao tom escolhido.'},
             ]
           }/>}
 
-        </div>
-      </div>
-    </div>
+        </div></div></div>
   );
 }
 
