@@ -416,6 +416,51 @@ Retorne SOMENTE JSON sem markdown:
     setIgLoad(false);
   };
 
+  const extrairFicha = async () => {
+    const url=form.fichaUrl.trim();
+    if(!url){setStatus({t:"err",m:"Cole o link da ficha Google."});return;}
+    setFichaLoad(true);
+    setStatus({t:"load",m:"Analisando negócio com IA..."});
+    try {
+      let query=url;
+      const mName=url.match(/maps\/place\/([^/@?&]+)/);
+      const mQ=url.match(/[?&]q=([^&]+)/);
+      if(mName) query=decodeURIComponent(mName[1].replace(/\+/g," ")).replace(/\s*maps\s*$/i,"").trim();
+      else if(mQ) query=decodeURIComponent(mQ[1].replace(/\+/g," ")).replace(/\s*maps\s*$/i,"").trim();
+      const mCoord=url.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+      const lat=mCoord?mCoord[1]:"";
+      const lng=mCoord?mCoord[2]:"";
+      const resp=await fetch("/api/claude",{
+        method:"POST",headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:600,
+          messages:[{role:"user",content:`Extraia dados do negócio: "${query}"${lat?` (coordenadas: ${lat},${lng})`:""}
+Retorne SOMENTE JSON sem markdown:
+{"nome":"nome do negócio","categoria":"tipo","especializacao":"especialidade se houver","cidade":"cidade","estado":"UF","nota":"","numAvals":"","numFotos":"","temSite":false,"temWhats":false,"postsAtivos":false,"frequencia":"nenhuma","site":"","whatsapp":"","posicao":""}`}]})});
+      const data=await resp.json();
+      const text=data.content?.filter(b=>b.type==="text").map(b=>b.text).join("")||"";
+      const s=text.indexOf("{"),e=text.lastIndexOf("}");
+      if(s<0)throw new Error("Resposta inválida");
+      const p=JSON.parse(text.slice(s,e+1));
+      const next={...form};
+      ["nome","categoria","especializacao","cidade","estado","nota","numAvals","numFotos","site","whatsapp","posicao"].forEach(k=>{if(p[k]!=null)next[k]=String(p[k]);});
+      if(typeof p.temSite==="boolean")next.temSite=p.temSite;
+      if(typeof p.temWhats==="boolean")next.temWhats=p.temWhats;
+      if(typeof p.postsAtivos==="boolean")next.postsAtivos=p.postsAtivos;
+      if(p.frequencia)next.frequencia=p.frequencia;
+      if(lat)next.placeLat=lat;
+      if(lng)next.placeLng=lng;
+      setForm(next);
+      const cat=(p.categoria||"").toLowerCase();
+      const found=Object.entries(NICHOS).find(([,v])=>cat.includes(v.label.toLowerCase().split(" ")[0]));
+      if(found)setNichoKey(found[0]);
+      setStatus({t:"warn",m:`✓ "${p.nome||query}" identificado. Confirme nota e avaliações com a ficha real.`});
+    } catch(e){
+      setStatus({t:"err",m:`Erro: ${e.message}`});
+    }
+    setFichaLoad(false);
+  };
+
+
   const buscarConcs = async () => {
     if(!form.categoria&&!form.cidade){setStatus({t:"err",m:"Preencha categoria e cidade na etapa 1."});return;}
     setConcLoad(true);
