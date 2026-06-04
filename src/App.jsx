@@ -656,9 +656,11 @@ Retorne SOMENTE JSON sem markdown:
   );
 
   const PageHead = ({title,sub}) => (
-    <div style={{marginBottom:"32px"}}>
-      <h1 style={{fontSize:"24px",fontWeight:700,color:V.txt,fontFamily:"'Sora',sans-serif",letterSpacing:"-.4px",margin:0,lineHeight:1.2}}>{title}</h1>
-      {sub&&<p style={{fontSize:"14px",color:V.txtSec,margin:"6px 0 0",lineHeight:1.6}}>{sub}</p>}
+    <div style={{marginBottom:"16px",paddingBottom:"14px",borderBottom:`1px solid ${V.border}`}}>
+      <div style={{display:"flex",alignItems:"baseline",gap:"10px"}}>
+        <h1 style={{fontSize:"16px",fontWeight:700,color:V.txt,fontFamily:"'Sora',sans-serif",letterSpacing:"-.2px",margin:0}}>{title}</h1>
+        {sub&&<span style={{fontSize:"12px",color:V.txtMut}}>{sub}</span>}
+      </div>
     </div>
   );
 
@@ -720,9 +722,10 @@ Retorne SOMENTE JSON sem markdown:
   };
 
   const YesNo = ({val,onYes,onNo}) => (
-    <div style={{display:"flex",borderRadius:"10px",overflow:"hidden",border:`1px solid ${V.border}`,width:"fit-content"}}>
-      <button onClick={onYes} style={{padding:"6px 16px",border:"none",background:val===true?V.ok:"transparent",color:val===true?"#fff":V.txtSec,fontSize:"11px",fontWeight:700,cursor:"pointer",transition:"all .15s"}}>SIM</button>
-      <button onClick={onNo}  style={{padding:"6px 16px",border:"none",background:val===false?V.err:"transparent",color:val===false?"#fff":V.txtSec,fontSize:"11px",fontWeight:700,cursor:"pointer",transition:"all .15s"}}>NÃO</button>
+    <div style={{display:"flex",borderRadius:"8px",overflow:"hidden",border:`1px solid ${V.border}`,flexShrink:0}}>
+      <button onClick={onYes} style={{width:"52px",height:"32px",border:"none",background:val===true?V.ok:"transparent",color:val===true?"#fff":V.txtSec,fontSize:"12px",fontWeight:600,cursor:"pointer",transition:"all .15s",fontFamily:"'Inter',sans-serif"}}>Sim</button>
+      <div style={{width:"1px",background:V.border,flexShrink:0}}/>
+      <button onClick={onNo}  style={{width:"52px",height:"32px",border:"none",background:val===false?V.err:"transparent",color:val===false?"#fff":V.txtSec,fontSize:"12px",fontWeight:600,cursor:"pointer",transition:"all .15s",fontFamily:"'Inter',sans-serif"}}>Não</button>
     </div>
   );
 
@@ -751,25 +754,19 @@ Retorne SOMENTE JSON sem markdown:
       <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 
       {/* ══ SIDEBAR ══════════════════════════════════════ */}
-      <aside style={{width:"230px",minHeight:"100vh",background:V.sidebar,display:"flex",flexDirection:"column",position:"fixed",top:0,left:0,zIndex:100,flexShrink:0}}>
+      <aside style={{width:"220px",height:"100vh",background:V.sidebar,display:"flex",flexDirection:"column",position:"fixed",top:0,left:0,zIndex:100,flexShrink:0,overflow:"hidden"}}>
 
-        {/* Logo */}
-        <div style={{padding:"28px 20px 20px",borderBottom:`1px solid ${V.sidebarBdr}`}}>
-          <div style={{display:"flex",alignItems:"center",gap:"12px"}}>
-            {logoUrl
-              ?<img src={logoUrl} style={{height:"38px",width:"38px",objectFit:"cover",borderRadius:"10px",flexShrink:0}}/>
-              :<div style={{flexShrink:0}}><LogoIcon size={80}/></div>
-            }
-            <div>
-              <div style={{fontSize:"15px",fontWeight:700,color:V.sidebarTxt,fontFamily:"'Sora',sans-serif",letterSpacing:"-.2px",lineHeight:1}}>{form.cslEmpresa||"SCentral"}</div>
-              <div style={{fontSize:"10px",color:V.sidebarMut,marginTop:"3px",letterSpacing:".04em"}}>Diagnóstico Digital</div>
-            </div>
-          </div>
+        {/* Logo — grande, centralizada, sem texto */}
+        <div style={{padding:"28px 20px 24px",borderBottom:`1px solid ${V.sidebarBdr}`,display:"flex",justifyContent:"center",alignItems:"center"}}>
+          {logoUrl
+            ?<img src={logoUrl} style={{height:"64px",width:"64px",objectFit:"cover",borderRadius:"16px",display:"block"}}/>
+            :<LogoIcon size={110}/>
+          }
         </div>
 
         {/* Toggle */}
-        <div style={{padding:"14px 16px",borderBottom:`1px solid ${V.sidebarBdr}`}}>
-          <div style={{display:"flex",background:"rgba(255,255,255,.06)",borderRadius:"10px",padding:"3px"}}>
+        <div style={{padding:"8px 12px",borderBottom:`1px solid ${V.sidebarBdr}`}}>
+          <div style={{display:"flex",background:"rgba(255,255,255,.06)",borderRadius:"8px",padding:"2px"}}>
             {["manual","auto"].map(m=>(
               <button key={m} onClick={()=>setP2modo(m)}
                 style={{flex:1,padding:"7px",fontSize:"11px",fontWeight:600,cursor:"pointer",border:"none",borderRadius:"8px",background:p2modo===m?V.accent:"transparent",color:p2modo===m?"#fff":V.sidebarMut,transition:"all .2s",letterSpacing:".03em",textTransform:"uppercase"}}>
@@ -780,27 +777,27 @@ Retorne SOMENTE JSON sem markdown:
         </div>
 
         {/* Projeto atual */}
-        {form.nome&&<div style={{padding:"14px 16px",borderBottom:`1px solid ${V.sidebarBdr}`}}>
-          <div style={{fontSize:"10px",color:V.sidebarMut,letterSpacing:".1em",textTransform:"uppercase",marginBottom:"8px",fontWeight:600}}>Projeto atual</div>
-          <div style={{display:"flex",alignItems:"center",gap:"8px",padding:"10px 12px",background:"rgba(255,255,255,.05)",borderRadius:"12px",border:`1px solid ${V.sidebarBdr}`}}>
-            <div style={{width:"7px",height:"7px",borderRadius:"50%",background:V.ok,flexShrink:0,boxShadow:`0 0 6px ${V.ok}`}}/>
-            <div style={{overflow:"hidden"}}>
+        {form.nome&&<div style={{padding:"8px 12px",borderBottom:`1px solid ${V.sidebarBdr}`}}>
+          <div style={{display:"flex",alignItems:"center",gap:"8px",padding:"8px 10px",background:"rgba(255,255,255,.05)",borderRadius:"8px",border:`1px solid ${V.sidebarBdr}`}}>
+            <div style={{width:"6px",height:"6px",borderRadius:"50%",background:V.ok,flexShrink:0,boxShadow:`0 0 5px ${V.ok}`}}/>
+            <div style={{overflow:"hidden",flex:1}}>
               <div style={{fontSize:"12px",fontWeight:600,color:V.sidebarTxt,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{form.nome}</div>
-              {form.cidade&&<div style={{fontSize:"10px",color:V.sidebarMut,marginTop:"1px"}}>{form.cidade}{form.estado?", "+form.estado:""}</div>}
+              {form.cidade&&<div style={{fontSize:"10px",color:V.sidebarMut}}>{form.cidade}{form.estado?", "+form.estado:""}</div>}
             </div>
           </div>
         </div>}
 
-        {/* Nav */}
-        <nav style={{flex:1,padding:"12px 10px",overflowY:"auto"}}>
+        {/* Nav — scroll próprio, hierarquia forte */}
+        <nav style={{flex:1,padding:"8px 10px",overflowY:"auto",overflowX:"hidden"}}>
           {groups.map(g=>(
-            <div key={g} style={{marginBottom:"20px"}}>
-              <div style={{fontSize:"9px",fontWeight:700,color:V.sidebarMut,letterSpacing:".14em",padding:"0 8px 6px",textTransform:"uppercase"}}>{g}</div>
+            <div key={g} style={{marginBottom:"4px"}}>
+              <div style={{fontSize:"9px",fontWeight:700,color:V.sidebarMut,letterSpacing:".16em",padding:"10px 10px 4px",textTransform:"uppercase"}}>{g}</div>
               {navItems.filter(n=>n.group===g).map(n=>(
                 <div key={n.id} onClick={()=>setPg(n.id)}
-                  style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"9px 12px",borderRadius:"10px",cursor:"pointer",background:pg===n.id?V.accent+"20":"transparent",marginBottom:"2px",border:`1px solid ${pg===n.id?V.accent+"40":"transparent"}`,transition:"all .15s"}}>
-                  <span style={{fontSize:"13px",fontWeight:pg===n.id?600:400,color:pg===n.id?"#fff":V.sidebarSub}}>{n.label}</span>
-                  {n.opt&&<span style={{fontSize:"9px",color:V.sidebarMut,fontStyle:"italic"}}>opt</span>}
+                  style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"8px 10px",borderRadius:"8px",cursor:"pointer",background:pg===n.id?V.accent:"transparent",marginBottom:"1px",transition:"all .15s",position:"relative"}}>
+                  {pg===n.id&&<div style={{position:"absolute",left:0,top:"50%",transform:"translateY(-50%)",width:"3px",height:"18px",borderRadius:"0 2px 2px 0",background:"rgba(255,255,255,.5)"}}/>}
+                  <span style={{fontSize:"13px",fontWeight:pg===n.id?600:400,color:pg===n.id?"#fff":V.sidebarSub,paddingLeft:pg===n.id?"6px":"0",transition:"all .15s"}}>{n.label}</span>
+                  {n.opt&&<span style={{fontSize:"9px",color:V.sidebarMut,background:"rgba(255,255,255,.06)",padding:"1px 5px",borderRadius:"4px"}}>opt</span>}
                 </div>
               ))}
             </div>
@@ -808,13 +805,13 @@ Retorne SOMENTE JSON sem markdown:
         </nav>
 
         {/* Footer */}
-        <div style={{padding:"14px 16px",borderTop:`1px solid ${V.sidebarBdr}`}}>
-          <BtnP onClick={()=>setPg(8)} style={{width:"100%",justifyContent:"center",padding:"10px",fontSize:"12px"}}>
-            Editar & PDF
-          </BtnP>
-          {form.cslNome&&<div style={{display:"flex",alignItems:"center",gap:"10px",marginTop:"12px",padding:"8px 4px"}}>
-            <div style={{width:"28px",height:"28px",borderRadius:"50%",background:V.accent+"33",border:`1px solid ${V.accent}55`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"12px",fontWeight:700,color:V.accent,flexShrink:0}}>{form.cslNome[0]}</div>
-            <div style={{overflow:"hidden"}}>
+        <div style={{padding:"12px 12px",borderTop:`1px solid ${V.sidebarBdr}`,flexShrink:0}}>
+          <button onClick={()=>setPg(8)} style={{width:"100%",padding:"9px",borderRadius:"8px",border:"none",background:V.accent,color:"#fff",fontSize:"12px",fontWeight:600,cursor:"pointer",fontFamily:"'Inter',sans-serif",marginBottom:form.cslNome?"10px":"0"}}>
+            Gerar PDF
+          </button>
+          {form.cslNome&&<div style={{display:"flex",alignItems:"center",gap:"8px",padding:"6px 4px"}}>
+            <div style={{width:"24px",height:"24px",borderRadius:"50%",background:V.accent+"33",border:`1px solid ${V.accent}55`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"11px",fontWeight:700,color:V.accent,flexShrink:0}}>{form.cslNome[0]}</div>
+            <div style={{overflow:"hidden",flex:1}}>
               <div style={{fontSize:"12px",fontWeight:500,color:V.sidebarTxt,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{form.cslNome}</div>
               <div style={{fontSize:"10px",color:V.sidebarMut}}>Admin</div>
             </div>
@@ -826,7 +823,7 @@ Retorne SOMENTE JSON sem markdown:
       <div style={{marginLeft:"230px",flex:1,display:"flex",flexDirection:"column"}}>
 
         {/* Header */}
-        <header style={{background:V.surface,borderBottom:`1px solid ${V.border}`,padding:"0 40px",height:"60px",display:"flex",alignItems:"center",justifyContent:"space-between",position:"sticky",top:0,zIndex:99,boxShadow:V.shadow}}>
+        <header style={{background:V.surface,borderBottom:`1px solid ${V.border}`,padding:"0 28px",height:"48px",display:"flex",alignItems:"center",justifyContent:"space-between",position:"sticky",top:0,zIndex:99,boxShadow:V.shadow}}>
           <div>
             <div style={{fontSize:"16px",fontWeight:600,color:V.txt,fontFamily:"'Sora',sans-serif"}}>
               {p2modo==="auto"?"Diagnóstico Automático":navItems.find(n=>n.id===pg)?.label||"Diagnóstico"}
@@ -847,7 +844,7 @@ Retorne SOMENTE JSON sem markdown:
         </header>
 
         {/* Content */}
-        <div style={{flex:1,padding:"36px 40px",display:"flex",gap:"28px",alignItems:"flex-start"}}>
+        <div style={{flex:1,padding:"28px 32px 28px 28px",display:"flex",gap:"24px",alignItems:"flex-start"}}>
 
           {/* Main col */}
           <div style={{flex:1,minWidth:0}}>
