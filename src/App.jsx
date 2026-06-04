@@ -370,10 +370,7 @@ export default function App() {
   // Verifica se seção tem dados para gerar no PDF
 
   const setNicho = key => { setNichoKey(key); setF("categoria",NICHOS[key].label); };
-  const txAtual = () => textos || textosPadrao({...form,nichoKey}, concs);
-  const setTx = (k,v) => setTextos(t=>({...(t||textosPadrao({...form,nichoKey},concs)),[k]:v}));
 
-  const loadLogo = e => { const f=e.target.files[0]; if(!f)return; const r=new FileReader(); r.onload=ev=>setLogoUrl(ev.target.result); r.readAsDataURL(f); };
 
   const salvarPreset = () => {
     if(!presetName.trim()) return;
