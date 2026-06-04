@@ -412,7 +412,7 @@ export default function App() {
         method:"POST",
         headers:{"Content-Type":"application/json"},
         body:JSON.stringify({
-          model:"claude-sonnet-4-20250514",
+          model:"claude-sonnet-4-6",
           max_tokens:800,
           messages:[{role:"user",content:`Você é especialista em negócios locais brasileiros.
 
@@ -479,7 +479,7 @@ Se não conhecer o negócio específico, use benchmarks típicos do segmento na 
       
       const resp=await fetch("/api/claude",{method:"POST",headers:{"Content-Type":"application/json"},
         body:JSON.stringify({
-          model:"claude-sonnet-4-20250514",
+          model:"claude-sonnet-4-6",
           max_tokens:900,
           messages:[{role:"user",content:`Você é um especialista em marketing digital brasileiro.
 Analise o perfil do Instagram @${handle} do segmento "${form.categoria||"negócio local"}" em ${form.cidade||"Brasil"}.
@@ -516,7 +516,8 @@ Retorne SOMENTE JSON sem markdown:
       setIg(next);
       setStatus({t:"ok",m:`✓ Perfil @${handle} analisado!`});
     } catch(e){
-      setStatus({t:"err",m:"Não foi possível analisar. Preencha manualmente."});
+      console.error("extrairIG error:", e);
+      setStatus({t:"err",m:`Erro: ${e.message||"Tente novamente."}`});
     }
     setIgLoad(false);
   };
@@ -530,7 +531,7 @@ Retorne SOMENTE JSON sem markdown:
         method:"POST",
         headers:{"Content-Type":"application/json"},
         body:JSON.stringify({
-          model:"claude-sonnet-4-20250514",
+          model:"claude-sonnet-4-6",
           max_tokens:1000,
           messages:[{role:"user",content:`Liste os 5 principais concorrentes reais de "${form.categoria}${form.especializacao?" - "+form.especializacao:""}" em ${form.cidade}, ${form.estado||"Brasil"}.
 
@@ -660,7 +661,7 @@ ${form.promptExtra?"INSTRUÇÃO EXTRA: "+form.promptExtra:""}
 Gere SOMENTE as seções que têm dados disponíveis. Use <strong> para negrito.
 Retorne SOMENTE JSON sem markdown:
 {"tituloIntro":"máx 6 palavras","tituloAnalise":"máx 6 palavras","tituloConc":"máx 6 palavras","tituloIg":"máx 6 palavras","tituloProx":"máx 6 palavras","intro":"3-4 frases","problema":"3-4 frases","dados":"2-3 frases","diferenciais":"2-3 frases","igAnalise":"3-4 frases","proximos":"3-4 frases"}`}];
-      const resp=await fetch("/api/claude",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1800,messages:[{role:"user",content:msgContent}]})});
+      const resp=await fetch("/api/claude",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:1800,messages:[{role:"user",content:msgContent}]})});
       const data=await resp.json();
       const text=data.content?.filter(b=>b.type==="text").map(b=>b.text).join("")||"";
       const s=text.indexOf("{"),e=text.lastIndexOf("}");
