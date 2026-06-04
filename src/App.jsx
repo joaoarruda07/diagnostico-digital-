@@ -802,7 +802,7 @@ Retorne SOMENTE JSON sem markdown:
       <aside style={{width:"200px",height:"100vh",background:"#000",display:"flex",flexDirection:"column",position:"fixed",top:0,left:0,zIndex:100,flexShrink:0}}>
 
         {/* Logo */}
-        <div style={{padding:"16px 12px 12px",borderBottom:"1px solid rgba(255,255,255,.08)",background:"#000"}}>
+        <div style={{padding:"10px 14px 8px",borderBottom:"1px solid rgba(255,255,255,.08)",background:"#000"}}>
           {logoUrl
             ?<img src={logoUrl} style={{width:"100%",height:"auto",objectFit:"contain",display:"block"}}/>
             :<LogoIcon size={168} fill={true}/>
@@ -810,11 +810,11 @@ Retorne SOMENTE JSON sem markdown:
         </div>
 
         {/* Toggle Manual / Auto IA */}
-        <div style={{padding:"10px 10px",borderBottom:"1px solid rgba(255,255,255,.08)"}}>
+        <div style={{padding:"7px 8px",borderBottom:"1px solid rgba(255,255,255,.08)"}}>
           <div style={{display:"flex",background:"rgba(255,255,255,.06)",borderRadius:"10px",padding:"3px",gap:"2px"}}>
             {["manual","auto"].map(m=>(
               <button key={m} onClick={()=>setP2modo(m)}
-                style={{flex:1,padding:"7px 4px",fontSize:"11px",fontWeight:700,cursor:"pointer",border:"none",borderRadius:"8px",background:p2modo===m?V.accent:"transparent",color:p2modo===m?"#fff":"rgba(255,255,255,.4)",transition:"all .2s",letterSpacing:".03em",textTransform:"uppercase",position:"relative",display:"flex",alignItems:"center",justifyContent:"center",gap:"4px"}}>
+                style={{flex:1,padding:"5px 4px",fontSize:"10px",fontWeight:700,cursor:"pointer",border:"none",borderRadius:"8px",background:p2modo===m?V.accent:"transparent",color:p2modo===m?"#fff":"rgba(255,255,255,.4)",transition:"all .2s",letterSpacing:".03em",textTransform:"uppercase",position:"relative",display:"flex",alignItems:"center",justifyContent:"center",gap:"4px"}}>
                 {m==="auto"&&<span style={{fontSize:"14px",lineHeight:1}}>✦</span>}
                 {m==="manual"?"Manual":"Auto IA"}
                 {m==="auto"&&p2modo==="auto"&&<span style={{position:"absolute",top:"-3px",right:"-3px",fontSize:"10px",lineHeight:1}}>★</span>}
@@ -824,8 +824,8 @@ Retorne SOMENTE JSON sem markdown:
         </div>
 
         {/* Projeto atual */}
-        {form.nome&&<div style={{padding:"8px 10px",borderBottom:"1px solid rgba(255,255,255,.08)"}}>
-          <div style={{display:"flex",alignItems:"center",gap:"8px",padding:"7px 10px",background:"rgba(255,255,255,.05)",borderRadius:"8px"}}>
+        {form.nome&&<div style={{padding:"5px 8px",borderBottom:"1px solid rgba(255,255,255,.08)"}}>
+          <div style={{display:"flex",alignItems:"center",gap:"8px",padding:"5px 8px",background:"rgba(255,255,255,.05)",borderRadius:"8px"}}>
             <div style={{width:"6px",height:"6px",borderRadius:"50%",background:V.ok,flexShrink:0,boxShadow:`0 0 5px ${V.ok}`}}/>
             <div style={{overflow:"hidden",flex:1}}>
               <div style={{fontSize:"11px",fontWeight:600,color:"#fff",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{form.nome}</div>
@@ -854,13 +854,13 @@ Retorne SOMENTE JSON sem markdown:
             const groups = [...new Set(navItems.map(n=>n.group))];
             return groups.map(g=>(
               <div key={g} style={{marginBottom:"4px"}}>
-                <div style={{fontSize:"9px",fontWeight:700,color:"rgba(255,255,255,.25)",letterSpacing:".16em",padding:"8px 8px 3px",textTransform:"uppercase"}}>{g}</div>
+                <div style={{fontSize:"9px",fontWeight:700,color:"rgba(255,255,255,.25)",letterSpacing:".14em",padding:"6px 8px 2px",textTransform:"uppercase"}}>{g}</div>
                 {navItems.filter(n=>n.group===g).map(n=>(
                   <div key={n.id} onClick={()=>setPg(n.id)}
-                    style={{display:"flex",alignItems:"center",gap:"9px",padding:"7px 10px",borderRadius:"8px",cursor:"pointer",background:pg===n.id?"rgba(139,92,246,.15)":"transparent",marginBottom:"1px",border:`1px solid ${pg===n.id?"rgba(139,92,246,.35)":"transparent"}`,transition:"all .15s",position:"relative"}}>
+                    style={{display:"flex",alignItems:"center",gap:"9px",padding:"5px 8px",borderRadius:"7px",cursor:"pointer",background:pg===n.id?"rgba(139,92,246,.15)":"transparent",marginBottom:"1px",border:`1px solid ${pg===n.id?"rgba(139,92,246,.35)":"transparent"}`,transition:"all .15s",position:"relative"}}>
                     {pg===n.id&&<div style={{position:"absolute",left:0,top:"50%",transform:"translateY(-50%)",width:"3px",height:"16px",borderRadius:"0 2px 2px 0",background:V.accent}}/>}
                     <span style={{color:pg===n.id?V.accent:"rgba(255,255,255,.35)",display:"flex",alignItems:"center",flexShrink:0}}>{icons[n.id]||<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><circle cx="12" cy="12" r="10"/></svg>}</span>
-                    <span style={{fontSize:"12px",fontWeight:pg===n.id?700:400,color:pg===n.id?"#fff":"rgba(255,255,255,.55)",fontFamily:"'Plus Jakarta Sans',sans-serif"}}>{n.label}</span>
+                    <span style={{fontSize:"11px",fontWeight:pg===n.id?600:400,color:pg===n.id?"#fff":"rgba(255,255,255,.5)",fontFamily:"'Plus Jakarta Sans',sans-serif"}}>{n.label}</span>
                   </div>
                 ))}
               </div>
@@ -869,16 +869,16 @@ Retorne SOMENTE JSON sem markdown:
         </nav>
 
         {/* Botão PDF */}
-        <div style={{padding:"8px 10px",borderTop:"1px solid rgba(255,255,255,.08)"}}>
-          <button onClick={()=>setPg(8)} style={{width:"100%",padding:"9px",borderRadius:"9px",border:"none",background:V.accent,color:"#fff",fontSize:"12px",fontWeight:700,cursor:"pointer",fontFamily:"'Inter',sans-serif",display:"flex",alignItems:"center",justifyContent:"center",gap:"6px"}}>
+        <div style={{padding:"6px 8px",borderTop:"1px solid rgba(255,255,255,.08)"}}>
+          <button onClick={()=>setPg(8)} style={{width:"100%",padding:"7px",borderRadius:"8px",border:"none",background:V.accent,color:"#fff",fontSize:"12px",fontWeight:700,cursor:"pointer",fontFamily:"'Inter',sans-serif",display:"flex",alignItems:"center",justifyContent:"center",gap:"6px"}}>
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
             Gerar PDF
           </button>
         </div>
 
         {/* Avatar / usuário */}
-        <div style={{padding:"10px 12px",borderTop:"1px solid rgba(255,255,255,.08)",display:"flex",alignItems:"center",gap:"10px",background:"rgba(255,255,255,.02)"}}>
-          <div style={{width:"32px",height:"32px",borderRadius:"50%",background:`linear-gradient(135deg,${V.accent},#A855F7)`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"13px",fontWeight:700,color:"#fff",flexShrink:0}}>
+        <div style={{padding:"6px 8px",borderTop:"1px solid rgba(255,255,255,.08)",display:"flex",alignItems:"center",gap:"8px",background:"rgba(255,255,255,.02)"}}>
+          <div style={{width:"28px",height:"28px",borderRadius:"50%",background:`linear-gradient(135deg,${V.accent},#A855F7)`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"13px",fontWeight:700,color:"#fff",flexShrink:0}}>
             {form.cslNome?form.cslNome[0].toUpperCase():"U"}
           </div>
           <div style={{flex:1,overflow:"hidden"}}>
@@ -1282,7 +1282,7 @@ Retorne SOMENTE JSON sem markdown:
                 <div style={{display:"flex",gap:"10px",flexWrap:"wrap",marginBottom:"20px"}}>
                   {[["#7C3AED"],["#2563EB"],["#0D9488"],["#C9A84C"],["#DC2626"],["#0891B2"],["#475569"]].map(([c1],i)=>(
                     <div key={i} onClick={()=>setForm(f=>({...f,cor1:c1}))}
-                      style={{width:"32px",height:"32px",borderRadius:"50%",background:c1,cursor:"pointer",border:form.cor1===c1?`3px solid ${V.txt}`:"3px solid transparent",transform:form.cor1===c1?"scale(1.15)":"scale(1)",transition:".15s",boxShadow:form.cor1===c1?`0 2px 10px ${c1}66`:""}}/>
+                      style={{width:"28px",height:"28px",borderRadius:"50%",background:c1,cursor:"pointer",border:form.cor1===c1?`3px solid ${V.txt}`:"3px solid transparent",transform:form.cor1===c1?"scale(1.15)":"scale(1)",transition:".15s",boxShadow:form.cor1===c1?`0 2px 10px ${c1}66`:""}}/>
                   ))}
                   <input type="color" value={form.cor1} onChange={e=>setForm(f=>({...f,cor1:e.target.value}))} style={{width:"32px",height:"32px",border:"none",borderRadius:"50%",cursor:"pointer",padding:0}}/>
                 </div>
