@@ -392,89 +392,77 @@ export default function App() {
 
   const extrairFicha = async () => {
     const url=form.fichaUrl.trim();
-    if(!url){setStatus({t:"err",m:"Cole o link da ficha Google."});return;}
+    if(!url){setStatus({t:"err",m:"Cole o link ou nome do negócio."});return;}
     setFichaLoad(true);
-    setStatus({t:"load",m:"Buscando ficha no Google Maps..."});
+    setStatus({t:"load",m:"Analisando negócio com IA..."});
     try {
-      // 1. Extrai nome do lugar da URL
-      let query="";
+      // Extrai nome da URL se for link do Maps
+      let query=url;
       const mName=url.match(/maps\/place\/([^/@?&]+)/);
-      if(mName) query=decodeURIComponent(mName[1].replace(/\+/g," "));
-      
-      // 2. Extrai coordenadas se disponível
-      const mCoord=url.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
-      const lat=mCoord?mCoord[1]:null;
-      const lng=mCoord?mCoord[2]:null;
-      
-      // 3. Se tem coordenadas, busca pelo nome + localização (mais preciso)
-      if(!query){
-        const mQ=url.match(/[?&]q=([^&]+)/);
-        if(mQ) query=decodeURIComponent(mQ[1].replace(/\+/g," ")).replace(/\s*maps\s*$/i,"").trim();
-      }
-      if(!query) throw new Error("Não foi possível extrair o nome da URL");
+      const mQ=url.match(/[?&]q=([^&]+)/);
+      if(mName) query=decodeURIComponent(mName[1].replace(/\+/g," ")).replace(/\s*maps\s*$/i,"").trim();
+      else if(mQ) query=decodeURIComponent(mQ[1].replace(/\+/g," ")).replace(/\s*maps\s*$/i,"").trim();
 
-      // 4. Busca na Places API
-      const searchQuery = lat&&lng ? `${query}` : query;
-      const r1=await fetch("/api/places",{
+      // Extrai coordenadas se disponível
+      const mCoord=url.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+      const lat=mCoord?mCoord[1]:"";
+      const lng=mCoord?mCoord[2]:"";
+
+      const resp=await fetch("/api/claude",{
         method:"POST",
         headers:{"Content-Type":"application/json"},
         body:JSON.stringify({
-          action:"search",
-          query:searchQuery,
-          lat:lat?parseFloat(lat):null,
-          lng:lng?parseFloat(lng):null,
-        })
-      });
-      const d1=await r1.json();
-      const place=d1.places?.[0];
-      if(!place) throw new Error("Negócio não encontrado na Places API");
+          model:"claude-sonnet-4-20250514",
+          max_tokens:800,
+          messages:[{role:"user",content:`Você é especialista em negócios locais brasileiros.
 
-      // 5. Busca detalhes completos
-      const r2=await fetch("/api/places",{
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({action:"details",placeId:place.id})
-      });
-      const det=await r2.json();
+Busque informações sobre este negócio no Google Maps: "${query}"
+${lat&&lng?`Localização aproximada: ${lat}, ${lng}`:""}
 
-      // 6. Preenche o form
+Com base no seu conhecimento, retorne SOMENTE JSON sem markdown:
+{
+  "nome": "nome completo do negócio",
+  "categoria": "tipo de negócio",
+  "especializacao": "especialidade se houver",
+  "cidade": "cidade",
+  "estado": "UF",
+  "nota": "nota de 0 a 5 com uma casa decimal",
+  "numAvals": "número estimado de avaliações",
+  "numFotos": "número estimado de fotos",
+  "temSite": true ou false,
+  "temWhats": true ou false,
+  "postsAtivos": true ou false,
+  "frequencia": "nenhuma/raramente/mensal/semanal/diaria",
+  "site": "url do site se souber",
+  "whatsapp": "telefone se souber",
+  "posicao": "posição estimada nas buscas locais 1-20"
+}
+
+Se não conhecer o negócio específico, use benchmarks típicos do segmento na região.`}]})});
+      const data=await resp.json();
+      const text=data.content?.filter(b=>b.type==="text").map(b=>b.text).join("")||"";
+      const s=text.indexOf("{"),e=text.lastIndexOf("}");
+      if(s<0) throw new Error();
+      const p=JSON.parse(text.slice(s,e+1));
       const next={...form,nichoKey};
-      next.nome=det.displayName?.text||place.displayName?.text||query;
-      next.nota=String(det.rating||place.rating||"");
-      next.numAvals=String(det.userRatingCount||place.userRatingCount||"");
-      next.numFotos=String(det.photos?.length||place.photos?.length||"");
-      next.site=det.websiteUri||"";
-      next.whatsapp=det.nationalPhoneNumber||"";
-      next.temSite=!!(det.websiteUri);
-      next.temWhats=!!(det.nationalPhoneNumber);
-      next.placeLat=lat||String(det.location?.latitude||"");
-      next.placeLng=lng||String(det.location?.longitude||"");
-      next.placeId=place.id||"";
-
-      // Extrai cidade do endereço
-      const addr=det.formattedAddress||place.formattedAddress||"";
-      if(addr){
-        const parts=addr.split(",");
-        if(parts.length>=3){
-          const cf=(parts[parts.length-2]||"").trim();
-          const cp=cf.split("-");
-          next.cidade=(cp[0]||"").trim();
-          next.estado=(cp[1]||"").trim();
-        }
-      }
-      
+      ["nome","categoria","especializacao","cidade","estado","nota","numAvals","numFotos","site","whatsapp","posicao"].forEach(k=>{
+        if(p[k]!=null&&String(p[k]).trim()) next[k]=String(p[k]);
+      });
+      if(typeof p.temSite==="boolean") next.temSite=p.temSite;
+      if(typeof p.temWhats==="boolean") next.temWhats=p.temWhats;
+      if(typeof p.postsAtivos==="boolean") next.postsAtivos=p.postsAtivos;
+      if(p.frequencia) next.frequencia=p.frequencia;
+      if(lat) next.placeLat=lat;
+      if(lng) next.placeLng=lng;
       if(next.nota||next.numAvals) next.score=String(calcScore(next));
       setForm(next);
-
-      // Auto-detecta nicho
-      const types=det.types||place.types||[];
-      for(const [k,vals] of Object.entries(NICHO_PLACE_TYPES)){
-        if(vals.some(t=>types.includes(t))){setNichoKey(k);break;}
-      }
-      setStatus({t:"ok",m:`✓ "${next.nome}" carregado! Nota: ${next.nota}★ · ${next.numAvals} avaliações`});
+      // Auto nicho
+      const cat=(p.categoria||"").toLowerCase();
+      const found=Object.entries(NICHOS).find(([,v])=>cat.includes(v.label.toLowerCase().split(" ")[0]));
+      if(found) setNichoKey(found[0]);
+      setStatus({t:"ok",m:`✓ "${next.nome}" carregado! Confira e ajuste se necessário.`});
     } catch(e){
-      setStatus({t:"err",m:"Não foi possível extrair. Verifique se a chave Google está configurada."});
-      console.error(e);
+      setStatus({t:"err",m:"Não foi possível extrair. Preencha manualmente."});
     }
     setFichaLoad(false);
   };
@@ -534,50 +522,33 @@ Retorne SOMENTE JSON sem markdown:
   };
 
   const buscarConcs = async () => {
-    if(!form.categoria&&!form.cidade){setStatus({t:"err",m:"Preencha categoria e cidade."});return;}
+    if(!form.categoria&&!form.cidade){setStatus({t:"err",m:"Preencha categoria e cidade na etapa 1."});return;}
     setConcLoad(true);
-    setStatus({t:"load",m:"Buscando concorrentes no Google Maps..."});
+    setStatus({t:"load",m:"Buscando concorrentes com IA..."});
     try {
-      let results=[];
-      // Se temos lat/lng da ficha, usa Nearby Search
-      if(form.placeLat&&form.placeLng){
-        const types=NICHO_PLACE_TYPES[nichoKey]||["establishment"];
-        const r=await fetch("/api/places",{method:"POST",headers:{"Content-Type":"application/json"},
-          body:JSON.stringify({action:"nearby",lat:form.placeLat,lng:form.placeLng,types})});
-        const d=await r.json();
-        results=d.places||[];
-      } else {
-        // Fallback: busca textual
-        const q=`${form.especializacao||form.categoria} em ${form.cidade}`;
-        const r=await fetch("/api/places",{method:"POST",headers:{"Content-Type":"application/json"},
-          body:JSON.stringify({action:"search",query:q})});
-        const d=await r.json();
-        results=d.places||[];
-        // Se não achou, tenta só categoria
-        if(!results.length){
-          const r2=await fetch("/api/places",{method:"POST",headers:{"Content-Type":"application/json"},
-            body:JSON.stringify({action:"search",query:`${form.categoria} ${form.cidade}`})});
-          const d2=await r2.json();
-          results=d2.places||[];
-        }
-      }
-      // Filtra o próprio negócio e mapeia
-      const concsFormatted=results
-        .filter(p=>!form.nome||!p.displayName?.text?.toLowerCase().includes(form.nome.toLowerCase().slice(0,10)))
-        .slice(0,5)
-        .map((p,i)=>({
-          posicao:i+1,
-          nome:p.displayName?.text||"",
-          nota:String(p.rating||"?"),
-          avals:String(p.userRatingCount||"?"),
-          diferencial:p.formattedAddress||"",
-          manual:false,
-          placeId:p.id,
-        }));
-      setConcs([...concsFormatted,...concs.filter(c=>c.manual)]);
-      setStatus({t:"ok",m:`✓ ${concsFormatted.length} concorrentes encontrados no Google Maps!`});
+      const resp=await fetch("/api/claude",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({
+          model:"claude-sonnet-4-20250514",
+          max_tokens:1000,
+          messages:[{role:"user",content:`Liste os 5 principais concorrentes reais de "${form.categoria}${form.especializacao?" - "+form.especializacao:""}" em ${form.cidade}, ${form.estado||"Brasil"}.
+
+Use seu conhecimento sobre negócios locais desta cidade. Liste estabelecimentos que realmente existem ou são típicos deste mercado.
+
+Retorne SOMENTE JSON sem markdown:
+{"concorrentes":[
+  {"posicao":1,"nome":"Nome Real","nota":"4.8","avals":"320","diferencial":"principal diferencial em 1 frase curta"}
+]}`}]})});
+      const data=await resp.json();
+      const text=data.content?.filter(b=>b.type==="text").map(b=>b.text).join("")||"";
+      const s=text.indexOf("{"),e=text.lastIndexOf("}");
+      const parsed=JSON.parse(text.slice(s,e+1));
+      const novos=(parsed.concorrentes||[]).map(c=>({...c,manual:false}));
+      setConcs([...novos,...concs.filter(c=>c.manual)]);
+      setStatus({t:"ok",m:`✓ ${novos.length} concorrentes encontrados!`});
     } catch(e){
-      setStatus({t:"err",m:"Erro ao buscar. Verifique a chave da API."});
+      setStatus({t:"err",m:"Erro. Adicione manualmente."});
     }
     setConcLoad(false);
   };
