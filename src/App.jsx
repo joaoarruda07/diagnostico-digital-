@@ -799,69 +799,95 @@ Retorne SOMENTE JSON sem markdown:
       <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Sora:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 
       {/* ══ SIDEBAR ══════════════════════════════════════ */}
-      <aside style={{width:"200px",height:"100vh",background:V.sidebar,display:"flex",flexDirection:"column",position:"fixed",top:0,left:0,zIndex:100,flexShrink:0}}>
+      <aside style={{width:"200px",height:"100vh",background:"#000",display:"flex",flexDirection:"column",position:"fixed",top:0,left:0,zIndex:100,flexShrink:0}}>
 
         {/* Logo */}
-        <div style={{padding:"16px 16px 12px",borderBottom:`1px solid ${V.sidebarBdr}`,background:"#000"}}>
+        <div style={{padding:"16px 12px 12px",borderBottom:"1px solid rgba(255,255,255,.08)",background:"#000"}}>
           {logoUrl
             ?<img src={logoUrl} style={{width:"100%",height:"auto",objectFit:"contain",display:"block"}}/>
             :<LogoIcon size={168} fill={true}/>
           }
         </div>
 
-        {/* Toggle */}
-        <div style={{padding:"6px 10px",borderBottom:`1px solid ${V.sidebarBdr}`}}>
-          <div style={{display:"flex",background:"rgba(255,255,255,.06)",borderRadius:"8px",padding:"2px"}}>
+        {/* Toggle Manual / Auto IA */}
+        <div style={{padding:"10px 10px",borderBottom:"1px solid rgba(255,255,255,.08)"}}>
+          <div style={{display:"flex",background:"rgba(255,255,255,.06)",borderRadius:"10px",padding:"3px",gap:"2px"}}>
             {["manual","auto"].map(m=>(
-              <button key={m} onClick={()=>{setP2modo(m);}}
-                style={{flex:1,padding:"5px",fontSize:"10px",fontWeight:600,cursor:"pointer",border:"none",borderRadius:"8px",background:p2modo===m?V.accent:"transparent",color:p2modo===m?"#fff":V.sidebarMut,transition:"all .2s",letterSpacing:".03em",textTransform:"uppercase"}}>
-                {m==="auto"?"Auto IA":"Manual"}
+              <button key={m} onClick={()=>setP2modo(m)}
+                style={{flex:1,padding:"7px 4px",fontSize:"11px",fontWeight:700,cursor:"pointer",border:"none",borderRadius:"8px",background:p2modo===m?V.accent:"transparent",color:p2modo===m?"#fff":"rgba(255,255,255,.4)",transition:"all .2s",letterSpacing:".03em",textTransform:"uppercase",position:"relative",display:"flex",alignItems:"center",justifyContent:"center",gap:"4px"}}>
+                {m==="auto"&&<span style={{fontSize:"14px",lineHeight:1}}>✦</span>}
+                {m==="manual"?"Manual":"Auto IA"}
+                {m==="auto"&&p2modo==="auto"&&<span style={{position:"absolute",top:"-3px",right:"-3px",fontSize:"10px",lineHeight:1}}>★</span>}
               </button>
             ))}
           </div>
         </div>
 
         {/* Projeto atual */}
-        {form.nome&&<div style={{padding:"6px 10px",borderBottom:`1px solid ${V.sidebarBdr}`}}>
-          <div style={{display:"flex",alignItems:"center",gap:"8px",padding:"8px 10px",background:"rgba(255,255,255,.05)",borderRadius:"8px",border:`1px solid ${V.sidebarBdr}`}}>
+        {form.nome&&<div style={{padding:"8px 10px",borderBottom:"1px solid rgba(255,255,255,.08)"}}>
+          <div style={{display:"flex",alignItems:"center",gap:"8px",padding:"7px 10px",background:"rgba(255,255,255,.05)",borderRadius:"8px"}}>
             <div style={{width:"6px",height:"6px",borderRadius:"50%",background:V.ok,flexShrink:0,boxShadow:`0 0 5px ${V.ok}`}}/>
             <div style={{overflow:"hidden",flex:1}}>
-              <div style={{fontSize:"12px",fontWeight:600,color:V.sidebarTxt,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{form.nome}</div>
-              {form.cidade&&<div style={{fontSize:"10px",color:V.sidebarMut}}>{form.cidade}{form.estado?", "+form.estado:""}</div>}
+              <div style={{fontSize:"11px",fontWeight:600,color:"#fff",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{form.nome}</div>
+              {form.cidade&&<div style={{fontSize:"10px",color:"rgba(255,255,255,.3)"}}>{form.cidade}{form.estado?", "+form.estado:""}</div>}
             </div>
           </div>
         </div>}
 
-        {/* Nav — scroll próprio, hierarquia forte */}
-        <nav style={{flex:1,padding:"4px 8px",overflow:"visible"}}>
-          {groups.map(g=>(
-            <div key={g} style={{marginBottom:"2px"}}>
-              <div style={{fontSize:"10px",fontWeight:700,color:"rgba(139,92,246,.8)",letterSpacing:".18em",padding:"10px 8px 3px",textTransform:"uppercase",fontFamily:"'Plus Jakarta Sans',sans-serif"}}>{g}</div>
-              {navItems.filter(n=>n.group===g).map(n=>(
-                <div key={n.id} onClick={()=>setPg(n.id)}
-                  style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"5px 8px",borderRadius:"6px",cursor:"pointer",background:pg===n.id?V.accent:"transparent",marginBottom:"1px",transition:"all .15s",position:"relative"}}>
-                  {pg===n.id&&<div style={{position:"absolute",left:0,top:"50%",transform:"translateY(-50%)",width:"3px",height:"18px",borderRadius:"0 2px 2px 0",background:"rgba(255,255,255,.5)"}}/>}
-                  <span style={{fontSize:"12px",fontWeight:pg===n.id?600:400,color:pg===n.id?"#fff":V.sidebarSub,paddingLeft:pg===n.id?"6px":"0",transition:"all .15s"}}>{n.label}</span>
-                  
-                </div>
-              ))}
-            </div>
-          ))}
+        {/* Nav */}
+        <nav style={{flex:1,padding:"6px 8px",overflow:"hidden"}}>
+          {(() => {
+            const navManualIcons = {
+              1: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>,
+              2: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>,
+              3: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>,
+              4: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg>,
+              5: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>,
+              6: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>,
+              7: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>,
+            };
+            const navAutoIcons = {
+              1: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>,
+              7: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>,
+            };
+            const icons = p2modo==="auto" ? navAutoIcons : navManualIcons;
+            const groups = [...new Set(navItems.map(n=>n.group))];
+            return groups.map(g=>(
+              <div key={g} style={{marginBottom:"4px"}}>
+                <div style={{fontSize:"9px",fontWeight:700,color:"rgba(255,255,255,.25)",letterSpacing:".16em",padding:"8px 8px 3px",textTransform:"uppercase"}}>{g}</div>
+                {navItems.filter(n=>n.group===g).map(n=>(
+                  <div key={n.id} onClick={()=>setPg(n.id)}
+                    style={{display:"flex",alignItems:"center",gap:"9px",padding:"7px 10px",borderRadius:"8px",cursor:"pointer",background:pg===n.id?"rgba(139,92,246,.15)":"transparent",marginBottom:"1px",border:`1px solid ${pg===n.id?"rgba(139,92,246,.35)":"transparent"}`,transition:"all .15s",position:"relative"}}>
+                    {pg===n.id&&<div style={{position:"absolute",left:0,top:"50%",transform:"translateY(-50%)",width:"3px",height:"16px",borderRadius:"0 2px 2px 0",background:V.accent}}/>}
+                    <span style={{color:pg===n.id?V.accent:"rgba(255,255,255,.35)",display:"flex",alignItems:"center",flexShrink:0}}>{icons[n.id]||<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><circle cx="12" cy="12" r="10"/></svg>}</span>
+                    <span style={{fontSize:"12px",fontWeight:pg===n.id?700:400,color:pg===n.id?"#fff":"rgba(255,255,255,.55)",fontFamily:"'Plus Jakarta Sans',sans-serif"}}>{n.label}</span>
+                  </div>
+                ))}
+              </div>
+            ));
+          })()}
         </nav>
 
-        {/* Footer */}
-        <div style={{padding:"8px 10px",borderTop:`1px solid ${V.sidebarBdr}`,flexShrink:0}}>
-          <button onClick={()=>setPg(7)} style={{width:"100%",padding:"7px",borderRadius:"7px",border:"none",background:V.accent,color:"#fff",fontSize:"12px",fontWeight:600,cursor:"pointer",fontFamily:"'Inter',sans-serif",marginBottom:form.cslNome?"10px":"0"}}>
+        {/* Botão PDF */}
+        <div style={{padding:"8px 10px",borderTop:"1px solid rgba(255,255,255,.08)"}}>
+          <button onClick={()=>setPg(p2modo==="auto"?7:7)} style={{width:"100%",padding:"9px",borderRadius:"9px",border:"none",background:V.accent,color:"#fff",fontSize:"12px",fontWeight:700,cursor:"pointer",fontFamily:"'Inter',sans-serif",display:"flex",alignItems:"center",justifyContent:"center",gap:"6px"}}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
             Gerar PDF
           </button>
-          {form.cslNome&&<div style={{display:"flex",alignItems:"center",gap:"8px",padding:"6px 4px"}}>
-            <div style={{width:"24px",height:"24px",borderRadius:"50%",background:V.accent+"33",border:`1px solid ${V.accent}55`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"11px",fontWeight:700,color:V.accent,flexShrink:0}}>{form.cslNome[0]}</div>
-            <div style={{overflow:"hidden",flex:1}}>
-              <div style={{fontSize:"12px",fontWeight:500,color:V.sidebarTxt,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{form.cslNome}</div>
-              <div style={{fontSize:"10px",color:V.sidebarMut}}>Admin</div>
-            </div>
-          </div>}
         </div>
+
+        {/* Avatar / usuário */}
+        <div style={{padding:"10px 12px",borderTop:"1px solid rgba(255,255,255,.08)",display:"flex",alignItems:"center",gap:"10px",background:"rgba(255,255,255,.02)"}}>
+          <div style={{width:"32px",height:"32px",borderRadius:"50%",background:`linear-gradient(135deg,${V.accent},#A855F7)`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"13px",fontWeight:700,color:"#fff",flexShrink:0}}>
+            {form.cslNome?form.cslNome[0].toUpperCase():"U"}
+          </div>
+          <div style={{flex:1,overflow:"hidden"}}>
+            <div style={{fontSize:"12px",fontWeight:600,color:"#fff",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",fontFamily:"'Plus Jakarta Sans',sans-serif"}}>{form.cslNome||"Consultor"}</div>
+            <div style={{fontSize:"10px",color:"rgba(255,255,255,.35)"}}>Administrador</div>
+          </div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.3)" strokeWidth="1.8" strokeLinecap="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+        </div>
+
       </aside>
 
       {/* ══ MAIN ═════════════════════════════════════════ */}
