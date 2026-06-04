@@ -763,7 +763,10 @@ Retorne SOMENTE JSON sem markdown:
           </div>
         </div>
         <nav style={{flex:1,padding:"8px 0"}}>
-          {[{n:1,g:"Negócio",l:"Segmento & Dados"},{n:2,g:"Negócio",l:"Métricas Google"},{n:3,g:"Negócio",l:"Palavras-chave"},{n:4,g:"Análise",l:"Concorrentes"},{n:5,g:"Análise",l:"Instagram"},{n:6,g:"Design",l:"Cores & Logo"},{n:7,g:"Design",l:"Consultor"},{n:8,g:"Saída",l:"Editar & PDF"}].map(({n,l,g},i,arr)=>{
+          {(p2modo==="auto"
+              ?[{n:1,g:"Auto IA",l:"Diagnóstico IA"},{n:8,g:"Saída",l:"Editar & PDF"}]
+              :[{n:1,g:"Negócio",l:"Segmento & Dados"},{n:2,g:"Negócio",l:"Métricas Google"},{n:3,g:"Negócio",l:"Palavras-chave"},{n:4,g:"Análise",l:"Concorrentes"},{n:5,g:"Análise",l:"Instagram"},{n:6,g:"Design",l:"Cores & Logo"},{n:7,g:"Design",l:"Consultor"},{n:8,g:"Saída",l:"Editar & PDF"}]
+            ).map(({n,l,g},i,arr)=>{
             const showG=i===0||arr[i-1].g!==g;
             const opcional = (n===2&&!temDadosGoogle&&form.nota==="")||(n===4&&!temConcs)||(n===5&&!temIG);
             return(<div key={n}>
@@ -784,8 +787,108 @@ Retorne SOMENTE JSON sem markdown:
       {/* MAIN */}
       <div style={{padding:"22px",background:T.n100,borderRadius:"0 14px 14px 0",overflowY:"auto",maxHeight:"760px"}}>
 
-        {/* P1 — Segmento & Dados */}
-        {pg===1&&<div>
+        {/* ═══ AUTO IA — Página única ═══ */}
+        {pg===1&&p2modo==="auto"&&<div>
+          <div style={{...css.card(),background:"#0D0B12",border:`.5px solid ${form.cor1}22`,marginBottom:"16px",padding:"24px 28px"}}>
+            <div style={{display:"flex",alignItems:"center",gap:"12px",marginBottom:"8px"}}>
+              <div style={{width:"36px",height:"36px",borderRadius:"10px",background:form.cor1+"22",display:"flex",alignItems:"center",justifyContent:"center"}}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={form.cor1} strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+              </div>
+              <div>
+                <div style={{fontSize:"15px",fontWeight:700,color:"#fff"}}>Diagnóstico Automático</div>
+                <div style={{fontSize:"12px",color:"#555"}}>Preencha os links e a IA faz o resto</div>
+              </div>
+            </div>
+          </div>
+
+          {/* LINKS */}
+          <div style={css.card()}>
+            <div style={css.sec}>Links do negócio</div>
+            <div style={{marginBottom:"12px"}}>
+              <label style={css.lbl}>Link da ficha Google Maps *</label>
+              <div style={{display:"flex",gap:"8px"}}>
+                <input style={css.inp} value={form.fichaUrl} onChange={e=>setF("fichaUrl",e.target.value)} placeholder="https://maps.google.com/place/..."/>
+                <button onClick={extrairFicha} disabled={fichaLoad} style={{...css.btn(form.cor1,"#fff"),whiteSpace:"nowrap",opacity:fichaLoad?.7:1,fontSize:"12px",padding:"9px 16px"}}>
+                  {fichaLoad?"Buscando...":"Extrair"}
+                </button>
+              </div>
+              {form.nome&&<div style={{marginTop:"8px",padding:"8px 12px",background:"#DCFCE7",borderRadius:"8px",fontSize:"12px",color:"#166534",fontWeight:600}}>✓ {form.nome} · {form.nota}★ · {form.numAvals} avaliações</div>}
+            </div>
+            <div>
+              <label style={css.lbl}>Perfil do Instagram <span style={{fontWeight:400,color:T.n400,textTransform:"none",letterSpacing:0}}>(opcional)</span></label>
+              <div style={{display:"flex",gap:"8px"}}>
+                <input style={css.inp} value={ig.url} onChange={e=>setIG("url",e.target.value)} placeholder="https://instagram.com/perfil ou @handle"/>
+                <button onClick={extrairIG} disabled={igLoad} style={{...css.btn(T.n700,"#fff"),whiteSpace:"nowrap",opacity:igLoad?.7:1,fontSize:"12px",padding:"9px 16px",border:`.5px solid ${T.n300}`}}>
+                  {igLoad?"Analisando...":"Analisar"}
+                </button>
+              </div>
+              {ig.handle&&<div style={{marginTop:"8px",padding:"8px 12px",background:"#DCFCE7",borderRadius:"8px",fontSize:"12px",color:"#166534",fontWeight:600}}>✓ @{ig.handle} · {ig.seguidores} seguidores</div>}
+            </div>
+          </div>
+
+          {/* TOM */}
+          <div style={css.card()}>
+            <div style={css.sec}>Tom de comunicação</div>
+            {Object.entries(TONS).map(([k,v])=>(
+              <div key={k} onClick={()=>setF("tom",k)} style={{display:"flex",alignItems:"center",gap:"12px",padding:"11px 14px",borderRadius:"10px",border:form.tom===k?`1.5px solid ${form.cor1}`:`.5px solid ${T.n200}`,background:form.tom===k?form.cor1+"0d":T.n0,cursor:"pointer",marginBottom:"7px",transition:"all .12s"}}>
+                <div style={{flex:1}}>
+                  <div style={{fontSize:"13px",fontWeight:700,color:form.tom===k?form.cor1:T.n900}}>{v.label}</div>
+                  <div style={{fontSize:"11px",color:T.n400,marginTop:"2px"}}>{v.desc}</div>
+                </div>
+                {form.tom===k&&<div style={{width:"8px",height:"8px",borderRadius:"50%",background:form.cor1,flexShrink:0}}/>}
+              </div>
+            ))}
+          </div>
+
+          {/* CORES & LOGO */}
+          <div style={css.card()}>
+            <div style={css.sec}>Identidade visual</div>
+            <div style={{display:"flex",gap:"16px",alignItems:"center",marginBottom:"14px",flexWrap:"wrap"}}>
+              <div style={{display:"flex",gap:"7px",flexWrap:"wrap"}}>
+                {[["#C9A84C","#0D0D0B"],["#0F4FD1","#0D0D0B"],["#0D9488","#0D0D0B"],["#7C3AED","#0D0D0B"],["#DC2626","#0D0D0B"],["#0891B2","#0D0D0B"]].map(([c1,c2],i)=>(
+                  <div key={i} onClick={()=>setForm(f=>({...f,cor1:c1,cor2:c2}))} style={{width:"26px",height:"26px",borderRadius:"50%",background:c1,cursor:"pointer",border:form.cor1===c1?`3px solid #0a0a0a`:`2px solid transparent`,transform:form.cor1===c1?"scale(1.2)":"scale(1)",transition:".12s"}}/>
+                ))}
+                <input type="color" value={form.cor1} onChange={e=>setForm(f=>({...f,cor1:e.target.value}))} style={{width:"26px",height:"26px",border:"none",borderRadius:"50%",cursor:"pointer",padding:0}}/>
+              </div>
+            </div>
+            <div onClick={()=>logoRef.current?.click()} style={{border:`.5px dashed ${T.n300}`,borderRadius:"10px",padding:"14px",textAlign:"center",cursor:"pointer",background:T.n50}}>
+              {logoUrl
+                ?<img src={logoUrl} style={{height:"60px",width:"60px",objectFit:"cover",borderRadius:"12px",display:"block",margin:"0 auto"}}/>
+                :<div style={{fontSize:"12px",color:T.n400}}>Upload da logo <span style={{color:T.n300}}>(clique)</span></div>
+              }
+            </div>
+            <input ref={logoRef} type="file" accept="image/*" style={{display:"none"}} onChange={loadLogo}/>
+          </div>
+
+          {/* CONSULTOR */}
+          <div style={css.card()}>
+            <div style={css.sec}>Dados do consultor</div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"12px",marginBottom:"10px"}}>
+              <div><label style={css.lbl}>Seu nome</label><input style={css.inp} value={form.cslNome} onChange={e=>setF("cslNome",e.target.value)} placeholder="Nathan"/></div>
+              <div><label style={css.lbl}>Empresa</label><input style={css.inp} value={form.cslEmpresa} onChange={e=>setF("cslEmpresa",e.target.value)} placeholder="SCentral"/></div>
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"12px"}}>
+              <div><label style={css.lbl}>WhatsApp</label><input style={css.inp} value={form.cslWhats} onChange={e=>setF("cslWhats",e.target.value)} placeholder="(37) 9 9999-9999"/></div>
+              <div><label style={css.lbl}>Instagram</label><input style={css.inp} value={form.cslInsta} onChange={e=>setF("cslInsta",e.target.value)} placeholder="scentral.ia"/></div>
+            </div>
+          </div>
+
+          {/* BOTÃO GERAR */}
+          <SBar/>
+          <button onClick={async()=>{
+            // Busca concorrentes automaticamente se tiver localização
+            if(form.placeLat&&form.placeLng&&concs.length===0){
+              await buscarConcs();
+            }
+            await gerarTextoIA();
+            setPg(8);
+          }} disabled={loading||fichaLoad} style={{...css.btn(form.cor1,"#fff"),width:"100%",padding:"14px",fontSize:"14px",fontWeight:700,borderRadius:"12px",opacity:(loading||fichaLoad)?.7:1}}>
+            {loading?"Gerando diagnóstico...":fichaLoad?"Carregando ficha...":"✦ Gerar diagnóstico completo"}
+          </button>
+        </div>}
+
+      {/* P1 — Segmento & Dados (MANUAL) */}
+        {pg===1&&p2modo==="manual"&&<div>
           {presets.length>0&&(
             <div style={css.card()}>
               <div style={css.sec}>Configurações salvas</div>
