@@ -1079,6 +1079,7 @@ Retorne SOMENTE JSON sem markdown:
             <div style={{marginTop:"16px",borderTop:`.5px solid ${T.n200}`,paddingTop:"16px"}}><div style={{fontSize:"10px",fontWeight:700,color:T.n400,textTransform:"uppercase",letterSpacing:".1em",marginBottom:"10px"}}>Prévia</div><div style={{borderRadius:"10px",overflow:"hidden",border:`.5px solid ${form.cor1}33`}}><div style={{background:form.cor2,padding:"16px",textAlign:"center"}}><img src={logoUrl||LOGO_B64} style={{maxHeight:"40px",maxWidth:"100%",objectFit:"contain",display:"block",margin:"0 auto 8px"}}/><div style={{fontSize:"16px",fontWeight:800,color:form.cor1}}>{form.cslEmpresa||"Sua Empresa"}</div></div><div style={{background:"#fff",padding:"14px"}}><div style={{background:form.cor1+"12",borderLeft:`3px solid ${form.cor1}`,padding:"10px 14px",borderRadius:"0 6px 6px 0",marginBottom:"10px"}}><div style={{fontSize:"13px",fontWeight:700,color:T.n900}}>{form.nome||"Nome do negócio"}</div><div style={{fontSize:"11px",color:T.n400,marginTop:"2px"}}>{form.categoria} · {form.cidade}</div></div><div style={{fontSize:"12px",color:T.n600,lineHeight:1.6}} dangerouslySetInnerHTML={{__html:tx.intro||""}}/></div></div></div><div style={{display:"flex",gap:"10px",marginTop:"16px",justifyContent:"space-between"}}><Nav label="← Voltar" to={7} back/><button onClick={abrirPDF} style={{...css.btn(T.gold,"#fff"),padding:"11px 22px",fontSize:"14px"}}>Gerar PDF</button></div></div></div>}
 
       </div></div>
+    </>
   );
 }
 /* ─── BUILD PDF ──────────────────────────────────────────── */
