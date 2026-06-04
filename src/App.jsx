@@ -783,7 +783,7 @@ Retorne SOMENTE JSON sem markdown:
     {id:4,label:"Instagram",group:"ANÁLISE",opt:!temIG},
     {id:5,label:"Identidade Visual",group:"DESIGN"},
     {id:6,label:"Consultor",group:"DESIGN"},
-    {id:7,label:"Editar & PDF",group:"SAÍDA"},
+    {id:8,label:"Editar & PDF",group:"SAÍDA"},
   ];
   const navAuto = [
     {id:1,label:"Diagnóstico IA",group:"AUTO IA"},
@@ -870,7 +870,7 @@ Retorne SOMENTE JSON sem markdown:
 
         {/* Botão PDF */}
         <div style={{padding:"8px 10px",borderTop:"1px solid rgba(255,255,255,.08)"}}>
-          <button onClick={()=>setPg(p2modo==="auto"?7:7)} style={{width:"100%",padding:"9px",borderRadius:"9px",border:"none",background:V.accent,color:"#fff",fontSize:"12px",fontWeight:700,cursor:"pointer",fontFamily:"'Inter',sans-serif",display:"flex",alignItems:"center",justifyContent:"center",gap:"6px"}}>
+          <button onClick={()=>setPg(8)} style={{width:"100%",padding:"9px",borderRadius:"9px",border:"none",background:V.accent,color:"#fff",fontSize:"12px",fontWeight:700,cursor:"pointer",fontFamily:"'Inter',sans-serif",display:"flex",alignItems:"center",justifyContent:"center",gap:"6px"}}>
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
             Gerar PDF
           </button>
@@ -1333,7 +1333,7 @@ Retorne SOMENTE JSON sem markdown:
             </div>}
 
             {/* ══ P7 CONSULTOR ═════════════════════════ */}
-            {pg===6&&<div>
+            {pg===6&&<div>  {/* Consultor */}
               <PageHead title="Dados do Consultor" sub="Informações que aparecem na página final do relatório."/>
               <Card>
                 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"14px",marginBottom:"14px"}}>
@@ -1354,7 +1354,7 @@ Retorne SOMENTE JSON sem markdown:
               </Card>
               <div style={{display:"flex",gap:"12px",justifyContent:"space-between"}}>
                 <BtnS onClick={()=>setPg(5)}>← Voltar</BtnS>
-                <BtnP onClick={()=>setPg(7)}>Editar & PDF →</BtnP>
+                <BtnP onClick={()=>setPg(8)}>Editar & PDF →</BtnP>
               </div>
             </div>}
 
