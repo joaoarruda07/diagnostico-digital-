@@ -230,7 +230,7 @@ function PasteImage({value, onChange, label="Cole um print (Ctrl+V)", hint=""}) 
 
 
 const LogoIcon = ({size=40,fill=false}) => (
-  <img src={LOGO_B64} alt="SCentral" style={{width:fill?"100%":`${size}px`,height:"auto",objectFit:"contain",display:"block",margin:"0 auto"}}/>
+  <img src={LOGO_B64} alt="SCentral" style={{width:fill?"100%":`${size}px`,height:"auto",objectFit:"contain",display:"block",margin:"0 auto",mixBlendMode:"screen"}}/>
 );
 
 /* ─── APP ────────────────────────────────────────────────── */
@@ -758,7 +758,7 @@ Retorne SOMENTE JSON sem markdown:
       <aside style={{width:"200px",height:"100vh",background:V.sidebar,display:"flex",flexDirection:"column",position:"fixed",top:0,left:0,zIndex:100,flexShrink:0}}>
 
         {/* Logo */}
-        <div style={{padding:"12px 16px 10px",borderBottom:`1px solid ${V.sidebarBdr}`}}>
+        <div style={{padding:"16px 16px 12px",borderBottom:`1px solid ${V.sidebarBdr}`,background:"transparent"}}>
           {logoUrl
             ?<img src={logoUrl} style={{width:"100%",height:"auto",objectFit:"contain",display:"block"}}/>
             :<LogoIcon size={168} fill={true}/>
@@ -769,7 +769,7 @@ Retorne SOMENTE JSON sem markdown:
         <div style={{padding:"6px 10px",borderBottom:`1px solid ${V.sidebarBdr}`}}>
           <div style={{display:"flex",background:"rgba(255,255,255,.06)",borderRadius:"8px",padding:"2px"}}>
             {["manual","auto"].map(m=>(
-              <button key={m} onClick={()=>{setP2modo(m);if(m==="auto")setPg(1);}}
+              <button key={m} onClick={()=>{setP2modo(m);}}
                 style={{flex:1,padding:"5px",fontSize:"10px",fontWeight:600,cursor:"pointer",border:"none",borderRadius:"8px",background:p2modo===m?V.accent:"transparent",color:p2modo===m?"#fff":V.sidebarMut,transition:"all .2s",letterSpacing:".03em",textTransform:"uppercase"}}>
                 {m==="auto"?"Auto IA":"Manual"}
               </button>
@@ -851,7 +851,7 @@ Retorne SOMENTE JSON sem markdown:
           <div style={{flex:1,minWidth:0}}>
 
             {/* ══ AUTO IA ══════════════════════════════ */}
-            {pg===1&&p2modo==="auto"&&<div>
+            {p2modo==="auto"&&pg!==8&&<div>
               {/* Hero banner */}
               <div style={{background:`linear-gradient(135deg,#0F0E1A 0%,#1A1235 100%)`,borderRadius:"20px",padding:"24px 32px",marginBottom:"24px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
                 <div>
