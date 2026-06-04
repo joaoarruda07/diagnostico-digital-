@@ -5,14 +5,25 @@ import LOGO_B64 from "./logo.png";
 
 /* ─── TOKENS ─────────────────────────────────────────────── */
 const T = {
-  gold:"#7C3AED", goldL:"#F3EEFF", goldM:"#C4A0FA",
-  dark:"#0D0B12",
-  n0:"#FFFFFF", n50:"#FAFAF9", n100:"#F5F4F8",
-  n200:"#E8E6EE", n300:"#CEC9DC", n400:"#9991AF",
-  n600:"#5C5575", n700:"#3A3450", n900:"#111020",
-  ok:"#166534", okBg:"#DCFCE7",
-  warn:"#854D0E", warnBg:"#FEF9C3",
-  err:"#991B1B", errBg:"#FEE2E2",
+  // SCentral Identity
+  gold:"#8B5CF6",   // SCentral Purple (accent primário)
+  goldL:"#F5F3FF",  // Purple tint (backgrounds ativos)
+  goldM:"#A855F7",  // Purple Light (hover)
+  dark:"#09090B",   // Deep Black (sidebar)
+  // Superfícies (layers)
+  n0:"#FFFFFF",
+  n50:"#18181B",    // Layer 3 — cards
+  n100:"#111827",   // Layer 2 — containers
+  n200:"#27272A",   // Bordas
+  n300:"#3F3F46",   // Bordas hover
+  n400:"#71717A",   // Texto muted
+  n600:"#A1A1AA",   // Texto secondary
+  n700:"#D4D4D8",   // Texto terceiro
+  n900:"#FAFAFA",   // Texto primary
+  // Feedback
+  ok:"#10B981", okBg:"rgba(16,185,129,.08)",
+  warn:"#F59E0B", warnBg:"rgba(245,158,11,.08)",
+  err:"#EF4444", errBg:"rgba(239,68,68,.08)",
 };
 
 /* ─── UTILS ──────────────────────────────────────────────── */
@@ -179,16 +190,13 @@ function makeMapStatic({concs=[],cidade="Cidade",nome="Negócio",cor1=T.gold}) {
 
 /* ─── ESTILOS ────────────────────────────────────────────── */
 const css = {
-  card: bg => ({background:bg||T.n0,border:`.5px solid ${T.n200}`,borderRadius:"14px",padding:"20px",marginBottom:"14px"}),
-  inp: {width:"100%",padding:"9px 12px",border:`.5px solid ${T.n200}`,borderRadius:"8px",fontSize:"13px",color:T.n900,background:T.n0,outline:"none",boxSizing:"border-box",fontFamily:"'Manrope',sans-serif"},
-  lbl: {display:"block",fontSize:"10px",fontWeight:700,letterSpacing:".1em",textTransform:"uppercase",color:T.n400,marginBottom:"5px"},
-  sec: {fontSize:"10px",fontWeight:700,letterSpacing:".12em",textTransform:"uppercase",color:T.n400,margin:"18px 0 10px",paddingBottom:"6px",borderBottom:`.5px solid ${T.n200}`},
-  btn: (bg,col) => ({display:"inline-flex",alignItems:"center",justifyContent:"center",gap:"7px",padding:"9px 18px",borderRadius:"8px",fontFamily:"'Manrope',sans-serif",fontSize:"13px",fontWeight:700,cursor:"pointer",border:"none",background:bg,color:col}),
-  btnSm: (bg,col,border) => ({display:"inline-flex",alignItems:"center",gap:"6px",padding:"6px 13px",borderRadius:"7px",fontFamily:"'Manrope',sans-serif",fontSize:"12px",fontWeight:600,cursor:"pointer",border:border||`.5px solid ${T.n300}`,background:bg,color:col}),
-  badge: (bg,col) => ({display:"inline-flex",alignItems:"center",gap:"4px",padding:"2px 9px",borderRadius:"20px",fontSize:"10px",fontWeight:700,background:bg,color:col}),
-  sbar: {display:"flex",alignItems:"center",gap:"10px",marginBottom:"7px"},
+  card: bg => ({background:bg||T.n50,border:`1px solid ${T.n200}`,borderRadius:"16px",padding:"24px",marginBottom:"12px",boxShadow:"0 1px 3px rgba(0,0,0,.4)"}),
+  inp: {width:"100%",padding:"10px 14px",border:`1px solid ${T.n200}`,borderRadius:"12px",fontSize:"13px",color:"#FAFAFA",background:"#18181B",outline:"none",boxSizing:"border-box",fontFamily:"'Inter',sans-serif",transition:"border .15s,box-shadow .15s",caretColor:T.gold},
+  lbl: {display:"block",fontSize:"10px",fontWeight:600,letterSpacing:".1em",textTransform:"uppercase",color:T.n400,marginBottom:"6px",fontFamily:"'Sora',sans-serif"},
+  sec: {fontSize:"10px",fontWeight:700,letterSpacing:".14em",textTransform:"uppercase",color:T.n400,margin:"20px 0 12px",fontFamily:"'Sora',sans-serif"},
+  btn: (bg,col) => ({padding:"10px 20px",borderRadius:"12px",border:"none",background:bg,color:col,fontSize:"13px",fontWeight:600,cursor:"pointer",fontFamily:"'Inter',sans-serif",transition:"all .2s",letterSpacing:".01em",boxShadow:bg===T.gold?"0 0 20px rgba(139,92,246,.25)":"none"}),
+  btnSm: (bg,col,border) => ({padding:"6px 14px",borderRadius:"8px",border:border||"none",background:bg,color:col,fontSize:"11px",fontWeight:600,cursor:"pointer",fontFamily:"'Inter',sans-serif",transition:"all .15s"}),
 };
-
 /* ─── Paste Image ───────────────────────────────────────── */
 function PasteImage({value, onChange, label="Cole um print (Ctrl+V)", hint=""}) {
   const [drag, setDrag] = useState(false);
@@ -669,7 +677,17 @@ Retorne SOMENTE JSON sem markdown:
   };
 
   /* helpers UI */
-  const SBar=()=>{if(!status)return null;const C={err:{bg:T.errBg,col:T.err},ok:{bg:T.okBg,col:T.ok},load:{bg:T.warnBg,col:T.warn}};return<div style={{padding:"9px 13px",borderRadius:"8px",fontSize:"12px",marginBottom:"12px",background:C[status.t]?.bg||"#EFF6FF",color:C[status.t]?.col||"#1D4ED8"}}>{status.m}</div>;};
+  const SBar=()=>{
+  if(!status)return null;
+  const C={
+    err:{bg:"rgba(239,68,68,.1)",col:"#FCA5A5",border:"rgba(239,68,68,.25)"},
+    ok:{bg:"rgba(16,185,129,.1)",col:"#6EE7B7",border:"rgba(16,185,129,.25)"},
+    load:{bg:"rgba(139,92,246,.1)",col:"#C4B5FD",border:"rgba(139,92,246,.25)"},
+    warn:{bg:"rgba(245,158,11,.1)",col:"#FCD34D",border:"rgba(245,158,11,.25)"},
+  };
+  const s=C[status.t]||C.ok;
+  return<div style={{padding:"10px 14px",borderRadius:"12px",fontSize:"12px",marginBottom:"12px",background:s.bg,color:s.col,border:`1px solid ${s.border}`,fontFamily:"'Inter',sans-serif",lineHeight:1.5}}>{status.m}</div>;
+};
   const Tog=({checked,onChange,label})=>(<div style={{display:"flex",alignItems:"center",gap:"10px",padding:"5px 0"}}><label style={{position:"relative",width:"34px",height:"18px",flexShrink:0}}><input type="checkbox" checked={checked} onChange={e=>onChange(e.target.checked)} style={{opacity:0,width:0,height:0}}/><span style={{position:"absolute",inset:0,background:checked?form.cor1:T.n300,borderRadius:"9px",cursor:"pointer",transition:".2s"}}><span style={{position:"absolute",width:"12px",height:"12px",left:checked?"19px":"3px",top:"3px",background:"#fff",borderRadius:"50%",transition:".2s"}}/></span></label><span style={{fontSize:"13px",color:T.n700}}>{label}</span></div>);
   const Nav=({label,to,back})=>(<button onClick={()=>setPg(to)} style={{...css.btn(back?T.n0:T.dark,back?T.n700:"#fff"),border:back?`.5px solid ${T.n300}`:"none"}}>{label}</button>);
 
@@ -698,10 +716,11 @@ Retorne SOMENTE JSON sem markdown:
   const TxField=({label,campo,multi=true})=>{const val=tx[campo]||"";return(<div style={{marginBottom:"14px"}}><label style={css.lbl}>{label}</label>{multi?<textarea style={{...css.inp,minHeight:"72px",resize:"vertical"}} value={val} onChange={e=>setTx(campo,e.target.value)}/>:<input style={css.inp} value={val} onChange={e=>setTx(campo,e.target.value)}/>}{val.includes("<strong>")&&<div style={{marginTop:"5px",padding:"7px 11px",background:T.n50,borderRadius:"6px",border:`.5px solid ${T.n200}`,fontSize:"12px",color:T.n600,lineHeight:1.5}} dangerouslySetInnerHTML={{__html:val}}/>}</div>);};
 
   return(
-    <div style={{display:"grid",gridTemplateColumns:"210px 1fr",minHeight:"700px"}}>
+    <><link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <div style={{display:"flex",minHeight:"100vh",background:"#09090B",fontFamily:"'Inter',sans-serif"}}>
 
       {/* SIDEBAR / TOP NAV */}
-      <div style={{background:"#0D0B12",borderRadius:"14px 0 0 14px",display:"flex",flexDirection:"column"}}><div style={{padding:"18px 16px 14px",borderBottom:"1px solid #1a1628"}}><div style={{marginBottom:"12px",padding:"12px 8px 8px"}}>
+      <div style={{background:"#09090B",borderBottom:"none",display:"flex",flexDirection:"column"}}><div style={{padding:"18px 16px 14px",borderBottom:"1px solid #27272A"}}><div style={{marginBottom:"12px",padding:"12px 8px 8px"}}>
             {logoUrl
               ?<img src={logoUrl} style={{height:"80px",width:"80px",objectFit:"cover",display:"block",margin:"0 auto",borderRadius:"16px"}}/>
               :<LogoIcon size={80}/>
@@ -728,7 +747,7 @@ Retorne SOMENTE JSON sem markdown:
       <div style={{padding:"22px",background:T.n100,borderRadius:"0 14px 14px 0",overflowY:"auto",maxHeight:"760px"}}>
 
         {/* ═══ AUTO IA — Página única ═══ */}
-        {pg===1&&p2modo==="auto"&&<div><div style={{...css.card(),background:"#0D0B12",border:`.5px solid ${form.cor1}22`,marginBottom:"16px",padding:"28px 36px"}}><div style={{display:"flex",alignItems:"center",gap:"12px",marginBottom:"8px"}}><div style={{width:"36px",height:"36px",borderRadius:"10px",background:form.cor1+"22",display:"flex",alignItems:"center",justifyContent:"center"}}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={form.cor1} strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg></div><div><div style={{fontSize:"15px",fontWeight:700,color:"#fff"}}>Diagnóstico Automático</div><div style={{fontSize:"12px",color:"#555"}}>Preencha os links e a IA faz o resto</div></div></div></div>
+        {pg===1&&p2modo==="auto"&&<div><div style={{...css.card(),background:"#0D0B12",border:`.5px solid ${form.cor1}22`,marginBottom:"16px",padding:"36px 40px"}}><div style={{display:"flex",alignItems:"center",gap:"12px",marginBottom:"8px"}}><div style={{width:"36px",height:"36px",borderRadius:"10px",background:form.cor1+"22",display:"flex",alignItems:"center",justifyContent:"center"}}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={form.cor1} strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg></div><div><div style={{fontSize:"15px",fontWeight:700,color:"#fff"}}>Diagnóstico Automático</div><div style={{fontSize:"12px",color:"#555"}}>Preencha os links e a IA faz o resto</div></div></div></div>
 
           {/* LINKS */}
           <div style={css.card()}><div style={css.sec}>Links do negócio</div><div style={{marginBottom:"12px"}}><label style={css.lbl}>Link da ficha Google Maps *</label><div style={{display:"flex",gap:"8px"}}><input style={css.inp} value={form.fichaUrl} onChange={e=>setF("fichaUrl",e.target.value)} placeholder="https://maps.google.com/place/..."/><button onClick={extrairFicha} disabled={fichaLoad} style={{...css.btn(form.cor1,"#fff"),whiteSpace:"nowrap",opacity:fichaLoad?.7:1,fontSize:"12px",padding:"9px 16px"}}>
@@ -828,7 +847,7 @@ Retorne SOMENTE JSON sem markdown:
                 )}
               </div>
             )}
-          </div><div style={{display:"flex",justifyContent:"flex-end"}}><button onClick={()=>setPg(2)} style={css.btn(T.dark,"#fff")}>Próximo</button></div></div>}
+          </div><div style={{display:"flex",justifyContent:"flex-end"}}><button onClick={()=>setPg(2)} style={css.btn(T.gold,"#fff")}>Próximo</button></div></div>}
 
         {/* P2 — Métricas Google (OPCIONAL) */}
         {pg===2&&<div>
@@ -970,13 +989,13 @@ Retorne SOMENTE JSON sem markdown:
                 <div key={i} onClick={()=>setForm(f=>({...f,cor1:c1,cor2:c2}))} style={{width:"28px",height:"28px",borderRadius:"50%",background:c1,cursor:"pointer",border:form.cor1===c1?`3px solid ${T.n900}`:`2px solid transparent`,transform:form.cor1===c1?"scale(1.2)":"scale(1)",transition:".12s"}}/>
               ))}
             </div><div style={{display:"flex",gap:"20px",alignItems:"flex-start"}}><div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:"5px"}}><label style={css.lbl}>Cor principal</label><input type="color" value={form.cor1} onChange={e=>setForm(f=>({...f,cor1:e.target.value}))} style={{width:"50px",height:"38px",border:"none",borderRadius:"8px",cursor:"pointer"}}/></div><div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:"5px"}}><label style={css.lbl}>Cor secundária</label><input type="color" value={form.cor2} onChange={e=>setForm(f=>({...f,cor2:e.target.value}))} style={{width:"50px",height:"38px",border:"none",borderRadius:"8px",cursor:"pointer"}}/></div><div style={{flex:1}}><label style={{...css.lbl,marginBottom:"6px"}}>Prévia</label><div style={{background:form.cor2,padding:"13px 16px",borderRadius:"9px",borderLeft:`6px solid ${form.cor1}`,color:form.cor1,fontWeight:700,fontSize:"14px"}}>{form.cslEmpresa||"Sua Empresa"}</div><div style={{marginTop:"8px",background:form.cor1+"12",borderLeft:`3px solid ${form.cor1}`,padding:"9px 12px",borderRadius:"0 7px 7px 0",fontSize:"12px",color:T.n600}}>{form.nome||"Nome do negócio"}</div></div></div></div><div style={css.card()}><div style={css.sec}>Logo da empresa consultora</div><p style={{fontSize:"12px",color:T.n400,marginBottom:"12px"}}>Esta logo aparecerá no topo do PDF. Se não houver upload, usa o ícone padrão.</p><div onClick={()=>logoRef.current?.click()} style={{border:`1.5px dashed ${T.n300}`,borderRadius:"10px",padding:"18px",textAlign:"center",cursor:"pointer",color:T.n400,fontSize:"13px"}}>
-              {logoUrl?<div style={{background:form.cor2,padding:"14px",borderRadius:"8px",display:"inline-block"}}><img src={logoUrl} style={{maxHeight:"60px",maxWidth:"160px",objectFit:"contain",borderRadius:"4px",display:"block"}}/></div>:<div><div style={{color:T.n300,marginBottom:"5px"}}><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" style={{display:"block",margin:"0 auto"}}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div><div style={{fontWeight:600}}>Upload da logo</div><div style={{fontSize:"11px",marginTop:"3px",color:T.n400}}>PNG · SVG · fundo transparente recomendado</div></div>}
+              {logoUrl?<div style={{background:form.cor2,padding:"14px",borderRadius:"8px",display:"inline-block"}}><img src={logoUrl} style={{maxHeight:"60px",maxWidth:"100%",objectFit:"contain",borderRadius:"4px",display:"block"}}/></div>:<div><div style={{color:T.n300,marginBottom:"5px"}}><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" style={{display:"block",margin:"0 auto"}}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div><div style={{fontWeight:600}}>Upload da logo</div><div style={{fontSize:"11px",marginTop:"3px",color:T.n400}}>PNG · SVG · fundo transparente recomendado</div></div>}
             </div><input ref={logoRef} type="file" accept="image/*" style={{display:"none"}} onChange={loadLogo}/>
             {logoUrl&&<button onClick={()=>setLogoUrl("")} style={{...css.btnSm(T.n0,T.n400),marginTop:"8px"}}>Remover logo</button>}
           </div><div style={css.card()}><div style={css.sec}>Salvar configurações</div><p style={{fontSize:"12px",color:T.n400,marginBottom:"12px"}}>Salve cores, logo, consultor e tom para reutilizar em outras análises.</p>
             {!showSave
               ?<button onClick={()=>setShowSave(true)} style={css.btnSm(T.goldL,T.gold,`.5px solid ${T.goldM}`)}>Salvar como preset</button>
-              :<div style={{display:"flex",gap:"8px",alignItems:"center"}}><input style={{...css.inp,maxWidth:"220px"}} value={presetName} onChange={e=>setPresetName(e.target.value)} placeholder="Nome (ex: Clínica Dourado)" onKeyDown={e=>{if(e.key==="Enter")salvarPreset();}}/><button onClick={salvarPreset} style={css.btnSm(T.gold,"#fff","none")}>Salvar</button><button onClick={()=>setShowSave(false)} style={css.btnSm(T.n0,T.n400)}>Cancelar</button></div>
+              :<div style={{display:"flex",gap:"8px",alignItems:"center"}}><input style={{...css.inp,maxWidth:"100%"}} value={presetName} onChange={e=>setPresetName(e.target.value)} placeholder="Nome (ex: Clínica Dourado)" onKeyDown={e=>{if(e.key==="Enter")salvarPreset();}}/><button onClick={salvarPreset} style={css.btnSm(T.gold,"#fff","none")}>Salvar</button><button onClick={()=>setShowSave(false)} style={css.btnSm(T.n0,T.n400)}>Cancelar</button></div>
             }
             <SBar/></div><div style={{display:"flex",gap:"10px",justifyContent:"space-between"}}><Nav label="← Voltar" to={5} back/><Nav label="Próximo →" to={7}/></div></div>}
 
@@ -1057,12 +1076,11 @@ Retorne SOMENTE JSON sem markdown:
               </div>
             ))}
 
-            <div style={{marginTop:"16px",borderTop:`.5px solid ${T.n200}`,paddingTop:"16px"}}><div style={{fontSize:"10px",fontWeight:700,color:T.n400,textTransform:"uppercase",letterSpacing:".1em",marginBottom:"10px"}}>Prévia</div><div style={{borderRadius:"10px",overflow:"hidden",border:`.5px solid ${form.cor1}33`}}><div style={{background:form.cor2,padding:"16px",textAlign:"center"}}><img src={logoUrl||LOGO_B64} style={{maxHeight:"40px",maxWidth:"130px",objectFit:"contain",display:"block",margin:"0 auto 8px"}}/><div style={{fontSize:"16px",fontWeight:800,color:form.cor1}}>{form.cslEmpresa||"Sua Empresa"}</div></div><div style={{background:"#fff",padding:"14px"}}><div style={{background:form.cor1+"12",borderLeft:`3px solid ${form.cor1}`,padding:"10px 14px",borderRadius:"0 6px 6px 0",marginBottom:"10px"}}><div style={{fontSize:"13px",fontWeight:700,color:T.n900}}>{form.nome||"Nome do negócio"}</div><div style={{fontSize:"11px",color:T.n400,marginTop:"2px"}}>{form.categoria} · {form.cidade}</div></div><div style={{fontSize:"12px",color:T.n600,lineHeight:1.6}} dangerouslySetInnerHTML={{__html:tx.intro||""}}/></div></div></div><div style={{display:"flex",gap:"10px",marginTop:"16px",justifyContent:"space-between"}}><Nav label="← Voltar" to={7} back/><button onClick={abrirPDF} style={{...css.btn(T.dark,"#fff"),padding:"11px 22px",fontSize:"14px"}}>Gerar PDF</button></div></div></div>}
+            <div style={{marginTop:"16px",borderTop:`.5px solid ${T.n200}`,paddingTop:"16px"}}><div style={{fontSize:"10px",fontWeight:700,color:T.n400,textTransform:"uppercase",letterSpacing:".1em",marginBottom:"10px"}}>Prévia</div><div style={{borderRadius:"10px",overflow:"hidden",border:`.5px solid ${form.cor1}33`}}><div style={{background:form.cor2,padding:"16px",textAlign:"center"}}><img src={logoUrl||LOGO_B64} style={{maxHeight:"40px",maxWidth:"100%",objectFit:"contain",display:"block",margin:"0 auto 8px"}}/><div style={{fontSize:"16px",fontWeight:800,color:form.cor1}}>{form.cslEmpresa||"Sua Empresa"}</div></div><div style={{background:"#fff",padding:"14px"}}><div style={{background:form.cor1+"12",borderLeft:`3px solid ${form.cor1}`,padding:"10px 14px",borderRadius:"0 6px 6px 0",marginBottom:"10px"}}><div style={{fontSize:"13px",fontWeight:700,color:T.n900}}>{form.nome||"Nome do negócio"}</div><div style={{fontSize:"11px",color:T.n400,marginTop:"2px"}}>{form.categoria} · {form.cidade}</div></div><div style={{fontSize:"12px",color:T.n600,lineHeight:1.6}} dangerouslySetInnerHTML={{__html:tx.intro||""}}/></div></div></div><div style={{display:"flex",gap:"10px",marginTop:"16px",justifyContent:"space-between"}}><Nav label="← Voltar" to={7} back/><button onClick={abrirPDF} style={{...css.btn(T.gold,"#fff"),padding:"11px 22px",fontSize:"14px"}}>Gerar PDF</button></div></div></div>}
 
       </div></div>
   );
 }
-
 /* ─── BUILD PDF ──────────────────────────────────────────── */
 function buildPDF({form,ig,kws,concs,logoUrl,textos,temDadosGoogle,temConcs,temIG,layout="custom"}) {
   const c1=form.cor1||T.gold, c2=form.cor2||T.dark;
@@ -1605,7 +1623,7 @@ ${temIG?`
     const logoHtmlC=logoUrl?`<img src="${logoUrl}" style="height:44px;width:44px;object-fit:cover;border-radius:12px;display:block"/>`:`<img src="${LOGO_B64}" style="height:44px;width:auto;object-fit:contain;display:block;filter:brightness(10)"/>`;
     const scoreBars=scoreCritsData.map(({l,pts,max})=>`<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:11px;color:#777;font-weight:500">${l}</span><span style="font-size:11px;font-weight:700;color:${pts===max?"#16A34A":pts>0?c1:"#ccc"}">${pts}<span style="color:#ccc;font-weight:400">/${max}</span></span></div><div style="height:4px;background:#f0f0f0;border-radius:2px"><div style="height:100%;width:${(pts/max)*100}%;background:${pts===max?"#16A34A":pts>0?c1:"transparent"};border-radius:2px"></div></div></div>`).join("");
     return`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"/><title>Diagnóstico — ${form.nome}</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Sora:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Inter',-apple-system,sans-serif;background:#fff;color:#111;-webkit-print-color-adjust:exact;print-color-adjust:exact}
