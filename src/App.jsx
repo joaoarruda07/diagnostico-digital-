@@ -230,7 +230,7 @@ function PasteImage({value, onChange, label="Cole um print (Ctrl+V)", hint=""}) 
 
 
 const LogoIcon = ({size=40}) => (
-  <img src={LOGO_B64} alt="SCentral" style={{height:`${size}px`,width:"auto",maxWidth:`${size*1.8}px`,objectFit:"contain",display:"block",margin:"0 auto",mixBlendMode:"lighten"}}/>
+  <img src={LOGO_B64} alt="SCentral" style={{width:`${size}px`,height:"auto",maxWidth:"100%",objectFit:"contain",display:"block",margin:"0 auto",mixBlendMode:"lighten"}}/>
 );
 
 /* ─── APP ────────────────────────────────────────────────── */
@@ -751,16 +751,16 @@ Retorne SOMENTE JSON sem markdown:
 
   return(
     <div style={{display:"flex",minHeight:"100vh",background:V.bg,fontFamily:"'Inter',sans-serif"}}>
-      <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+      <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Sora:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 
       {/* ══ SIDEBAR ══════════════════════════════════════ */}
       <aside style={{width:"200px",height:"100vh",background:V.sidebar,display:"flex",flexDirection:"column",position:"fixed",top:0,left:0,zIndex:100,flexShrink:0}}>
 
-        {/* Logo — grande, centralizada, sem texto */}
-        <div style={{padding:"16px 20px",borderBottom:`1px solid ${V.sidebarBdr}`,display:"flex",justifyContent:"center",alignItems:"center"}}>
+        {/* Logo */}
+        <div style={{padding:"20px 16px 16px",borderBottom:`1px solid ${V.sidebarBdr}`,display:"flex",justifyContent:"center",alignItems:"center"}}>
           {logoUrl
-            ?<img src={logoUrl} style={{height:"44px",width:"44px",objectFit:"cover",borderRadius:"10px",display:"block"}}/>
-            :<LogoIcon size={120}/>
+            ?<img src={logoUrl} style={{width:"100%",maxWidth:"160px",height:"auto",objectFit:"contain",display:"block",margin:"0 auto"}}/>
+            :<LogoIcon size={160}/>
           }
         </div>
 
@@ -791,13 +791,13 @@ Retorne SOMENTE JSON sem markdown:
         <nav style={{flex:1,padding:"4px 8px",overflow:"visible"}}>
           {groups.map(g=>(
             <div key={g} style={{marginBottom:"2px"}}>
-              <div style={{fontSize:"9px",fontWeight:700,color:V.sidebarMut,letterSpacing:".14em",padding:"8px 8px 2px",textTransform:"uppercase"}}>{g}</div>
+              <div style={{fontSize:"11px",fontWeight:700,color:"rgba(139,92,246,.75)",letterSpacing:".18em",padding:"10px 8px 3px",textTransform:"uppercase",fontFamily:"'Plus Jakarta Sans',sans-serif"}}>{g}</div>
               {navItems.filter(n=>n.group===g).map(n=>(
                 <div key={n.id} onClick={()=>setPg(n.id)}
-                  style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"5px 8px",borderRadius:"6px",cursor:"pointer",background:pg===n.id?V.accent:"transparent",marginBottom:"1px",transition:"all .15s",position:"relative"}}>
+                  style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"7px 10px",borderRadius:"6px",cursor:"pointer",background:pg===n.id?"rgba(139,92,246,.18)":"transparent",marginBottom:"2px",transition:"all .15s",position:"relative"}}>
                   {pg===n.id&&<div style={{position:"absolute",left:0,top:"50%",transform:"translateY(-50%)",width:"3px",height:"18px",borderRadius:"0 2px 2px 0",background:"rgba(255,255,255,.5)"}}/>}
-                  <span style={{fontSize:"12px",fontWeight:pg===n.id?600:400,color:pg===n.id?"#fff":V.sidebarSub,paddingLeft:pg===n.id?"6px":"0",transition:"all .15s"}}>{n.label}</span>
-                  {n.opt&&<span style={{fontSize:"9px",color:V.sidebarMut,background:"rgba(255,255,255,.06)",padding:"1px 5px",borderRadius:"4px"}}>opt</span>}
+                  <span style={{fontSize:"13px",fontWeight:pg===n.id?700:500,color:pg===n.id?"#FFFFFF":"#D4D4D8",paddingLeft:pg===n.id?"6px":"0",transition:"all .15s",fontFamily:"'Plus Jakarta Sans',sans-serif",lineHeight:1.4}}>{n.label}</span>
+
                 </div>
               ))}
             </div>
@@ -812,7 +812,7 @@ Retorne SOMENTE JSON sem markdown:
           {form.cslNome&&<div style={{display:"flex",alignItems:"center",gap:"8px",padding:"6px 4px"}}>
             <div style={{width:"24px",height:"24px",borderRadius:"50%",background:V.accent+"33",border:`1px solid ${V.accent}55`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"11px",fontWeight:700,color:V.accent,flexShrink:0}}>{form.cslNome[0]}</div>
             <div style={{overflow:"hidden",flex:1}}>
-              <div style={{fontSize:"12px",fontWeight:500,color:V.sidebarTxt,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{form.cslNome}</div>
+              <div style={{fontSize:"12px",fontWeight:600,color:V.sidebarTxt,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",fontFamily:"'Plus Jakarta Sans',sans-serif"}}>{form.cslNome}</div>
               <div style={{fontSize:"10px",color:V.sidebarMut}}>Admin</div>
             </div>
           </div>}
@@ -1965,7 +1965,7 @@ ${temIG?`
     const logoHtmlC=logoUrl?`<img src="${logoUrl}" style="height:44px;width:44px;object-fit:cover;border-radius:12px;display:block"/>`:`<img src="${LOGO_B64}" style="height:44px;width:auto;object-fit:contain;display:block;filter:brightness(10)"/>`;
     const scoreBars=scoreCritsData.map(({l,pts,max})=>`<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:11px;color:#777;font-weight:500">${l}</span><span style="font-size:11px;font-weight:700;color:${pts===max?"#16A34A":pts>0?c1:"#ccc"}">${pts}<span style="color:#ccc;font-weight:400">/${max}</span></span></div><div style="height:4px;background:#f0f0f0;border-radius:2px"><div style="height:100%;width:${(pts/max)*100}%;background:${pts===max?"#16A34A":pts>0?c1:"transparent"};border-radius:2px"></div></div></div>`).join("");
     return`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"/><title>Diagnóstico — ${form.nome}</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Sora:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Sora:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Inter',-apple-system,sans-serif;background:#fff;color:#111;-webkit-print-color-adjust:exact;print-color-adjust:exact}
