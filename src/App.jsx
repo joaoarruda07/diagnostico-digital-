@@ -1381,6 +1381,94 @@ Retorne SOMENTE JSON sem markdown:
                     ))}
                   </div>
                 </div>
+                {/* Preview do layout */}
+                <div style={{marginBottom:"16px",borderRadius:"12px",overflow:"hidden",border:`1px solid ${V.border}`}}>
+                  {layoutPDF==="basico"&&<div>
+                    <div style={{background:"#2563EB",padding:"8px 14px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+                      <div style={{width:"18px",height:"18px",borderRadius:"5px",background:"rgba(255,255,255,.2)"}}/>
+                      <div style={{fontSize:"9px",color:"rgba(255,255,255,.8)",letterSpacing:".1em",textTransform:"uppercase"}}>Diagnóstico Digital</div>
+                    </div>
+                    <div style={{padding:"12px",background:"#F8FAFC"}}>
+                      <div style={{fontSize:"9px",fontWeight:600,color:"#2563EB",letterSpacing:".1em",textTransform:"uppercase",marginBottom:"4px"}}>Análise de Presença</div>
+                      <div style={{fontSize:"13px",fontWeight:800,color:"#0F172A",marginBottom:"6px"}}>Nome do Negócio</div>
+                      <div style={{background:"#fff",border:"1px solid #E2E8F0",borderRadius:"6px",padding:"8px"}}>
+                        {[100,80,60].map((w,i)=><div key={i} style={{height:"4px",background:"#E2E8F0",borderRadius:"2px",marginBottom:"3px",width:w+"%"}}/>)}
+                      </div>
+                    </div>
+                    <div style={{padding:"6px 14px",background:"#fff",borderTop:"1px solid #E2E8F0",display:"flex",justifyContent:"space-between"}}>
+                      <div style={{fontSize:"9px",color:"#64748B"}}>Notion + Stripe</div>
+                      <div style={{fontSize:"9px",fontWeight:700,color:"#2563EB"}}>BÁSICO</div>
+                    </div>
+                  </div>}
+                  {layoutPDF==="premium"&&<div>
+                    <div style={{background:"#111",padding:"12px 14px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+                      <div style={{width:"18px",height:"18px",borderRadius:"5px",background:"rgba(201,162,39,.2)"}}/>
+                      <div style={{fontSize:"9px",color:"rgba(201,162,39,.7)",letterSpacing:".12em",textTransform:"uppercase"}}>Análise Premium</div>
+                    </div>
+                    <div style={{padding:"12px",background:"#F9F7F3"}}>
+                      <div style={{fontSize:"9px",fontWeight:600,color:"#C9A227",letterSpacing:".12em",textTransform:"uppercase",marginBottom:"5px"}}>Resumo Executivo</div>
+                      <div style={{fontSize:"13px",fontStyle:"italic",color:"#111",fontFamily:"Georgia,serif",marginBottom:"5px"}}>Nome do Negócio</div>
+                      <div style={{height:"1px",background:"linear-gradient(90deg,#C9A227,transparent)",margin:"6px 0"}}/>
+                      <div style={{background:"#fff",border:"1px solid #E5E1D8",borderRadius:"8px",padding:"7px"}}>
+                        {[100,75].map((w,i)=><div key={i} style={{height:"3px",background:"#E5E1D8",borderRadius:"2px",marginBottom:"3px",width:w+"%"}}/>)}
+                      </div>
+                    </div>
+                    <div style={{padding:"6px 14px",background:"#111",display:"flex",justifyContent:"space-between"}}>
+                      <div style={{fontSize:"9px",color:"#444"}}>McKinsey · Apple</div>
+                      <div style={{fontSize:"9px",fontWeight:700,color:"#C9A227"}}>PREMIUM</div>
+                    </div>
+                  </div>}
+                  {layoutPDF==="luxo"&&<div>
+                    <div style={{background:"#0A0A0A",padding:"14px",textAlign:"center"}}>
+                      <div style={{width:"28px",height:"1px",background:"#D4AF37",margin:"0 auto 8px"}}/>
+                      <div style={{fontSize:"14px",fontWeight:300,color:"#FAFAFA",fontFamily:"Georgia,serif",fontStyle:"italic"}}>Nome do Negócio</div>
+                      <div style={{fontSize:"9px",color:"#D4AF37",letterSpacing:".15em",textTransform:"uppercase",marginTop:"4px"}}>Categoria</div>
+                      <div style={{width:"28px",height:"1px",background:"rgba(212,175,55,.3)",margin:"8px auto 0"}}/>
+                    </div>
+                    <div style={{padding:"6px 14px",background:"#0A0A0A",borderTop:"1px solid rgba(212,175,55,.2)",display:"flex",justifyContent:"space-between"}}>
+                      <div style={{fontSize:"9px",color:"#444"}}>Louis Vuitton · Rolex</div>
+                      <div style={{fontSize:"9px",fontWeight:600,color:"#D4AF37"}}>LUXO</div>
+                    </div>
+                  </div>}
+                  {layoutPDF==="relatorio"&&<div>
+                    <div style={{background:"#0B1F3A",padding:"8px 14px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+                      <div style={{fontSize:"11px",color:"#fff",fontWeight:600}}>Relatório Técnico</div>
+                      <div style={{fontSize:"9px",color:"rgba(255,255,255,.4)"}}>Confidencial</div>
+                    </div>
+                    <div style={{padding:"12px",background:"#fff"}}>
+                      <div style={{borderLeft:"4px solid #0B1F3A",paddingLeft:"10px",marginBottom:"8px"}}>
+                        <div style={{fontSize:"12px",fontWeight:700,color:"#0B1F3A"}}>Nome do Negócio</div>
+                      </div>
+                      <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:"4px"}}>
+                        {["Nota","Avals","Fotos","Pos"].map((l,i)=><div key={i} style={{background:"#E5E7EB",borderRadius:"4px",padding:"4px",textAlign:"center"}}>
+                          <div style={{fontSize:"10px",fontWeight:700,color:"#0B1F3A"}}>—</div>
+                          <div style={{fontSize:"8px",color:"#6B7280"}}>{l}</div>
+                        </div>)}
+                      </div>
+                    </div>
+                    <div style={{padding:"6px 14px",background:"#0B1F3A",display:"flex",justifyContent:"space-between"}}>
+                      <div style={{fontSize:"9px",color:"rgba(255,255,255,.3)"}}>PwC · KPMG</div>
+                      <div style={{fontSize:"9px",fontWeight:700,color:"rgba(255,255,255,.5)"}}>RELATÓRIO</div>
+                    </div>
+                  </div>}
+                  {layoutPDF==="custom"&&<div>
+                    <div style={{background:"#0a0a0a",padding:"12px 14px",display:"flex",alignItems:"center",justifyContent:"space-between",position:"relative",overflow:"hidden"}}>
+                      <div style={{position:"absolute",top:0,right:0,width:"40%",height:"100%",background:`linear-gradient(135deg,${form.cor1}22,transparent)`}}/>
+                      <div style={{fontSize:"13px",fontWeight:800,color:"#fff"}}>Nome do Negócio</div>
+                      <div style={{fontSize:"9px",color:form.cor1,opacity:.8,letterSpacing:".1em",textTransform:"uppercase"}}>Custom</div>
+                    </div>
+                    <div style={{padding:"12px",background:"#fff"}}>
+                      <div style={{background:`${form.cor1}08`,borderLeft:`3px solid ${form.cor1}`,padding:"7px 10px",borderRadius:"0 8px 8px 0",marginBottom:"6px"}}>
+                        {[100,70].map((w,i)=><div key={i} style={{height:"4px",background:`${form.cor1}22`,borderRadius:"2px",marginBottom:"3px",width:w+"%"}}/>)}
+                      </div>
+                    </div>
+                    <div style={{padding:"6px 14px",background:"#0a0a0a",display:"flex",justifyContent:"space-between"}}>
+                      <div style={{fontSize:"9px",color:"#444"}}>Cor da sua marca</div>
+                      <div style={{fontSize:"9px",fontWeight:700,color:form.cor1}}>CUSTOM</div>
+                    </div>
+                  </div>}
+                </div>
+
                 <SBar/>
                 <div style={{display:"flex",gap:"10px",flexWrap:"wrap",marginTop:"4px"}}>
                   <BtnP onClick={gerarTextoIA} disabled={loading} style={{opacity:loading?.5:1}}>{loading?"Gerando textos...":"Gerar textos com IA"}</BtnP>
@@ -2072,4 +2160,47 @@ ${temIG?`<div class="pg"><div class="accent"></div><div class="body">
 
 </body></html>`;
   }
+
+  if(layout==="custom"){
+  // Layout custom — usa cor da marca
+  const B={bg:"#F8FAFC",text:"#0F172A",muted:"#64748B",border:"#E2E8F0",accent:c1,card:"#FFFFFF"};
+  const scoreBars=scoreCritsData.map(({l,pts,max})=>`<div style="display:flex;align-items:center;gap:12px;margin-bottom:8px"><div style="font-size:11px;color:#64748B;width:130px;flex-shrink:0">${l}</div><div style="flex:1;height:5px;background:#E2E8F0;border-radius:3px;overflow:hidden"><div style="width:${(pts/max)*100}%;height:100%;background:${pts===max?"#10B981":c1};border-radius:3px"></div></div><span style="font-size:11px;font-weight:600;color:#94A3B8;min-width:34px;text-align:right">${pts}/${max}</span></div>`).join("");
+  return `<!DOCTYPE html><html><head><meta charset="UTF-8"/><style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Inter','Helvetica Neue',sans-serif;background:#fff;color:${B.text}}
+    .pg{page-break-after:always;min-height:100vh;position:relative;display:flex;flex-direction:column}
+    .body{padding:56px;flex:1;display:flex;flex-direction:column}
+    .label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:${c1};margin-bottom:12px}
+    .card{background:#fff;border:1px solid ${B.border};border-radius:14px;padding:24px;margin-bottom:16px}
+    .highlight{background:${c1}08;border-left:3px solid ${c1};padding:16px 20px;border-radius:0 12px 12px 0;margin-bottom:16px}
+  </style></head><body>
+  <div class="pg" style="background:#0a0a0a">
+    <div style="position:absolute;top:0;right:0;width:40%;height:100%;background:linear-gradient(135deg,${c1}25 0%,transparent 70%)"></div>
+    <div class="body" style="justify-content:flex-end;background:transparent;padding-bottom:80px">
+      ${logoUrl?`<img src="${logoUrl}" style="max-width:160px;max-height:60px;object-fit:contain;margin-bottom:48px"/>`:``}
+      <div style="font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:${c1};margin-bottom:16px">${t.tituloIntro||"Diagnóstico Digital"}</div>
+      <h1 style="font-size:42px;font-weight:800;color:#fff;line-height:1.1;margin-bottom:20px">${empresa}</h1>
+      <div style="font-size:15px;color:rgba(255,255,255,.5);line-height:1.7;max-width:480px">${t.intro||""}</div>
+      <div style="margin-top:40px;padding-top:28px;border-top:1px solid rgba(255,255,255,.08)">
+        <div style="font-size:12px;color:rgba(255,255,255,.3)">${form.cidade||""} ${form.estado||""} · ${new Date().toLocaleDateString("pt-BR",{month:"long",year:"numeric"})}</div>
+      </div>
+    </div>
+  </div>
+  ${temDadosGoogle?`<div class="pg"><div class="body"><div class="label">${t.tituloAnalise||"Presença no Google"}</div><h2 style="font-size:26px;font-weight:800;color:${B.text};margin-bottom:8px">${empresa}</h2><p style="font-size:13px;color:${B.muted};margin-bottom:28px;line-height:1.6">${t.dados||""}</p><div class="card"><div class="label">Score de presença</div><div style="font-size:48px;font-weight:800;color:${c1};margin-bottom:4px">${form.score||0}<span style="font-size:20px;color:${B.muted}">/100</span></div></div><div class="card">${scoreBars}</div></div></div>`:""}
+  ${temIG?`<div class="pg"><div class="body"><div class="label">${t.tituloIg||"Instagram"}</div><h2 style="font-size:26px;font-weight:800;margin-bottom:20px">${ig.handle?`@${ig.handle}`:empresa}</h2><p style="font-size:13px;color:${B.muted};line-height:1.75;margin-bottom:24px">${t.igAnalise||""}</p></div></div>`:""}
+  <div class="pg" style="background:#0a0a0a">
+    <div style="position:absolute;top:0;right:0;width:40%;height:100%;background:linear-gradient(135deg,${c1}12 0%,transparent 70%)"></div>
+    <div class="body" style="padding:64px;justify-content:space-between;background:transparent">
+      <div>
+        <div style="font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:${c1};margin-bottom:20px">${t.tituloProx||"Próximos Passos"}</div>
+        <h1 style="font-size:34px;color:#fff;margin-bottom:20px;line-height:1.15">O próximo passo<br/>é uma conversa.</h1>
+        <p style="color:#777;font-size:14px;line-height:1.8;max-width:400px">${t.proximos||""}</p>
+      </div>
+      <div style="display:flex;gap:48px;align-items:flex-end">
+        ${logoUrl?`<img src="${logoUrl}" style="max-height:48px;max-width:120px;object-fit:contain"/>`:``}
+        <div>${form.cslNome?`<div style="font-size:16px;font-weight:700;color:#fff;margin-bottom:6px">${form.cslNome}</div>`:""}${form.cslWhats?`<div style="font-size:12px;color:#666;margin-bottom:4px">📱 ${form.cslWhats}</div>`:""}${form.cslInsta?`<div style="font-size:12px;color:#666">@${form.cslInsta}</div>`:""}</div>
+      </div>
+    </div>
+  </div>
+</body></html>`;
 }
