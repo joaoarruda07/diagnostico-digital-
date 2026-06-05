@@ -2161,6 +2161,7 @@ ${temIG?`<div class="pg"><div class="accent"></div><div class="body">
 </body></html>`;
   }
 
+
   if(layout==="custom"){
   // Layout custom — usa cor da marca
   const B={bg:"#F8FAFC",text:"#0F172A",muted:"#64748B",border:"#E2E8F0",accent:c1,card:"#FFFFFF"};
@@ -2203,4 +2204,5 @@ ${temIG?`<div class="pg"><div class="accent"></div><div class="body">
     </div>
   </div>
 </body></html>`;
+}
 }
